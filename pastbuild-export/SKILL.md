@@ -1,220 +1,203 @@
 ---
 name: pastbuild-export
-description: Generate Past Build project JSON for portfolio import. Use when users want to export their software projects from source code to pastbuild.com. Analyzes codebase to extract project name, description, tech stack, and structure for the Past Build import format.
+description: Generate Past Build project JSON for portfolio import. Analyzes codebase to extract project name, description, tech stack, and structure for the Past Build import format.
 ---
 
 # Past Build Export
 
-Generate valid JSON for importing software projects into pastbuild.com - a platform for preserving and showcasing past builds.
+Turn any codebase into a compelling portfolio piece for pastbuild.com. This skill extracts what makes your project interesting and formats it for easy import.
 
-## Quick Start
+## When to Use
 
-When a user asks to "export to Past Build", "create Past Build JSON", or similar:
+Users ask things like:
+- "Export this to Past Build"
+- "Create a portfolio JSON for my project"
+- "Generate Past Build format for [project]"
 
-1. **Analyze the codebase** - Look for package.json, README, source files to extract:
-   - Project name
-   - Description/summary
-   - Tech stack (dependencies, frameworks)
-   - Project structure and features
+Your job: analyze the codebase, identify the highlights, and output clean JSON.
 
-2. **Generate the JSON** using the schema below
+## What Makes a Strong Project Entry
 
-3. **Present the output** for the user to paste into Past Build's JSON import
+Past Build isn't a resume template. It's a way to showcase *why* you built something and *what makes it interesting*. Focus on:
 
-## JSON Schema
+**Technical decisions worth talking about** - Not just "used React", but "chose React Server Components to reduce client bundle by 40%"
+
+**Problems you solved** - "I built this after debugging race conditions for three days" tells a story
+
+**Unique features** - What makes this project different from a generic starter template?
+
+**Measurable impact** - "Processes 10K requests/second" or "reduced build time from 45s to 8s"
+
+## JSON Structure
 
 ```json
 {
   "version": 1,
   "name": "Project Name",
-  "description": "Brief description of what the project does",
+  "description": "One sentence that captures what this project accomplishes",
   "projectStatus": "ongoing" | "finished",
   "projectDate": "YYYY-MM-DD",
   "sections": [
     {
       "id": "uuid-v4",
-      "title": "Section Title",
-      "subtitle": "Optional subtitle",
+      "title": "Feature-focused headline",
+      "subtitle": "Why this matters + technical insight",
       "order": 0,
       "media": []
     }
   ],
-  "links": [
-    {
-      "id": "uuid-v4",
-      "text": "GitHub",
-      "url": "https://github.com/..."
-    }
-  ],
+  "links": [...],
   "exportedAt": "2024-01-01T00:00:00.000Z"
 }
 ```
 
-## Field Requirements
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `version` | Yes | Must be `1` |
-| `name` | Yes | Project name |
-| `description` | Yes | Project description (1-2 sentences) |
-| `projectStatus` | No | `"ongoing"` or `"finished"` (default: `"finished"`) |
-| `projectDate` | No | When the project was built (YYYY-MM-DD format) |
-| `sections` | Yes | Array of sections describing the project |
-| `links` | No | External links (GitHub, website, demo) |
-| `exportedAt` | Yes | ISO timestamp of generation |
-
-## Section Structure
-
-Each section should cover a distinct aspect of the project:
-
-```json
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "title": "Tech Stack",
-  "subtitle": "Libraries and frameworks used",
-  "order": 0,
-  "media": []
-}
-```
-
-**Suggested section titles:**
-- Overview / Introduction
-- Tech Stack
-- Features
-- How It Works
-- Challenges & Solutions
-- Key Learnings
-- Demo / Screenshots
-- Future Improvements
+| Field | Required | Notes |
+|-------|----------|-------|
+| `version` | Yes | Always `1` |
+| `name` | Yes | Project name from package.json or repo |
+| `description` | Yes | One sentence, pitch-style |
+| `projectStatus` | No | `"ongoing"` or `"finished"` |
+| `projectDate` | No | When the project was built (git log --reverse helps) |
+| `sections` | Yes | 2-5 feature sections work best |
+| `links` | No | GitHub, demo, docs |
+| `exportedAt` | Yes | Current ISO timestamp |
 
 ## Extracting Project Info
 
-### Common Sources
+### Where to Find Information
 
-| Source | What to Extract |
-|--------|-----------------|
-| `package.json` / `pyproject.toml` | Name, version, dependencies (tech stack) |
-| `README.md` | Description, features, setup instructions |
-| `Cargo.toml`, `go.mod` | Name, dependencies |
-| Source files | Architecture patterns, key features |
+| Source | What to Look For |
+|--------|------------------|
+| `package.json`, `pyproject.toml`, `go.mod` | Name, dependencies, tech stack |
+| `README.md` | What the project claims to do, features, origin story |
+| Source files | Architecture patterns, complex logic, interesting solutions |
+| Git history | When it started, what evolved over time |
 
-### Project Status Heuristics
+### Section Strategy
 
-- **`ongoing`**: Actively maintained, recent commits, planned features
-- **`finished`**: Completed project, no active development, side project that reached its goals
+Each section should cover one compelling aspect of the project. Think:
 
-### Project Date
+**"What would I want to show someone if they only had 30 seconds?"**
 
-Estimate from:
-- Git history (`git log --reverse --format=%ai`)
-- File creation dates
-- README mentions ("built in 2023")
+Good sections answer questions like:
+- "What interesting problem does this solve?"
+- "What technical challenge did you tackle?"
+- "What makes this different from a boilerplate?"
 
-## Example Outputs
+Bad sections just restate generic categories:
+- "Overview" (too vague)
+- "Tech Stack" (boring, expected)
+- "Features" (what doesn't have features?)
 
-### Simple Web App
+### Writing Subtitles That Work
+
+The subtitle is where the story lives. Avoid generic placeholders.
+
+**Weak:** "How authentication works"
+**Strong:** "I built custom JWT handling after our team hit session expiration bugs in production - now tokens refresh silently without user disruption"
+
+**Weak:** "Performance optimizations"
+**Strong:** "Reduced TTI from 3.2s to 0.8s by deferring non-critical chunks and preloading only what was above the fold"
+
+**Weak:** "Database design"
+**Strong:** "Schema designed to handle 10M+ rows without sacrificing query speed - I denormalized just enough to make joins practical"
+
+## Example: SaaS Dashboard
 
 ```json
 {
   "version": 1,
-  "name": "Task Tracker",
-  "description": "A minimal task management app with drag-and-drop reordering and local storage sync",
-  "projectStatus": "finished",
-  "projectDate": "2024-06-15",
+  "name": "MetricFlow Analytics",
+  "description": "A real-time analytics dashboard helping SaaS teams monitor key metrics without switching between tools.",
+  "projectDate": "2026-02-01",
   "sections": [
     {
-      "id": "overview-section",
-      "title": "Overview",
-      "subtitle": "What this project does",
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "title": "Real-time data pipelines over WebSocket",
+      "subtitle": "Built to handle 10K+ concurrent connections without dropping updates - I learned the hard way that polling just doesn't cut it for live dashboards.",
       "order": 0,
       "media": []
     },
     {
-      "id": "tech-section",
-      "title": "Tech Stack",
-      "subtitle": "Built with",
+      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "title": "Drag-and-drop widget customization",
+      "subtitle": "Users compose their own view by dragging widgets onto a canvas - I used a grid-based layout system to make positioning intuitive yet responsive.",
       "order": 1,
       "media": []
     },
     {
-      "id": "features-section",
-      "title": "Features",
-      "subtitle": "Key capabilities",
+      "id": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+      "title": "Multi-tenant RBAC with granular permissions",
+      "subtitle": "Each organization gets complete isolation - I implemented row-level security at the database level rather than application level for true data separation.",
       "order": 2,
       "media": []
     }
   ],
   "links": [
-    {
-      "id": "github-link",
-      "text": "GitHub Repository",
-      "url": "https://github.com/username/task-tracker"
-    }
+    { "id": "l1", "text": "Live Demo", "url": "https://metricflow.example.com" },
+    { "id": "l2", "text": "GitHub", "url": "https://github.com/username/metricflow" }
   ],
-  "exportedAt": "2024-06-15T12:00:00.000Z"
+  "exportedAt": "2026-02-12T01:30:00.000Z"
 }
 ```
 
-### CLI Tool
+## Example: Developer Tool / CLI
 
 ```json
 {
   "version": 1,
-  "name": "Image Optimizer CLI",
-  "description": "Batch image compression tool with WebP conversion and smart quality detection",
-  "projectStatus": "finished",
-  "projectDate": "2024-03-20",
+  "name": "GitWip CLI",
+  "description": "A developer tool that intelligently groups related git changes into sensible work-in-progress commits.",
+  "projectDate": "2026-01-15",
   "sections": [
     {
-      "id": "what-it-does",
-      "title": "What It Does",
-      "subtitle": "Problem solved",
+      "id": "e1f2a3b4-c5d6-7890-abcd-ef1234567890",
+      "title": "Smart commit grouping with semantic analysis",
+      "subtitle": "Instead of asking 'what files did you change?', it analyzes imports and file patterns to auto-group related changes - this reduced our team's WIP commit noise by 70%.",
       "order": 0,
       "media": []
     },
     {
-      "id": "how-it-works",
-      "title": "How It Works",
-      "subtitle": "Technical approach",
+      "id": "f2a3b4c5-d6e7-8901-bcde-f23456789012",
+      "title": "Cross-branch stash management",
+      "subtitle": "I built this after losing work twice when stashing on one branch and applying on another - it tracks stash context so nothing ever gets applied to the wrong branch.",
       "order": 1,
+      "media": []
+    },
+    {
+      "id": "g3a4b5c6-e7f8-9012-cdef-345678901234",
+      "title": "Optimized for monorepos with millions of files",
+      "subtitle": "Standard git status is too slow in large repos - I implemented a Rust-based status scanner that cuts status time from 8s to 200ms in our main monorepo.",
+      "order": 2,
       "media": []
     }
   ],
   "links": [
-    {
-      "id": "github",
-      "text": "Source Code",
-      "url": "https://github.com/username/img-opt"
-    },
-    {
-      "id": "npm",
-      "text": "NPM Package",
-      "url": "https://npmjs.com/package/img-opt"
-    }
+    { "id": "l1", "text": "npm Package", "url": "https://npmjs.com/package/gitwip" },
+    { "id": "l2", "text": "Documentation", "url": "https://gitwip.dev/docs" }
   ],
-  "exportedAt": "2024-03-20T09:30:00.000Z"
+  "exportedAt": "2026-02-12T01:30:00.000Z"
 }
 ```
 
-## UUID Generation
+## Quick Reference
 
-Generate UUIDs for `id` fields. Python example:
-
+**UUID Generation:**
 ```python
 import uuid
-print(str(uuid.uuid4()))
-# Output: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+str(uuid.uuid4())
+# → a1b2c3d4-e5f6-7890-abcd-ef1234567890
 ```
 
-## Tips for Quality Output
+**Git date extraction:**
+```bash
+git log --reverse --format=%ai | head -1
+```
 
-1. **Read multiple sources** - Check package.json, README, and source files for complete picture
-2. **Keep descriptions concise** - 1-2 sentences that capture the essence
-3. **Use consistent section ordering** - Overview → Tech Stack → Features → Details
-4. **Include relevant links** - GitHub, live demo, documentation
-5. **Match user's framing** - Use terminology from their project
+**For project status:**
+- `ongoing`: Recent commits, active features planned
+- `finished`: Side project that reached its goals, no active development
 
-## Resources
+## More Examples
 
-- **Schema Reference**: See [SCHEMA.md](SCHEMA.md) for complete type definitions
-- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for more output examples
+See [EXAMPLES.md](references/EXAMPLES.md) for additional examples across different project types.

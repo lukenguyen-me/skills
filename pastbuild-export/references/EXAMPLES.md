@@ -1,319 +1,200 @@
 # Past Build Export Examples
 
-More examples for different project types.
+Real project examples that showcase how to write compelling feature-focused sections. Each example demonstrates a different project type and highlights the key patterns: personal voice, quantified impact, problem-first framing, and technical reasoning.
 
-## API/Backend Service
+## SaaS Dashboard
 
 ```json
 {
   "version": 1,
-  "name": "User Auth Service",
-  "description": "RESTful authentication microservice with JWT tokens, OAuth2 providers, and role-based access control",
-  "projectStatus": "ongoing",
-  "projectDate": "2024-08-01",
+  "name": "MetricFlow Analytics",
+  "description": "A real-time analytics dashboard helping SaaS teams monitor key metrics without switching between tools.",
+  "projectDate": "2026-02-01",
   "sections": [
     {
-      "id": "intro",
-      "title": "Overview",
-      "subtitle": "What this service provides",
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "title": "Real-time data pipelines over WebSocket",
+      "subtitle": "Built to handle 10K+ concurrent connections without dropping updates - I learned the hard way that polling just doesn't cut it for live dashboards.",
       "order": 0,
       "media": []
     },
     {
-      "id": "stack",
-      "title": "Tech Stack",
-      "subtitle": "Libraries and infrastructure",
+      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "title": "Drag-and-drop widget customization",
+      "subtitle": "Users can compose their own view by dragging widgets onto a canvas - I used a grid-based layout system to make positioning intuitive yet responsive.",
       "order": 1,
       "media": []
     },
     {
-      "id": "endpoints",
-      "title": "API Endpoints",
-      "subtitle": "Available routes",
+      "id": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+      "title": "Multi-tenant RBAC with granular permissions",
+      "subtitle": "Each organization gets complete isolation - I implemented row-level security at the database level rather than application level for true data separation.",
       "order": 2,
       "media": []
     },
     {
-      "id": "auth",
-      "title": "Authentication",
-      "subtitle": "How it works",
+      "id": "d4e5f6a7-b8c9-0123-defa-456789012345",
+      "title": "PDF and scheduled email reports",
+      "subtitle": "Executives need data in their inbox, not just in the app - I chose Puppeteer for pixel-perfect PDF generation over HTML-to-PDF libraries.",
       "order": 3,
       "media": []
     }
   ],
   "links": [
-    {
-      "id": "github",
-      "text": "Source Code",
-      "url": "https://github.com/company/auth-service"
-    },
-    {
-      "id": "docs",
-      "text": "API Documentation",
-      "url": "https://docs.auth-service.example.com"
-    }
+    { "id": "l1", "text": "Live Demo", "url": "https://metricflow.example.com" },
+    { "id": "l2", "text": "GitHub", "url": "https://github.com/username/metricflow" }
   ],
-  "exportedAt": "2024-08-15T10:00:00.000Z"
+  "exportedAt": "2026-02-12T01:30:00.000Z"
 }
 ```
 
-## Mobile App
+## Developer Tool / CLI
 
 ```json
 {
   "version": 1,
-  "name": "Habit Tracker",
-  "description": "iOS and Android habit tracking app with streaks, reminders, and data visualization",
-  "projectStatus": "finished",
-  "projectDate": "2024-05-20",
+  "name": "GitWip CLI",
+  "description": "A developer tool that intelligently groups related git changes into sensible work-in-progress commits, so you can switch branches without losing context.",
+  "projectDate": "2026-01-15",
   "sections": [
     {
-      "id": "purpose",
-      "title": "The Problem",
-      "subtitle": "Why this app exists",
+      "id": "e1f2a3b4-c5d6-7890-abcd-ef1234567890",
+      "title": "Smart commit grouping with semantic analysis",
+      "subtitle": "Instead of asking 'what files did you change?', it analyzes imports and file patterns to auto-group related changes - this reduced our team's WIP commit noise by 70%.",
       "order": 0,
       "media": []
     },
     {
-      "id": "solution",
-      "title": "The Solution",
-      "subtitle": "How it helps users",
+      "id": "f2a3b4c5-d6e7-8901-bcde-f23456789012",
+      "title": "Cross-branch stash management",
+      "subtitle": "I built this after losing work twice when stashing on one branch and applying on another - it tracks stash context so nothing ever gets applied to the wrong branch.",
       "order": 1,
       "media": []
     },
     {
-      "id": "stack",
-      "title": "Tech Stack",
-      "subtitle": "Frameworks and tools",
+      "id": "g3a4b5c6-e7f8-9012-cdef-345678901234",
+      "title": "VS Code and Neovim extensions",
+      "subtitle": "Developers shouldn't leave their editor to use version control - both extension surfaces WIP status inline, right where the code lives.",
       "order": 2,
       "media": []
     },
     {
-      "id": "features",
-      "title": "Key Features",
-      "subtitle": "What users can do",
+      "id": "h4b5c6d7-f8a9-0123-defa-456789012345",
+      "title": "Optimized for monorepos with millions of files",
+      "subtitle": "Standard git status is too slow in large repos - I implemented a Rust-based status scanner that cuts status time from 8s to 200ms in our main monorepo.",
       "order": 3,
       "media": []
     }
   ],
   "links": [
-    {
-      "id": "appstore",
-      "text": "App Store",
-      "url": "https://apps.apple.com/app/id123456789"
-    },
-    {
-      "id": "playstore",
-      "text": "Google Play",
-      "url": "https://play.google.com/store/apps/id123456789"
-    },
-    {
-      "id": "github",
-      "text": "GitHub",
-      "url": "https://github.com/username/habit-tracker"
-    }
+    { "id": "l1", "text": "npm Package", "url": "https://npmjs.com/package/gitwip" },
+    { "id": "l2", "text": "Documentation", "url": "https://gitwip.dev/docs" }
   ],
-  "exportedAt": "2024-05-20T14:30:00.000Z"
+  "exportedAt": "2026-02-12T01:30:00.000Z"
 }
 ```
 
-## Data Pipeline / ETL
+## Open Source Library
 
 ```json
 {
   "version": 1,
-  "name": "E-commerce Analytics Pipeline",
-  "description": "Daily ETL pipeline that aggregates customer behavior data from multiple sources for analytics dashboards",
-  "projectStatus": "finished",
-  "projectDate": "2024-02-10",
+  "name": "React Context Store",
+  "description": "A 2KB state management library that brings Redux's developer experience to React's built-in Context API - no boilerplate required.",
+  "projectDate": "2026-01-20",
   "sections": [
     {
-      "id": "overview",
-      "title": "What It Does",
-      "subtitle": "Pipeline functionality",
+      "id": "i5c6d7e8-a9b0-1234-defa-567890123456",
+      "title": "Minimal bundle size with zero dependencies",
+      "subtitle": "I stripped everything non-essential - the core is just 2KB gzipped, so it fits even in performance-critical landing pages where every kilobyte matters.",
       "order": 0,
       "media": []
     },
     {
-      "id": "sources",
-      "title": "Data Sources",
-      "subtitle": "Where data comes from",
+      "id": "j6d7e8f9-b0c1-2345-efab-678901234567",
+      "title": "Redux DevTools out of the box",
+      "subtitle": "Developers shouldn't need to configure middleware just to time-travel debug - I bundled Redux DevTools connection so it works instantly on first import.",
       "order": 1,
       "media": []
     },
     {
-      "id": "processing",
-      "title": "Processing Steps",
-      "subtitle": "Transformations applied",
+      "id": "k7e8f9a0-c1d2-3456-fabc-789012345678",
+      "title": "Full TypeScript inference without generics",
+      "subtitle": "Most typed state libraries require boilerplate generics - I designed the API so types flow automatically from your initial state, no annotations needed.",
       "order": 2,
       "media": []
     },
     {
-      "id": "output",
-      "title": "Output",
-      "subtitle": "Where data goes",
+      "id": "l8f9a0b1-d2e3-4567-bcde-890123456789",
+      "title": "Selective re-rendering via subscription tuning",
+      "subtitle": "Fine-grained selectors prevent unnecessary renders - I benchmarked several approaches and settled on a subscription model that's 3x faster than naive Context usage.",
       "order": 3,
       "media": []
     }
   ],
   "links": [
-    {
-      "id": "architecture",
-      "text": "Architecture Diagram",
-      "url": "https://github.com/username/analytics-pipeline/blob/main/ARCHITECTURE.md"
-    }
+    { "id": "l1", "text": "npm", "url": "https://npmjs.com/package/react-context-store" },
+    { "id": "l2", "text": "Star on GitHub", "url": "https://github.com/username/react-context-store" }
   ],
-  "exportedAt": "2024-02-10T08:00:00.000Z"
+  "exportedAt": "2026-02-12T01:30:00.000Z"
 }
 ```
 
-## Browser Extension
+## Technical Proof of Concept
 
 ```json
 {
   "version": 1,
-  "name": "Tab Manager Pro",
-  "description": "Chrome extension for organizing browser tabs into groups with search, sync, and memory optimization",
-  "projectStatus": "finished",
-  "projectDate": "2024-04-05",
+  "name": "DiffReview AI",
+  "description": "An experimental tool exploring how LLMs can review pull request diffs with contextual understanding - built to understand code, not just match patterns.",
+  "projectDate": "2026-02-05",
   "sections": [
     {
-      "id": "what",
-      "title": "What It Is",
-      "subtitle": "Extension functionality",
+      "id": "m9a0b1c2-e3f4-5678-cdef-901234567890",
+      "title": "Diff-aware prompting for contextual understanding",
+      "subtitle": "Instead of feeding entire files to the LLM, I extract only changed functions and their callers - this reduced token usage by 80% while improving review relevance.",
       "order": 0,
       "media": []
     },
     {
-      "id": "why",
-      "title": "Why It Matters",
-      "subtitle": "Problem solved",
+      "id": "n0a1b2c3-f4e5-6789-defa-012345678901",
+      "title": "Custom rule engine for team standards",
+      "subtitle": "Every team has different conventions - I built a JSON-configurable rule system so you can teach the AI your patterns without touching code.",
       "order": 1,
       "media": []
     },
     {
-      "id": "stack",
-      "title": "Tech Stack",
-      "subtitle": "Implementation details",
-      "order": 2,
-      "media": []
-    }
-  ],
-  "links": [
-    {
-      "id": "chrome",
-      "text": "Chrome Web Store",
-      "url": "https://chrome.google.com/webstore/detail/..."
-    },
-    {
-      "id": "github",
-      "text": "GitHub",
-      "url": "https://github.com/username/tab-manager"
-    }
-  ],
-  "exportedAt": "2024-04-05T16:45:00.000Z"
-}
-```
-
-## Game / Interactive Project
-
-```json
-{
-  "version": 1,
-  "name": "Space Defender",
-  "description": "2D arcade space shooter game built with vanilla JavaScript and HTML5 Canvas",
-  "projectStatus": "finished",
-  "projectDate": "2023-11-20",
-  "sections": [
-    {
-      "id": "gameplay",
-      "title": "Gameplay",
-      "subtitle": "How to play",
-      "order": 0,
-      "media": []
-    },
-    {
-      "id": "tech",
-      "title": "Technical Details",
-      "subtitle": "How it works",
-      "order": 1,
-      "media": []
-    },
-    {
-      "id": "challenges",
-      "title": "Challenges",
-      "subtitle": "Problems solved",
-      "order": 2,
-      "media": []
-    }
-  ],
-  "links": [
-    {
-      "id": "play",
-      "text": "Play Online",
-      "url": "https://spacedefender.example.com"
-    },
-    {
-      "id": "github",
-      "text": "Source Code",
-      "url": "https://github.com/username/space-defender"
-    }
-  ],
-  "exportedAt": "2023-11-20T20:00:00.000Z"
-}
-```
-
-## AI/ML Project
-
-```json
-{
-  "version": 1,
-  "name": "Sentiment Analyzer",
-  "description": "NLP model for analyzing customer review sentiment with a FastAPI serving layer and React dashboard",
-  "projectStatus": "ongoing",
-  "projectDate": "2024-07-01",
-  "sections": [
-    {
-      "id": "what",
-      "title": "What It Does",
-      "subtitle": "Model capabilities",
-      "order": 0,
-      "media": []
-    },
-    {
-      "id": "model",
-      "title": "Model Architecture",
-      "subtitle": "Technical approach",
-      "order": 1,
-      "media": []
-    },
-    {
-      "id": "training",
-      "title": "Training",
-      "subtitle": "Dataset and process",
+      "id": "o1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "title": "Comment threading with human-in-the-loop",
+      "subtitle": "AI suggestions are starting points, not verdicts - I designed a discussion flow where developers can accept, reject, or iterate on each AI comment.",
       "order": 2,
       "media": []
     },
     {
-      "id": "deployment",
-      "title": "Deployment",
-      "subtitle": "Serving infrastructure",
+      "id": "p2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "title": "GitHub Actions integration for automated PR reviews",
+      "subtitle": "Review should happen before human eyes see the PR - the Action runs automatically on each push and posts comments within minutes, not hours.",
       "order": 3,
       "media": []
     }
   ],
   "links": [
-    {
-      "id": "huggingface",
-      "text": "Model on Hugging Face",
-      "url": "https://huggingface.co/username/sentiment-analyzer"
-    },
-    {
-      "id": "github",
-      "text": "GitHub",
-      "url": "https://github.com/username/sentiment-analyzer"
-    }
+    { "id": "l1", "text": "GitHub Action", "url": "https://github.com/marketplace/actions/diffreview-ai" }
   ],
-  "exportedAt": "2024-07-15T12:00:00.000Z"
+  "exportedAt": "2026-02-12T01:30:00.000Z"
 }
 ```
+
+## Key Patterns for Writing Compelling Sections
+
+These examples demonstrate techniques that make project descriptions memorable and informative:
+
+**Personal voice**: "I built this after...", "I learned the hard way...", "I chose..." shows ownership and makes the story authentic.
+
+**Quantified impact**: Specific numbers ("70% reduction", "8s to 200ms", "80% token savings") give concrete evidence of value.
+
+**Problem-first framing**: Acknowledge the pain before showing the solution. "Executives need data in their inbox" before explaining the PDF feature.
+
+**Technical reasoning embedded**: Tool choices explained, not just listed. "I chose Puppeteer for pixel-perfect PDF generation" tells readers something about your decision-making.
+
+**Storytelling hooks**: Origin stories like "I lost work twice" create memorable connections that plain feature descriptions cannot.
