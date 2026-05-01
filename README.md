@@ -4,6 +4,15 @@ A collection of LLM Coding-Agent skills for various tasks and workflows.
 
 ## Available Skills
 
+### appstore-release-notes
+
+Generate compact App Store release notes from git history, tags, commits, and changed files. Outputs clear hyphen bullets labeled as Feature, Fix, or Improvement.
+
+Usage:
+```bash
+claude /skill:appstore-release-notes
+```
+
 ### appstore-submission-content
 
 A skill for generating complete, ready-to-paste App Store Connect text content. Covers all localizable fields (App Name, Subtitle, Description, Keywords, etc.), enforces Apple character rules, detects multi-language support, and outputs structured markdown.
