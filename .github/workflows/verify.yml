@@ -10,6 +10,7 @@ on:
       - ".claude/skills/**"
       - ".claude-plugin/**"
       - ".codex-plugin/**"
+      - "package.json"
 
 permissions:
   contents: read
@@ -30,38 +31,5 @@ jobs:
       - name: Install dependencies
         run: npm_config_ignore_scripts=true npx -y pnpm@10 install --frozen-lockfile
 
-      # Check b: scaffold-repository apply, no network (exit 0)
-      - name: "Check b — apply-scaffold-repository.js exits 0 (no-network)"
-        run: node scripts/apply-scaffold-repository.js skills/scaffold-repository --check
-
-      # Check c: dogfood verification covers all five skills
-      - name: "Check c — verify-dogfood.sh exits 0 (all five skills)"
-        run: bash scripts/verify-dogfood.sh
-
-      # Check marketplace catalog validity
-      - name: "verify-marketplace.sh exits 0 (catalog validated)"
-        run: bash scripts/verify-marketplace.sh
-
-      # Check finish-pr workflow contract
-      - name: "verify-finish-pr-workflow.sh exits 0 (workflow contract)"
-        run: bash scripts/verify-finish-pr-workflow.sh
-
-      # Check a (representative sample): CLI resolves skills from local paths
-      # Using local path sources because the branch may not be published to
-      # remote at CI time. Post-merge, consumers use:
-      #   npm_config_ignore_scripts=true npx skills@latest \
-      #     add patinaproject/skills --skill <name> --agent claude-code -y
-      # The local-path form proves the SKILL.md shape is CLI-compatible.
-      - name: "Check a — CLI resolves scaffold-repository from local path (must exit 0)"
-        run: |
-          # Intentional canary: this uses the current marketplace protocol.
-          npm_config_ignore_scripts=true npx skills@latest \
-            add ./skills/scaffold-repository --list
-          echo "exit=$?"
-
-      - name: "Check a — CLI resolves office-hours from local path (must exit 0)"
-        run: |
-          # Intentional canary: this uses the current marketplace protocol.
-          npm_config_ignore_scripts=true npx skills@latest \
-            add ./skills/office-hours --list
-          echo "exit=$?"
+      - name: Run test suite
+        run: npx -y pnpm@10 test
