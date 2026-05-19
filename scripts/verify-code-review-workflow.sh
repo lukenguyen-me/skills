@@ -33,6 +33,18 @@ assert_no_match() {
   fi
 }
 
+assert_order() {
+  local first_pattern="$1"
+  local second_pattern="$2"
+  local file="$3"
+  local first_line second_line
+  first_line="$(rg -n --pcre2 -e "$first_pattern" "$file" | head -n 1 | cut -d: -f1 || true)"
+  second_line="$(rg -n --pcre2 -e "$second_pattern" "$file" | head -n 1 | cut -d: -f1 || true)"
+  if [ -z "$first_line" ] || [ -z "$second_line" ] || [ "$first_line" -ge "$second_line" ]; then
+    fail "expected pattern '$first_pattern' before '$second_pattern' in $file"
+  fi
+}
+
 assert_file "$WORKFLOW"
 
 if [ -f "$WORKFLOW" ]; then
@@ -52,12 +64,27 @@ if [ -f "$WORKFLOW" ]; then
   assert_match "code-review\\.yml" "$WORKFLOW"
   assert_match "CLAUDE_CODE_OAUTH_TOKEN" "$WORKFLOW"
   assert_no_match "ANTHROPIC_API_KEY|RELEASE_PLEASE_TOKEN|NPM_TOKEN|GITHUB_TOKEN:" "$WORKFLOW"
+  assert_match "# actions/checkout@v4\\.3\\.1" "$WORKFLOW"
+  assert_match "uses: actions/checkout@[0-9a-f]{40}" "$WORKFLOW"
+  assert_match "fetch-depth: 1" "$WORKFLOW"
+  assert_order "uses: actions/checkout@[0-9a-f]{40}" "uses: anthropics/claude-code-action@[0-9a-f]{40}" "$WORKFLOW"
   assert_match "# anthropics/claude-code-action@v1" "$WORKFLOW"
   assert_match "uses: anthropics/claude-code-action@[0-9a-f]{40}" "$WORKFLOW"
+  assert_match "NON-INTERACTIVE CI REVIEW" "$WORKFLOW"
+  assert_match "gh pr diff" "$WORKFLOW"
+  assert_match "BASE_SHA=\\$\\(gh pr view" "$WORKFLOW"
+  assert_match "Critical \\(Must Fix\\)" "$WORKFLOW"
+  assert_match "Major \\(Should Fix\\)" "$WORKFLOW"
+  assert_match "## Code Review" "$WORKFLOW"
+  assert_match "Affected Areas" "$WORKFLOW"
   assert_match "include_fix_links: false" "$WORKFLOW"
   assert_match "display_report: false" "$WORKFLOW"
   assert_match "show_full_output: false" "$WORKFLOW"
-  assert_match "--disallowedTools \".*Edit.*MultiEdit.*Write.*Bash.*\"" "$WORKFLOW"
+  assert_match "--max-turns 25" "$WORKFLOW"
+  assert_match "--allowedTools Read,Bash\\(gh pr comment:\\*\\),Bash\\(gh pr diff:\\*\\),Bash\\(gh pr view:\\*\\),Bash\\(git diff:\\*\\)" "$WORKFLOW"
+  assert_no_match "inline comment on the" "$WORKFLOW"
+  assert_no_match "When a skill step says HALT" "$WORKFLOW"
+  assert_no_match "--disallowedTools" "$WORKFLOW"
 fi
 
 assert_match "blacksmith-2vcpu-ubuntu-2404" .github/actionlint.yaml
