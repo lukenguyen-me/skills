@@ -10,11 +10,12 @@ This repository is the marketplace surface for Patina Project plugins and relate
 - `skills/develop-issue/`: issue development orchestration skill
 - `skills/finish-pr/`: PR finishing skill
 - `skills/review-code/`: isolated local branch-diff review skill
+- `skills/update-branch/`: local branch update skill
 - `skills/install-skills/`: project-local skills CLI installation skill
 - `.agents/skills/<name>/`: symlinks into `../../skills/<name>/` (dogfood overlay)
 - `.claude/skills/<name>/`: symlinks into `../../skills/<name>/` (Claude Code overlay)
 - `.claude-plugin/marketplace.json`: repo-local Claude marketplace source of truth (plugin slug: `patinaproject-skills`)
-- `.claude-plugin/plugin.json`: Claude plugin manifest listing all seven skill paths
+- `.claude-plugin/plugin.json`: Claude plugin manifest listing all eight skill paths
 - `.codex/environments/environment.toml`: Codex workspace setup for this repository
 - `docs/`: contributor docs such as `docs/file-structure.md` and
   `docs/release-flow.md`
@@ -46,7 +47,7 @@ This is a single-context repository; domain docs are optional and created lazily
 - `pnpm exec commitlint --edit <path>`: validate commit messages manually
 - `pnpm lint:md`: lint all tracked Markdown files with `markdownlint-cli2`
 - `pnpm test`: run the full local verification suite
-- `find skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort`: inspect the seven skill entry points
+- `find skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort`: inspect the eight skill entry points
 
 ## Coding Style & Naming Conventions
 
@@ -73,12 +74,13 @@ npm_config_ignore_scripts=true npx skills@latest add mattpocock/skills@write-a-s
 
 - Run `pnpm test` to run the full suite, or use the targeted commands below while iterating.
 - Validate paths with `find` or `rg`
-- Run `bash scripts/tests/dogfood.test.sh` to confirm all seven in-repo skills pass the flat-layout check
+- Run `bash scripts/tests/dogfood.test.sh` to confirm all eight in-repo skills pass the flat-layout check
 - Run `bash scripts/tests/esm-tooling.test.sh` after changing repo tooling configs or the package module type
 - Run `bash scripts/tests/develop-issue-workflow.test.sh` after changing `skills/develop-issue/**`
 - Run `bash scripts/tests/finish-pr-workflow.test.sh` after changing `skills/finish-pr/**`
 - Run `bash scripts/tests/marketplace.test.sh` to confirm the `.claude-plugin/` catalog is valid
 - Run `bash scripts/tests/review-code-skill.test.sh` after changing `skills/review-code/**`
+- Run `bash scripts/tests/update-branch-workflow.test.sh` after changing `skills/update-branch/**`
 - Run `bash scripts/tests/code-review-workflow.test.sh` after changing `.github/workflows/code-review.yml`
 - Run `bash scripts/tests/pull-request-workflow.test.sh` after changing `.github/workflows/pull-request.yml`
 - Run `bash scripts/tests/workflow-cleanup.test.sh` after changing workflow cleanup behavior
@@ -137,9 +139,9 @@ an action by tag or branch, giving a hard gate on top of the CI check.
 
 ## Skill Releases
 
-This repo owns seven skills at flat paths: `skills/scaffold-repository/`,
+This repo owns eight skills at flat paths: `skills/scaffold-repository/`,
 `skills/using-github/`, `skills/new-branch/`, `skills/develop-issue/`,
-`skills/finish-pr/`, `skills/review-code/`,
+`skills/finish-pr/`, `skills/review-code/`, `skills/update-branch/`,
 and `skills/install-skills/`.
 `find-skills` is a third-party skill from `vercel-labs/skills` and is not
 a marketplace entry in this repo.
@@ -149,7 +151,7 @@ maintains a single standing Release PR for the repo as a whole. Tag form: `v<X.Y
 component prefix. The marketplace only publishes tagged (`v<X.Y.Z>`) releases. See
 [docs/release-flow.md](./docs/release-flow.md).
 
-The seven in-repo skills share the single root `patinaproject-skills` release
+The eight in-repo skills share the single root `patinaproject-skills` release
 and tag; they are not separate release-please packages. Third-party
 skills such as `find-skills` are installed separately from their source repo's
 default branch or a specific `#<git-ref>`.

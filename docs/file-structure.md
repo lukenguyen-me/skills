@@ -1,7 +1,7 @@
 # Repository File Structure
 
 This repository is the marketplace surface for Patina Project plugins and
-related install documentation. Seven skills live under `skills/<name>/` in a
+related install documentation. Eight skills live under `skills/<name>/` in a
 flat layout.
 
 ## Top level
@@ -12,12 +12,13 @@ flat layout.
 - `skills/develop-issue/`: issue development orchestration skill
 - `skills/finish-pr/`: PR finishing skill
 - `skills/review-code/`: isolated local branch-diff review skill
+- `skills/update-branch/`: local branch update skill
 - `skills/install-skills/`: project-local skills CLI installation skill
 - `.agents/skills/<name>/`: committed symlinks into `../../skills/<name>/`
 - `.claude/skills/<name>/`: committed symlinks into `../../skills/<name>/`
 - `.claude-plugin/marketplace.json`: Claude marketplace catalog
-- `.claude-plugin/plugin.json`: Claude plugin manifest listing all seven skill paths
-- `.codex-plugin/plugin.json`: Codex plugin manifest listing all seven skill paths
+- `.claude-plugin/plugin.json`: Claude plugin manifest listing all eight skill paths
+- `.codex-plugin/plugin.json`: Codex plugin manifest listing all eight skill paths
 - `.agents/plugins/marketplace.json`: Codex marketplace catalog
 - `.codex/environments/environment.toml`: Codex workspace setup for this repository
 - `skills-lock.json`: vercel-labs CLI install lockfile
@@ -29,7 +30,7 @@ flat layout.
 
 ## Flat skill layout
 
-Seven skills are owned by this repository:
+Eight skills are owned by this repository:
 
 | Skill | Canonical path | Description |
 | --- | --- | --- |
@@ -39,6 +40,7 @@ Seven skills are owned by this repository:
 | `develop-issue` | `skills/develop-issue/` | Issue development orchestration |
 | `finish-pr` | `skills/finish-pr/` | Ready-for-merge PR finishing |
 | `review-code` | `skills/review-code/` | Isolated local branch-diff review |
+| `update-branch` | `skills/update-branch/` | Local branch update workflow |
 | `install-skills` | `skills/install-skills/` | Project-local skills CLI installation workflow |
 
 `find-skills` is a third-party vendored skill from `vercel-labs/skills`. It is
@@ -51,7 +53,7 @@ files such as templates, agents, and workflow docs live alongside `SKILL.md`.
 
 ## Dogfood overlay layout
 
-The seven in-repo skills are also accessible through two overlay directories
+The eight in-repo skills are also accessible through two overlay directories
 via one-hop committed symlinks:
 
 | Overlay path | Symlink target | Mode |
@@ -62,7 +64,7 @@ via one-hop committed symlinks:
 These symlinks allow the agent runtime to discover the in-repo skills alongside
 any third-party skills installed by the vercel-labs CLI.
 
-Third-party CLI-installed skills are untracked; only the seven in-repo overlay
+Third-party CLI-installed skills are untracked; only the eight in-repo overlay
 symlinks are committed.
 
 ## Symlink hygiene

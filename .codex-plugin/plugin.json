@@ -8,6 +8,7 @@
     "./skills/develop-issue",
     "./skills/finish-pr",
     "./skills/review-code",
+    "./skills/update-branch",
     "./skills/install-skills"
   ]
 }

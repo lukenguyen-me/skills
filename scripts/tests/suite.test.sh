@@ -8,6 +8,7 @@ bash scripts/tests/finish-pr-workflow.test.sh
 bash scripts/tests/marketplace.test.sh
 bash scripts/tests/pull-request-workflow.test.sh
 bash scripts/tests/review-code-skill.test.sh
+bash scripts/tests/update-branch-workflow.test.sh
 bash scripts/tests/scaffold-cleanup.test.sh
 bash scripts/tests/code-review-workflow.test.sh
 bash scripts/tests/workflow-cleanup.test.sh
@@ -40,6 +41,7 @@ run_cli_canary() {
 run_cli_canary ./skills/scaffold-repository
 run_cli_canary ./skills/install-skills
 run_cli_canary ./skills/review-code
+run_cli_canary ./skills/update-branch
 run_cli_canary ./skills/develop-issue 'develop-issue'
 
 run_cli_install_canary() {

@@ -1,9 +1,10 @@
 # Skills used by the Patina Project team
 
-Seven installable agent skills for repository scaffolding, project-local skill
+Eight installable agent skills for repository scaffolding, project-local skill
 installation, GitHub workflows, issue branch setup, issue development, PR
-finishing, and isolated local code review. They are available across Claude
-Code, Codex, and any agent runtime that reads `AGENTS.md`.
+finishing, isolated local code review, and local branch updating. They are
+available across Claude Code, Codex, and any agent runtime that reads
+`AGENTS.md`.
 
 ## Quickstart
 
@@ -103,6 +104,16 @@ stops at ready-to-merge.
 
 See [./skills/finish-pr/](./skills/finish-pr/) for the skill contract.
 
+### update-branch
+
+Keeping a work branch current should be a local git operation unless an
+operator chooses to publish it. `update-branch` fetches the selected base
+branch, defaults to `origin/HEAD`, guards dirty work, merges with
+`git merge --no-ff`, and reports the local-only result plus the push command to
+run later.
+
+See [./skills/update-branch/](./skills/update-branch/) for the skill contract.
+
 ### scaffold-repository
 
 Teams spend disproportionate time on repo plumbing - commit conventions,
@@ -122,6 +133,7 @@ README and skill contract.
 | [develop-issue](./skills/develop-issue/) | Develop one issue through local review and PR readiness |
 | [finish-pr](./skills/finish-pr/) | Finish completed branch work through ready-to-merge PRs |
 | [review-code](./skills/review-code/) | Run isolated local branch-diff review |
+| [update-branch](./skills/update-branch/) | Update a local work branch from the base branch |
 | [install-skills](./skills/install-skills/) | Project-local skills CLI installation workflow |
 | [scaffold-repository](./skills/scaffold-repository/) | Scaffold a new repository to the Patina Project baseline |
 
@@ -142,6 +154,7 @@ pnpm test
 npx skills@latest add ./skills/scaffold-repository --list
 npx skills@latest add ./skills/install-skills --list
 npx skills@latest add ./skills/review-code --list
+npx skills@latest add ./skills/update-branch --list
 npx skills@latest add ./skills/develop-issue --list
 ```
 
@@ -151,7 +164,7 @@ npx skills@latest add ./skills/develop-issue --list
 bash scripts/tests/scaffold-cleanup.test.sh
 ```
 
-### Check c - dogfood verification, all seven skills
+### Check c - dogfood verification, all eight skills
 
 ```sh
 bash scripts/tests/dogfood.test.sh
@@ -168,6 +181,7 @@ skills/
   develop-issue/
   finish-pr/
   review-code/
+  update-branch/
 .agents/skills/<name>/               Symlinks to ../../skills/<name>/
 .claude/skills/<name>/               Symlinks to ../../skills/<name>/
 .claude-plugin/
