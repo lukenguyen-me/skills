@@ -28,6 +28,22 @@ Progress reports should name the current checkpoint, evidence gathered, next
 action, and blocker status. Keep stop reports concrete enough for a human to
 decide the next move.
 
+## Reporting Guidance
+
+Progress reports and final handoffs should say whether the PR is ready to
+merge, not ready to merge, or waiting on a human decision. Keep the full command
+results, check snapshots, and gate evidence available for workflow decisions.
+Report user-visible details when work failed, skipped, interrupted, otherwise
+changes readiness, explains a blocker, identifies residual risk, or creates a
+human next action.
+
+Leave out exact verification commands, command inventories, pass counts, green
+check names, and gate inventories when everything passes. Progress reports
+should mention the current checkpoint and next action without repeated check
+lists. Show exact commands, failed check names, skipped verification,
+interrupted runs, or unresolved feedback only when they explain a blocker or
+tell the human what to do next.
+
 ## Steps
 
 1. Resolve context:
@@ -356,8 +372,7 @@ decide the next move.
     Updated the branch with latest `main`, resolved the skill guidance conflict,
     and pushed `2635d83`.
 
-    Verified: local suite and PR checks passed. No human action needed before
-    merge.
+    Verified: routine checks passed. No human action needed before merge.
     ```
 
     Avoid final output shaped like a readiness checklist:
