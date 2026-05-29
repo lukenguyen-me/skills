@@ -72,6 +72,7 @@ assert_absent_path "scripts/apply-scaffold-repository.js"
 assert_absent_path "scripts/verify-scaffold-agent-plugin-readme.js"
 assert_absent_path ".github/ISSUE_TEMPLATE/bug_report.md"
 assert_absent_path ".github/ISSUE_TEMPLATE/feature_request.md"
+assert_absent_path "scripts/install-skills.sh"
 
 # This protects the live patinaproject/skills reference repo. Some files below
 # are marketplace-internal verification files, while the skill installation
@@ -112,7 +113,7 @@ for live_reference_path in \
   docs/wiki-index.md \
   package.json \
   scripts/clean.sh \
-  scripts/install-skills.sh \
+  scripts/worktree-setup.sh \
   scripts/tests/code-review-workflow.test.sh \
   scripts/tests/develop-issue-workflow.test.sh \
   scripts/tests/dogfood.test.sh \
@@ -140,12 +141,12 @@ done
 
 assert_no_match "apply:scaffold-repository|apply-scaffold-repository|scaffold-repository self-apply" \
   AGENTS.md CLAUDE.md README.md docs package.json .github/workflows \
-  scripts/install-skills.sh "${test_files[@]}" \
+  "${test_files[@]}" \
   skills/scaffold-repository
 
 assert_no_match "skills/scaffold-repository/templates|skills/bootstrap/templates|\\.tmpl" \
   AGENTS.md CLAUDE.md README.md docs package.json .github/workflows \
-  scripts/install-skills.sh "${test_files[@]}" \
+  "${test_files[@]}" \
   skills/scaffold-repository
 
 assert_no_match "Cursor|Windsurf|Continue\\.dev|\\.cursor/|\\.windsurfrules|\\.continue/" \
@@ -171,25 +172,31 @@ assert_no_match "#cursor|#windsurf|#github-copilot|#continuedev" \
 assert_no_match "scripts/(test|verify-code-review-workflow|verify-develop-issue-workflow|verify-dogfood|verify-esm-tooling|verify-finish-pr-workflow|verify-marketplace|verify-review-code-skill|verify-scaffold-cleanup|verify-workflow-cleanup)\\.sh" \
   skills/scaffold-repository/SKILL.md skills/scaffold-repository/audit-checklist.md
 
-assert_match "scripts/install-skills\\.sh" \
-  skills/scaffold-repository/SKILL.md skills/scaffold-repository/audit-checklist.md
-
 assert_match "scripts/clean\\.sh" \
   skills/scaffold-repository/SKILL.md skills/scaffold-repository/audit-checklist.md
 
 assert_match "skills-lock\\.json" \
   skills/scaffold-repository/SKILL.md skills/scaffold-repository/audit-checklist.md
 
-assert_match "postinstall: \"pnpm skills:install\"" \
+assert_match "env:setup: \"pnpm install\"" \
   skills/scaffold-repository/SKILL.md
 
-assert_match "skills:install: \"bash scripts/install-skills\\.sh\"" \
+assert_match "skills:install: \"pnpm dlx skills@latest experimental_install --yes\"" \
   skills/scaffold-repository/SKILL.md
 
 assert_match "clean: \"bash scripts/clean\\.sh\"" \
   skills/scaffold-repository/SKILL.md
 
-assert_no_match "skills:restore" \
+# The committed-vendored model drops the auto-restore postinstall hook and the
+# retired skills:refresh/skills:restore package scripts.
+assert_no_match "postinstall: \"pnpm skills:install\"" \
+  skills/scaffold-repository/SKILL.md
+
+assert_no_match "skills:refresh|skills:restore" \
+  skills/scaffold-repository/SKILL.md skills/scaffold-repository/audit-checklist.md
+
+# Scaffold must wire the shared worktree setup script into both agent surfaces.
+assert_match "scripts/worktree-setup\\.sh" \
   skills/scaffold-repository/SKILL.md skills/scaffold-repository/audit-checklist.md
 
 if [ "$FAIL_COUNT" -gt 0 ]; then
