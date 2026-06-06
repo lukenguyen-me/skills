@@ -22,6 +22,15 @@ Usage:
 claude /skill:appstore-submission-content
 ```
 
+### commit-message
+
+Generate two conventional commit message options from staged changes and recent commit history: one multi-line format and one concise one-line version.
+
+Usage:
+```bash
+claude /skill:commit-message
+```
+
 ### pastbuild-export
 
 A skill for generating JSON exports compatible with [pastbuild.com](https://pastbuild.com) — a platform for preserving and showcasing past project of builders.
