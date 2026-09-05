@@ -1,6 +1,20 @@
 # skills
 
-A collection of LLM Coding-Agent skills for various tasks and workflows.
+A collection of LLM coding-agent skills for various tasks and workflows.
+
+Each skill lives under `skills/<name>/` in the [Agent Skills](https://agentskills.io/specification) format, so the npm `skills` CLI can list and install them from this repo.
+
+## Install
+
+```bash
+npx skills add lukenguyen-me/skills
+```
+
+That command lists every skill in this repo. Pick the ones you want, or install one by name:
+
+```bash
+npx skills add lukenguyen-me/skills --skill write-to-human
+```
 
 ## Available Skills
 
@@ -60,12 +74,20 @@ claude /skill:playstore-submission-content
 
 ## Adding New Skills
 
-To add a new skill, create a new directory with:
-- `SKILL.md` - Skill documentation
-- `references/` - Additional documentation (schema, examples, etc.)
-- `assets/` - Media files (optional)
-- `scripts/` - Utility scripts (optional)
+Create a directory under `skills/`:
+
+```
+skills/<skill-name>/
+├── SKILL.md          # Required: YAML name + description, then instructions
+├── references/       # Optional: docs loaded on demand
+├── scripts/          # Optional: helper scripts
+└── assets/           # Optional: templates and media
+```
+
+`name` in the `SKILL.md` frontmatter must match the folder name.
 
 ## Learn More
 
-Visit the [Claude Code documentation](https://claude.com/claude-code) to learn about skills and how to use them.
+- [Agent Skills specification](https://agentskills.io/specification)
+- [skills CLI](https://github.com/vercel-labs/skills)
+- [Claude Code skills](https://claude.com/claude-code)
