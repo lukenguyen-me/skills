@@ -40,6 +40,15 @@ Usage:
 claude /skill:pastbuild-export
 ```
 
+### write-to-human
+
+Write every message to a human in Simplified Technical English (ASD-STE100). Lead with business impact and how the operation changes. Use a concrete example when a concept is complex. Applies to the whole conversation, not only reports or code.
+
+Usage:
+```bash
+claude /skill:write-to-human
+```
+
 ### playstore-submission-content
 
 Generate complete, ready-to-paste Google Play Store text content for Android app submissions. Covers App Title, Short Description, Full Description, and What's New with strict Play Store character and emoji rules enforced. Supports 51 languages and detects multi-language projects automatically.
