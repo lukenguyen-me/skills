@@ -45,15 +45,6 @@ Usage:
 claude /skill:commit-message
 ```
 
-### pastbuild-export
-
-A skill for generating JSON exports compatible with [pastbuild.com](https://pastbuild.com) — a platform for preserving and showcasing past project of builders.
-
-Usage:
-```bash
-claude /skill:pastbuild-export
-```
-
 ### write-to-human
 
 Write every message to a human in Simplified Technical English (ASD-STE100). Lead with business impact and how the operation changes. Use a concrete example when a concept is complex. Applies to the whole conversation, not only reports or code.
