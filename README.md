@@ -45,6 +45,15 @@ Usage:
 claude /skill:commit-message
 ```
 
+### pr-summary
+
+Add a concise Before/After/Solution block at the top of every new or refreshed pull request description. Use alongside pr-writer when that skill is available.
+
+Usage:
+```bash
+claude /skill:pr-summary
+```
+
 ### write-to-human
 
 Write every message to a human in Simplified Technical English (ASD-STE100). Lead with business impact and how the operation changes. Use a concrete example when a concept is complex. Applies to the whole conversation, not only reports or code.
