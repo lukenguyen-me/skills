@@ -5,12 +5,10 @@ let meta = #{
     phases: [
         #{ title: "Discover", detail: "parent spec, ordered children, project verification" },
         #{ title: "Prepare", detail: "parent feature branch from the base branch" },
-        #{ title: "Child", detail: "/implement, verify, commit, merge into parent — one child at a time" },
+        #{ title: "Child", detail: "/implement on the parent branch — one child at a time" },
         #{ title: "Final", detail: "integration verification and parent-spec review" },
     ],
 };
-
-const MAX_VERIFY_RETRIES = 2;
 
 fn trimmed(s) {
     if type_of(s) == "string" {
@@ -282,13 +280,6 @@ if is_smoke_mode(mode) {
         let impl = agent("Smoke test child " + sid + " implement. Reply with OK. Do not use tools. Do not edit files.", #{ label: "smoke-impl-" + sid, capability_mode: "read-only" });
         if impl == () || !impl.success { finish("STOPPED", "smoke implement failed for " + sid, "STOPPED\n"); }
         log("  implemented");
-        let ver = agent("Smoke test child " + sid + " verify. Reply with OK. Do not use tools.", #{ label: "smoke-verify-" + sid, capability_mode: "read-only" });
-        if ver == () || !ver.success { finish("STOPPED", "smoke verify failed for " + sid, "STOPPED\n"); }
-        log("  verified");
-        let rev = agent("Smoke test child " + sid + " review. Reply with OK. Do not use tools.", #{ label: "smoke-review-" + sid, capability_mode: "read-only" });
-        if rev == () || !rev.success { finish("STOPPED", "smoke review failed for " + sid, "STOPPED\n"); }
-        log("  reviewed");
-        log("  integrated");
         si += 1;
     }
     phase("Final");
@@ -461,7 +452,6 @@ let report = "";
 report += "DEVELOP FEATURE: " + parent_id + "\n\n";
 report += "Parent prepared: " + parent_branch + " from " + base_branch + "\n\n";
 
-let impl_ids = [];
 let child_results = [];
 
 // --------------------------------------------------------------------------- children (STRICTLY SEQUENTIAL — never parallel)
@@ -512,12 +502,12 @@ while idx < children.len() {
     impl_prompt += "Start from the CURRENT parent branch (it already contains earlier children).\n";
     if child_branches {
         impl_prompt += "Child branches are on. Run: python3 <helper> start-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id>\n";
-        impl_prompt += "Then run /implement on that child branch and commit there.\n";
+        impl_prompt += "Then run /implement and commit on that child branch. After /implement succeeds, merge into the parent: python3 <helper> integrate-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id> --delete-child\n";
     } else {
-        impl_prompt += "Work on the parent feature branch. Do not create a per-child branch. Run /implement, then commit on the parent branch.\n";
+        impl_prompt += "Work on the parent feature branch. Do not create a per-child branch. Run /implement, commit on the parent branch, then: python3 <helper> state-mark --parent <parent_id> --child <child_id> --status integrated\n";
     }
     impl_prompt += "Do not merge into the base branch. Do not start the next child. Do not create a PR.\n";
-    impl_prompt += "status=ok when /implement is finished and the work is committed. status=stop when you would have to guess product behavior, a dependency is missing, or tests need a human.\n";
+    impl_prompt += "status=ok when /implement is finished, the work is committed on the parent branch, and the child is marked integrated. status=stop when you would have to guess product behavior, a dependency is missing, or tests need a human.\n";
 
     let impl = ();
     try {
@@ -533,103 +523,8 @@ while idx < children.len() {
         finish("STOPPED", "implement failed for " + child_id + ": " + stop_reason_of(impl), report + "STOPPED on " + child_id + "\n" + stop_reason_of(impl) + "\n");
     }
     log("  implemented");
-    let impl_id = impl.agent_id;
-
-    let verify_prompt = worker_rules();
-    verify_prompt += "Verify the current child implementation. Use tools. Run the commands; do not claim pass from memory.\n";
-    verify_prompt += "Context JSON:\n" + ctx + "\n";
-    verify_prompt += "Prefer the child's acceptance criteria, then project verify_commands, then repo scripts/CI. Do not assume a package manager.\n";
-    verify_prompt += "If a command needs a human (device tap, paid credential, interactive simulator), status=stop.\n";
-    verify_prompt += "status=pass only with evidence you ran (or a documented reason that no automated command exists and you inspected the diff against the criteria).\n";
-
-    let verify = ();
-    try {
-        verify = agent(verify_prompt, #{
-            label: "verify:" + child_id,
-            capability_mode: "all",
-            output_schema: verify_schema,
-        });
-    } catch (e) {
-        finish("STOPPED", "verify threw for " + child_id + ": " + e, report + "STOPPED on " + child_id + "\n" + e + "\n");
-    }
-
-    let vtries = 0;
-    while !is_success(status_of(verify)) && vtries < MAX_VERIFY_RETRIES {
-        if is_stop(status_of(verify)) {
-            finish("STOPPED", "verify stopped for " + child_id + ": " + stop_reason_of(verify), report + "STOPPED on " + child_id + "\n" + stop_reason_of(verify) + "\n");
-        }
-        vtries += 1;
-        log("  verify failed; repair " + vtries.to_string() + "/" + MAX_VERIFY_RETRIES.to_string());
-        let repair_prompt = implement_skill_flow();
-        repair_prompt += "Verification failed after /implement. Fix it using the same /implement flow (tdd, tests, code-review, commit). Previous verify summary: ";
-        repair_prompt += json_encode(summary_of(verify));
-        repair_prompt += "\nContext JSON:\n" + ctx + "\n";
-        repair_prompt += "Commit the fix. Do not merge to base. Do not create a PR. Do not start the next child.\n";
-        try {
-            impl = agent(repair_prompt, #{
-                label: "repair:" + child_id,
-                capability_mode: "all",
-                output_schema: work_schema,
-                resume_from: impl_id,
-            });
-        } catch (e) {
-            impl = agent(repair_prompt, #{
-                label: "repair-fresh:" + child_id,
-                capability_mode: "all",
-                output_schema: work_schema,
-            });
-        }
-        if agent_ok(impl) { impl_id = impl.agent_id; }
-        if !agent_ok(impl) || is_stop(status_of(impl)) {
-            finish("STOPPED", "repair failed for " + child_id + ": " + stop_reason_of(impl), report + "STOPPED on " + child_id + "\n");
-        }
-        verify = agent(verify_prompt, #{
-            label: "reverify:" + child_id,
-            capability_mode: "all",
-            output_schema: verify_schema,
-        });
-    }
-    if !is_success(status_of(verify)) {
-        await_user("verification", "Child " + child_id + " verification failed after retries: " + summary_of(verify) + ". Fix the environment or code, then resume this workflow.");
-        verify = agent(verify_prompt, #{
-            label: "reverify-resume:" + child_id,
-            capability_mode: "all",
-            output_schema: verify_schema,
-        });
-        if !is_success(status_of(verify)) {
-            finish("STOPPED", "verify still failing for " + child_id + ": " + summary_of(verify), report + "STOPPED on " + child_id + "\n" + summary_of(verify) + "\n");
-        }
-    }
-    log("  verified");
-
-    let integ_prompt = worker_rules();
-    integ_prompt += helper_lookup();
-    integ_prompt += "Integrate this completed child into the parent feature branch. Context JSON:\n" + ctx + "\n";
-    if child_branches {
-        integ_prompt += "A child branch was used. Merge it: python3 <helper> integrate-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id> --delete-child\n";
-    } else {
-        integ_prompt += "Work is already committed on the parent branch. Do not create a merge commit unless needed. Run: python3 <helper> state-mark --parent <parent_id> --child <child_id> --status integrated\n";
-    }
-    integ_prompt += "Do not merge to the base branch. Do not create a PR. Do not start the next child.\n";
-    integ_prompt += "status=ok when the parent branch contains this child and the working tree is clean.\n";
-
-    let integ = ();
-    try {
-        integ = agent(integ_prompt, #{
-            label: "integrate:" + child_id,
-            capability_mode: "all",
-            output_schema: work_schema,
-        });
-    } catch (e) {
-        finish("STOPPED", "integrate threw for " + child_id + ": " + e, report + "STOPPED on " + child_id + "\n" + e + "\n");
-    }
-    if !agent_ok(integ) || !is_success(status_of(integ)) {
-        finish("STOPPED", "integrate failed for " + child_id + ": " + stop_reason_of(integ), report + "STOPPED on " + child_id + "\n" + stop_reason_of(integ) + "\n");
-    }
-    log("  integrated");
-    report += "[" + pos + "] " + child_id + " /implement, verified, integrated\n";
+    report += "[" + pos + "] " + child_id + " /implement\n";
     child_results.push(#{ id: child_id, status: "integrated" });
-    impl_ids.push(impl_id);
 
     idx += 1;
 }

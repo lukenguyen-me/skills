@@ -8,10 +8,7 @@ This is the shared lifecycle. Grok executes `develop-feature.rhai`; Codex follow
 discover
   → prepare parent branch from base
   → for each child in linearized order:
-        /implement (tdd, tests, /code-review, commit)
-        verify
-        repair with /implement* (bounded)
-        record on parent (no PR)
+        /implement (tdd, tests, /code-review, commit on parent)
   → final integration verify
   → final review against the original parent spec
   → READY FOR HUMAN QA
