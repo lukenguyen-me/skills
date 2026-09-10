@@ -1,0 +1,29 @@
+# Optional project config for /develop-feature
+# Copy to <repo>/.grok/develop-feature.toml and edit.
+# Omit any key you want inferred from the repo.
+
+# Git
+base_branch = "main"
+parent_branch_template = "feat/{id}"
+child_branch_template = "feat/{parent-id}-{child-id}"
+# merge-no-ff | ff | commit-on-parent
+integrate = "merge-no-ff"
+# If false, children commit directly on the parent branch (no per-child branch).
+child_branches = true
+
+# Tickets. Leave empty to use docs/agents/issue-tracker.md when present.
+# github | gitlab | local | auto
+ticket_source = "auto"
+local_tickets_root = ".scratch"
+
+# Verification. Leave empty to discover from AGENTS.md, CLAUDE.md, package
+# scripts, Makefile, justfile, pyproject, Cargo.toml, go.mod, and CI.
+verify_commands = []
+integration_verify_commands = []
+
+# Human boundary
+create_final_pr = false
+
+# Extra skills the implementer should load when they exist in the session.
+implementation_skills = ["tdd", "implement", "conventional-git"]
+review_skills = ["code-review"]

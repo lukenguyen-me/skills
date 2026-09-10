@@ -72,6 +72,26 @@ Usage:
 claude /skill:playstore-submission-content
 ```
 
+## Grok Build workflows
+
+This repo also ships Grok Build workflows (Rhai) under `workflows/`. They are not Agent Skills; install them into `~/.grok/workflows/` or a project's `.grok/workflows/`.
+
+### develop-feature
+
+Implement ordered child tickets onto one parent feature branch, strictly one child at a time, and stop at human QA.
+
+```bash
+./workflows/develop-feature/install.sh --user
+```
+
+Then, in the product repository:
+
+```text
+/develop-feature {"ticket":"<parent-spec>"}
+```
+
+See [workflows/develop-feature/README.md](workflows/develop-feature/README.md).
+
 ## Adding New Skills
 
 Create a directory under `skills/`:
