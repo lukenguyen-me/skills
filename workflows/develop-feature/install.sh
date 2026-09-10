@@ -176,6 +176,7 @@ install_file() {
 # Grok discovers only regular files in workflows/*.rhai. Symlinks are ignored.
 install_file "$RHAI_SRC" "$DEST_WORKFLOWS/develop-feature.rhai" 0
 install_file "$HELPER_SRC" "$DEST_LIB/git_state.py" 1
+install_file "$SRC_DIR/references/lifecycle.md" "$DEST_LIB/lifecycle.md" 1
 chmod +x "$DEST_LIB/git_state.py"
 
 TOML_NOTE="left existing $DEST_TOML unchanged"
@@ -195,6 +196,7 @@ Installed develop-feature ($SCOPE, $MODE)
 
   workflow  $DEST_WORKFLOWS/develop-feature.rhai
   helper    $DEST_LIB/git_state.py
+  strategy  $DEST_LIB/lifecycle.md
   config    $TOML_NOTE
 
 Invoke from a Grok Build session in the target repository:

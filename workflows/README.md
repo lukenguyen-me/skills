@@ -1,6 +1,6 @@
 # Agent workflows
 
-Reusable workflows for Grok Build and Codex. Grok runs Rhai workflows; Codex runs the equivalent skill with native subagents.
+Reusable workflows for Grok Build and Codex. Strategy lives in each package's `references/` file. Grok runs a Rhai adapter; Codex runs a skill adapter.
 
 | Workflow | Command | What it does |
 | --- | --- | --- |

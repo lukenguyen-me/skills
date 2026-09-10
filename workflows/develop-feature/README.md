@@ -6,7 +6,7 @@ It automates: parent branch, then per child the same `/implement` flow you use b
 
 ## Codex
 
-Codex uses the native [SKILL.md](SKILL.md) entry point and subagents. Grok continues to use `develop-feature.rhai`. Both follow the same lifecycle and use the same git helper and saved progress.
+Codex uses the native [SKILL.md](SKILL.md) entry point and subagents. Grok uses `develop-feature.rhai`. Both follow the same strategy in [references/lifecycle.md](references/lifecycle.md) and share the git helper and saved progress. The two files are only runtime adapters.
 
 Install for all repositories:
 
