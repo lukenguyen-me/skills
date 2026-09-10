@@ -8,12 +8,10 @@ The Rhai workflow is the authority. This file is the human-readable map of that 
 discover
   → prepare parent branch from base
   → for each child in linearized order:
-        implement (from current parent)
+        /implement (tdd, tests, /code-review, commit)
         verify
-        repair* (bounded)
-        review (fresh agent)
-        address blocking findings* (bounded)
-        integrate into parent
+        repair with /implement* (bounded)
+        record on parent (no PR)
   → final integration verify
   → final review against the original parent spec
   → READY FOR HUMAN QA
@@ -35,7 +33,7 @@ GitHub: `gh issue view`; children via `## Parent #N`, sub-issues, or the parent 
 
 Parent branch is the integration branch. Each child starts from the current parent tip, not from the original base.
 
-Default names: `feat/{id}` and `feat/{parent-id}-{child-id}`. Override in `.grok/develop-feature.toml`.
+Default names: `feat/{id}`. Children commit on the parent branch (`child_branches = false`). Override in `.grok/develop-feature.toml`.
 
 Worktrees are not used. Sequential children share the workspace so tests, servers, databases, and simulators do not collide. Grok’s `isolation_worktree` also does not merge edits back.
 

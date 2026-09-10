@@ -5,13 +5,12 @@ let meta = #{
     phases: [
         #{ title: "Discover", detail: "parent spec, ordered children, project verification" },
         #{ title: "Prepare", detail: "parent feature branch from the base branch" },
-        #{ title: "Child", detail: "implement, verify, review, integrate — one child at a time" },
+        #{ title: "Child", detail: "/implement, verify, commit, merge into parent — one child at a time" },
         #{ title: "Final", detail: "integration verification and parent-spec review" },
     ],
 };
 
 const MAX_VERIFY_RETRIES = 2;
-const MAX_REVIEW_ROUNDS = 2;
 
 fn trimmed(s) {
     if type_of(s) == "string" {
@@ -88,13 +87,30 @@ fn is_smoke_mode(s) {
     s == "smoke" || s == "SMOKE"
 }
 
-fn worker_rules() {
-    let s = "You are a worker, not an orchestrator. Do this task yourself. ";
-    s += "Do not spawn subagents. Do not start extra implementation or review agents. ";
-    s += "Do not merge into main, master, develop, trunk, production, or the repo base branch. ";
+fn git_safety() {
+    let s = "Do not merge into main, master, develop, trunk, production, or the repo base branch. ";
     s += "Do not open a pull request. Do not push unless a test cannot run without it. ";
     s += "Do not deploy or release. ";
     s += "If an acceptance criterion needs a product guess, set status to stop and explain. ";
+    s
+}
+
+fn worker_rules() {
+    let s = "You are a worker, not an orchestrator. Do this task yourself. ";
+    s += "Do not spawn subagents. Do not start extra implementation or review agents. ";
+    s += git_safety();
+    s
+}
+
+fn implement_skill_flow() {
+    let s = "CODING must follow the /implement skill, the same way a human would type /implement for this child.\n";
+    s += "Load implement in this order and follow the first SKILL.md that exists: ";
+    s += "1) .agents/skills/implement/SKILL.md  2) .grok/skills/implement/SKILL.md  ";
+    s += "3) ~/.agents/skills/implement/SKILL.md  4) ~/.grok/bundled/skills/implement/SKILL.md.\n";
+    s += "Follow that file. If it says use /tdd, do that. If it says use /code-review, do that.\n";
+    s += "You may spawn subagents only as implement, tdd, or code-review require. Do not implement other children. Do not spawn parallel child-ticket workers.\n";
+    s += "Do not open a pull request. Commit on the current branch when implement finishes, if anything is still uncommitted.\n";
+    s += git_safety();
     s
 }
 
@@ -210,6 +226,7 @@ let discovery_schema = #{
         "parent_branch": #{ "type": "string" },
         "helper_path": #{ "type": "string" },
         "config_notes": #{ "type": "string" },
+        "child_branches": #{ "type": "boolean" },
         "verify_commands": #{ "type": "array", "items": #{ "type": "string" } },
         "integration_verify_commands": #{ "type": "array", "items": #{ "type": "string" } },
         "children": #{
@@ -318,7 +335,8 @@ discover_prompt += "3) The parent feature branch already exists and clearly cont
 discover_prompt += "If a child is still open/ready-for-agent and there is no evidence on the parent branch, status is pending (omit status or use pending).\n";
 discover_prompt += "If it is unclear whether a child is done (ticket still open but the parent branch has overlapping unrelated commits), set the discovery status=stop and name the ambiguous children. Do not guess and do not redo finished work.\n";
 discover_prompt += "Reuse an existing parent feature branch when it already exists; do not recreate it from the original base.\n";
-discover_prompt += "Branch names: use .grok/develop-feature.toml templates when set, else feat/{id} and feat/{parent-id}-{child-id}, else the repo's documented convention (conventional-git, AGENTS.md). The parent branch must not be the base branch.\n";
+discover_prompt += "Branch names: use .grok/develop-feature.toml templates when set, else feat/{id}. child_branches defaults to false: /implement commits on the parent branch, no per-child branch or PR. Set child_branches true in toml only if a branch per child is required. The parent branch must not be the base branch.\n";
+discover_prompt += "Return child_branches as a boolean from the toml (false if unset).\n";
 discover_prompt += "Verification: do not assume npm, pnpm, bun, cargo, or any stack. Prefer (1) ticket acceptance criteria, (2) .grok/develop-feature.toml, (3) AGENTS.md/CLAUDE.md, (4) repo scripts, (5) CI. Put cheap commands in verify_commands and full/e2e/automation commands in integration_verify_commands.\n";
 discover_prompt += "Set status=stop if the parent is missing, children cannot be ordered, the ticket is too ambiguous to implement, or required environment is unavailable.\n";
 discover_prompt += "Do not implement code.\n";
@@ -350,6 +368,10 @@ let parent_branch = as_str(discovered.output.parent_branch);
 let helper_path = as_str(discovered.output.helper_path);
 if helper_path == "" { helper_path = helper_override; }
 let config_notes = as_str(discovered.output.config_notes);
+let child_branches = false;
+if discovered.output.child_branches != () && discovered.output.child_branches == true {
+    child_branches = true;
+}
 let verify_commands = discovered.output.verify_commands;
 let integration_verify_commands = discovered.output.integration_verify_commands;
 let children = discovered.output.children;
@@ -477,22 +499,25 @@ while idx < children.len() {
         child_title: child_title,
         child_ref: child_ref,
         child_branch: child_branch,
+        child_branches: child_branches,
         position: pos,
         config_notes: config_notes,
     });
 
-    let impl_prompt = worker_rules();
+    let impl_prompt = implement_skill_flow();
     impl_prompt += helper_lookup();
-    impl_prompt += "Implement ONE child ticket. Stay inside that child's scope unless a supporting change is required for it to land.\n";
+    impl_prompt += "Implement ONE child ticket with /implement. Stay inside that child's scope unless a supporting change is required for it to land.\n";
     impl_prompt += "Context JSON:\n" + ctx + "\n";
     impl_prompt += "Read the parent spec, this child ticket, AGENTS.md/CLAUDE.md, CONTEXT.md, docs/agents/*, and the current code.\n";
-    impl_prompt += "If skills tdd, implement, or conventional-git are available, follow them. Do not invoke /implement or /execute-plan (those are outer orchestrators).\n";
-    impl_prompt += "Start from the CURRENT parent branch (it already contains earlier children). ";
-    impl_prompt += "If using child branches, run: python3 <helper> start-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id>\n";
-    impl_prompt += "Commit on the child branch (or on the parent if the project config sets child_branches=false).\n";
-    impl_prompt += "Run the ticket's verification plus project verify_commands you can run safely.\n";
-    impl_prompt += "Do not merge into the parent or base. Do not start the next child.\n";
-    impl_prompt += "status=ok when the child is implemented and committed. status=stop when you would have to guess product behavior, a dependency is missing, or tests need a human.\n";
+    impl_prompt += "Start from the CURRENT parent branch (it already contains earlier children).\n";
+    if child_branches {
+        impl_prompt += "Child branches are on. Run: python3 <helper> start-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id>\n";
+        impl_prompt += "Then run /implement on that child branch and commit there.\n";
+    } else {
+        impl_prompt += "Work on the parent feature branch. Do not create a per-child branch. Run /implement, then commit on the parent branch.\n";
+    }
+    impl_prompt += "Do not merge into the base branch. Do not start the next child. Do not create a PR.\n";
+    impl_prompt += "status=ok when /implement is finished and the work is committed. status=stop when you would have to guess product behavior, a dependency is missing, or tests need a human.\n";
 
     let impl = ();
     try {
@@ -535,11 +560,11 @@ while idx < children.len() {
         }
         vtries += 1;
         log("  verify failed; repair " + vtries.to_string() + "/" + MAX_VERIFY_RETRIES.to_string());
-        let repair_prompt = worker_rules();
-        repair_prompt += "Repair the implementation so verification passes. Previous verify summary: ";
+        let repair_prompt = implement_skill_flow();
+        repair_prompt += "Verification failed after /implement. Fix it using the same /implement flow (tdd, tests, code-review, commit). Previous verify summary: ";
         repair_prompt += json_encode(summary_of(verify));
         repair_prompt += "\nContext JSON:\n" + ctx + "\n";
-        repair_prompt += "Commit the fix. Do not merge to parent/base. Do not start the next child.\n";
+        repair_prompt += "Commit the fix. Do not merge to base. Do not create a PR. Do not start the next child.\n";
         try {
             impl = agent(repair_prompt, #{
                 label: "repair:" + child_id,
@@ -577,90 +602,14 @@ while idx < children.len() {
     }
     log("  verified");
 
-    let review_prompt = worker_rules();
-    review_prompt += "Fresh review of this child only. Read the child ticket, parent spec where relevant, the diff against the parent branch before this child, and the surrounding code.\n";
-    review_prompt += "Context JSON:\n" + ctx + "\n";
-    review_prompt += "If a code-review skill exists, apply its two axes (standards and spec) yourself — do not spawn reviewers.\n";
-    review_prompt += "Blocking issues: correctness, missed acceptance criteria, regressions, required tests missing, unsafe scope expansion.\n";
-    review_prompt += "Do not block on style nits or optional refactors. Put those in summary only.\n";
-    review_prompt += "status=pass when blocking_count is 0. status=blocking when something must be fixed before integrate. status=stop if you cannot review (empty diff, missing ticket).\n";
-
-    let review = ();
-    try {
-        review = agent(review_prompt, #{
-            label: "review:" + child_id,
-            capability_mode: "all",
-            output_schema: review_schema,
-        });
-    } catch (e) {
-        finish("STOPPED", "review threw for " + child_id + ": " + e, report + "STOPPED on " + child_id + "\n" + e + "\n");
-    }
-
-    let rrounds = 0;
-    while is_blocking(review) && rrounds < MAX_REVIEW_ROUNDS {
-        rrounds += 1;
-        log("  review blocking; fix round " + rrounds.to_string() + "/" + MAX_REVIEW_ROUNDS.to_string());
-        let fix_prompt = worker_rules();
-        fix_prompt += "Address blocking review findings. Review summary: ";
-        fix_prompt += json_encode(summary_of(review));
-        if agent_ok(review) && review.output.blocking_issues != () {
-            fix_prompt += "\nFindings JSON: " + json_encode(review.output.blocking_issues);
-        }
-        fix_prompt += "\nContext JSON:\n" + ctx + "\n";
-        fix_prompt += "Fix blocking issues. You may wontfix a finding only with a technical reason. Commit. Then we will re-verify.\n";
-        try {
-            impl = agent(fix_prompt, #{
-                label: "fix:" + child_id,
-                capability_mode: "all",
-                output_schema: work_schema,
-                resume_from: impl_id,
-            });
-        } catch (e) {
-            impl = agent(fix_prompt, #{
-                label: "fix-fresh:" + child_id,
-                capability_mode: "all",
-                output_schema: work_schema,
-            });
-        }
-        if agent_ok(impl) { impl_id = impl.agent_id; }
-        if !agent_ok(impl) || is_stop(status_of(impl)) {
-            finish("STOPPED", "review fix failed for " + child_id + ": " + stop_reason_of(impl), report + "STOPPED on " + child_id + "\n");
-        }
-        verify = agent(verify_prompt, #{
-            label: "reverify-review:" + child_id,
-            capability_mode: "all",
-            output_schema: verify_schema,
-        });
-        if !is_success(status_of(verify)) {
-            finish("STOPPED", "verify failed after review fix for " + child_id + ": " + summary_of(verify), report + "STOPPED on " + child_id + "\n");
-        }
-        review = agent(review_prompt, #{
-            label: "rereview:" + child_id,
-            capability_mode: "all",
-            output_schema: review_schema,
-        });
-    }
-    if is_stop(status_of(review)) {
-        finish("STOPPED", "review stopped for " + child_id + ": " + stop_reason_of(review), report + "STOPPED on " + child_id + "\n");
-    }
-    if is_blocking(review) {
-        await_user("verification", "Child " + child_id + " still has blocking review findings: " + summary_of(review) + ". Inspect, then resume to retry once.");
-        review = agent(review_prompt, #{
-            label: "rereview-resume:" + child_id,
-            capability_mode: "all",
-            output_schema: review_schema,
-        });
-        if is_blocking(review) || is_stop(status_of(review)) {
-            finish("STOPPED", "review still blocking for " + child_id + ": " + summary_of(review), report + "STOPPED on " + child_id + "\n");
-        }
-    }
-    log("  reviewed");
-
     let integ_prompt = worker_rules();
     integ_prompt += helper_lookup();
     integ_prompt += "Integrate this completed child into the parent feature branch. Context JSON:\n" + ctx + "\n";
-    integ_prompt += "If a child branch was used: python3 <helper> integrate-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id> --delete-child\n";
-    integ_prompt += "If work was already on the parent branch: python3 <helper> state-mark --parent <parent_id> --child <child_id> --status integrated\n";
+    if child_branches {
+        integ_prompt += "A child branch was used. Merge it: python3 <helper> integrate-child --branch <child_branch> --parent-branch <parent_branch> --parent <parent_id> --child <child_id> --delete-child\n";
+    } else {
+        integ_prompt += "Work is already committed on the parent branch. Do not create a merge commit unless needed. Run: python3 <helper> state-mark --parent <parent_id> --child <child_id> --status integrated\n";
+    }
     integ_prompt += "Do not merge to the base branch. Do not create a PR. Do not start the next child.\n";
     integ_prompt += "status=ok when the parent branch contains this child and the working tree is clean.\n";
 
@@ -678,7 +627,7 @@ while idx < children.len() {
         finish("STOPPED", "integrate failed for " + child_id + ": " + stop_reason_of(integ), report + "STOPPED on " + child_id + "\n" + stop_reason_of(integ) + "\n");
     }
     log("  integrated");
-    report += "[" + pos + "] " + child_id + " implemented, verified, reviewed, integrated\n";
+    report += "[" + pos + "] " + child_id + " /implement, verified, integrated\n";
     child_results.push(#{ id: child_id, status: "integrated" });
     impl_ids.push(impl_id);
 

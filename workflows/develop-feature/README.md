@@ -2,7 +2,7 @@
 
 A Grok Build workflow that implements an ordered list of child tickets onto one parent feature branch, **one child at a time**, and stops at human QA.
 
-It automates: parent branch, per-child implement → verify → review → fix → merge, then integration verification. It does not merge to the base branch, deploy, or open the final PR.
+It automates: parent branch, then per child the same `/implement` flow you use by hand (tdd, tests, `/code-review`, commit), a verify pass, and merge onto the parent. It does not open a per-child PR, merge to the base branch, or deploy.
 
 ## Install
 
@@ -64,12 +64,11 @@ In this skills repository there are no product tickets. A fixture parent spec ex
 1. **Discover.** Read the parent spec, find child tickets, linearize them by `Blocked by`, detect the base branch, branch names, and verification commands.
 2. **Prepare.** Create or check out the parent feature branch from the base branch.
 3. **Each child, strictly in order:**
-   1. Implement on a branch taken from the *current* parent (earlier children already merged).
-   2. Verify using ticket criteria, then project instructions, then repo scripts/CI.
-   3. Repair on failure, bounded retries.
-   4. Fresh review (correctness and spec, not style nits).
-   5. Fix blocking findings, re-verify, review again (bounded).
-   6. Merge into the parent. Only then start the next child.
+   1. Run the repo's `/implement` skill for that child (project `.agents/skills/implement` if present: tdd, typecheck/tests, `/code-review`, commit).
+   2. Commit on the parent feature branch. No per-child PR.
+   3. Verify using ticket criteria, then project instructions, then repo scripts/CI.
+   4. Repair on failure with the same `/implement` flow, bounded retries.
+   5. Record the child as integrated on the parent. Only then start the next child.
 4. **Final.** Diff against base, run integration/e2e if the project defines them, review against the original parent spec, fix blocking gaps.
 5. **Stop.** `READY FOR HUMAN QA`. You run the product, then open the PR.
 

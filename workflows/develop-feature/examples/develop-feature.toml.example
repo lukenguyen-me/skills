@@ -8,8 +8,9 @@ parent_branch_template = "feat/{id}"
 child_branch_template = "feat/{parent-id}-{child-id}"
 # merge-no-ff | ff | commit-on-parent
 integrate = "merge-no-ff"
-# If false, children commit directly on the parent branch (no per-child branch).
-child_branches = true
+# Default false: /implement commits on the parent feature branch, no per-child
+# branch or per-child PR. Set true only if you want a branch per child.
+child_branches = false
 
 # Tickets. Leave empty to use docs/agents/issue-tracker.md when present.
 # github | gitlab | local | auto
