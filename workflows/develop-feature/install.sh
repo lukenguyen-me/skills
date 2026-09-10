@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install or update the develop-feature Grok Build workflow.
+# Install or update the develop-feature Grok workflow or Codex skill.
 # Default: user scope (~/.grok), reusable across repositories.
 # Never overwrites a project develop-feature.toml.
 
@@ -7,19 +7,23 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Install the develop-feature Grok Build workflow.
+Install the develop-feature Grok Build workflow or Codex skill.
 
 Usage:
-  ./install.sh [--user | --project] [--link | --copy] [--update]
+  ./install.sh [--grok | --codex] [--user | --project] [--link | --copy] [--update]
+
+Runtime
+  --grok      Install the Grok Rhai workflow (default).
+  --codex     Install the Codex skill into ~/.agents/skills or .agents/skills.
 
 Scopes
-  --user      Install into ~/.grok (default). Available in every repository.
-  --project   Install into the current repository's .grok directory.
+  --user      Install for all repositories (default).
+  --project   Install into the current repository.
 
 Layout
   --copy      Copy files (default). Required for the .rhai — Grok skips
-              symlinked workflow scripts.
-  --link      Copy the .rhai (same as --copy) and symlink only the git helper.
+              symlinked workflow scripts. Codex copies all skill resources.
+  --link      Grok: copy .rhai and symlink helper. Codex: symlink skill files.
 
 Other
   --update    Same as a normal install: overwrite the workflow and helper,
@@ -29,14 +33,19 @@ Other
 The installer never overwrites:
   .grok/develop-feature.toml
   ~/.grok/develop-feature.toml
+  .codex/develop-feature.toml
+  Codex config.toml (select model/effort when launching Codex)
 EOF
 }
 
 SCOPE="user"
 MODE="copy"
+RUNTIME="grok"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --grok) RUNTIME="grok" ;;
+    --codex) RUNTIME="codex" ;;
     --user) SCOPE="user" ;;
     --project) SCOPE="project" ;;
     --copy) MODE="copy" ;;
@@ -59,6 +68,64 @@ SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
 RHAI_SRC="$SRC_DIR/develop-feature.rhai"
 HELPER_SRC="$SRC_DIR/scripts/git_state.py"
 EXAMPLE_TOML="$SRC_DIR/examples/develop-feature.toml.example"
+
+# Keep Codex as a native, self-contained skill; Rhai remains Grok-only.
+if [[ "$RUNTIME" == "codex" ]]; then
+  if [[ "$SCOPE" == "user" ]]; then
+    DEST_SKILL="$HOME/.agents/skills/develop-feature"
+    CODEX_TOML=""
+  else
+    REPO_ROOT="$(git rev-parse --show-toplevel)" || {
+      echo "--project requires a git repository (run from the target repo)" >&2
+      exit 1
+    }
+    DEST_SKILL="$REPO_ROOT/.agents/skills/develop-feature"
+    CODEX_TOML="$REPO_ROOT/.codex/develop-feature.toml"
+  fi
+  for resource in SKILL.md README.md scripts/git_state.py references/lifecycle.md examples/develop-feature.toml.example; do
+    src="$SRC_DIR/$resource"
+    dest="$DEST_SKILL/$resource"
+    if [[ ! -f "$src" ]]; then
+      echo "missing skill resource: $src" >&2
+      exit 1
+    fi
+    if [[ "$src" -ef "$dest" && ! -L "$dest" ]]; then
+      echo "refusing to overwrite source with itself: $dest" >&2
+      exit 1
+    fi
+    mkdir -p "$(dirname "$dest")"
+    rm -f "$dest"
+    if [[ "$MODE" == "link" ]]; then
+      ln -s "$src" "$dest"
+    else
+      cp "$src" "$dest"
+    fi
+  done
+  # Preserve the fallback config of an existing Grok project.
+  if [[ -n "$CODEX_TOML" && ! -e "$CODEX_TOML" && ! -e "$REPO_ROOT/.grok/develop-feature.toml" ]]; then
+    mkdir -p "$(dirname "$CODEX_TOML")"
+    cp "$EXAMPLE_TOML" "$CODEX_TOML"
+  fi
+  python3 "$DEST_SKILL/scripts/git_state.py" self-check >/dev/null
+  cat <<EOF
+Installed develop-feature for Codex ($SCOPE, $MODE)
+
+  skill     $DEST_SKILL/SKILL.md
+  helper    $DEST_SKILL/scripts/git_state.py
+
+Start Codex in the target repository:
+
+  codex -m gpt-5.6-sol -c 'model_reasoning_effort="xhigh"'
+
+Then invoke (workers use gpt-5.6-sol / high):
+
+  \$develop-feature {"ticket":"<parent-spec-ticket>"}
+  \$develop-feature {"ticket":"<parent-spec-ticket>","mode":"plan"}
+
+Existing project configuration is preserved. Codex config.toml is unchanged.
+EOF
+  exit 0
+fi
 
 if [[ ! -f "$RHAI_SRC" ]]; then
   echo "missing workflow source: $RHAI_SRC" >&2

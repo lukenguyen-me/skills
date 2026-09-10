@@ -1,10 +1,48 @@
 # develop-feature
 
-A Grok Build workflow that implements an ordered list of child tickets onto one parent feature branch, **one child at a time**, and stops at human QA.
+A workflow for Grok Build and Codex that implements an ordered list of child tickets onto one parent feature branch, **one child at a time**, and stops at human QA.
 
 It automates: parent branch, then per child the same `/implement` flow you use by hand (tdd, tests, `/code-review`, commit), a verify pass, and merge onto the parent. It does not open a per-child PR, merge to the base branch, or deploy.
 
-## Install
+## Codex
+
+Codex uses the native [SKILL.md](SKILL.md) entry point and subagents. Grok continues to use `develop-feature.rhai`. Both follow the same lifecycle and use the same git helper and saved progress.
+
+Install for all repositories:
+
+```bash
+./workflows/develop-feature/install.sh --codex --user
+```
+
+Or, from the target repository:
+
+```bash
+/path/to/skills/workflows/develop-feature/install.sh --codex --project
+```
+
+This installs the skill and its resources into `~/.agents/skills/develop-feature/` or `<repo>/.agents/skills/develop-feature/`. `--copy` is the default; `--link` links the resources to this checkout. Re-run the installer to update a copied install. These are [Codex skill discovery locations](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills).
+
+In the target repository, start the orchestrator with **gpt-5.6-sol / xhigh**:
+
+```bash
+codex -m gpt-5.6-sol -c 'model_reasoning_effort="xhigh"'
+```
+
+Then invoke:
+
+```text
+$develop-feature {"ticket":"172"}
+$develop-feature {"ticket":"172","mode":"plan"}
+$develop-feature {"mode":"smoke"}
+```
+
+In the Codex app, select the same model and reasoning level before invoking the skill. Every worker uses **gpt-5.6-sol / high**, requested explicitly when spawning; runtimes using configured roles need the equivalent worker model/effort. Codex supports explicit subagent model and reasoning selection; see [subagent configuration](https://learn.chatgpt.com/docs/agent-configuration/subagents#choosing-models-and-reasoning). The skill checks for this support rather than silently changing the requested settings.
+
+The installer preserves project configuration and does not change Codex `config.toml`. Codex reads `.codex/develop-feature.toml` first, then `.grok/develop-feature.toml`. A project install creates an example only if neither exists. The helper keeps progress in `.grok/develop-feature-state/` for resume compatibility with Grok.
+
+The target repository or session must provide the `implement` skill and any skills it requires, just as for the Grok workflow.
+
+## Grok install
 
 Grok discovers workflows from:
 
@@ -33,7 +71,7 @@ The installer overwrites the workflow script and git helper. It does not overwri
 
 After install, open `/workflows` and press `r` to reload, or start a new Grok session. The command is `/develop-feature`.
 
-## Invoke
+## Grok invoke
 
 From a Grok Build session in the **target product repository**:
 
@@ -76,7 +114,7 @@ Children never run concurrently. Shared ports, databases, simulators, and test p
 
 ## Configuration
 
-Optional file: `<repo>/.grok/develop-feature.toml`. See `examples/develop-feature.toml.example`.
+Optional file: `<repo>/.grok/develop-feature.toml`, or `<repo>/.codex/develop-feature.toml` for Codex. See `examples/develop-feature.toml.example`.
 
 The workflow infers what it can:
 
@@ -88,6 +126,8 @@ The workflow infers what it can:
 If the existing tracker already names parent and children, you do not need extra config.
 
 ## Reasoning levels
+
+Codex uses `gpt-5.6-sol` with **xhigh** for orchestration and **high** for all workers, as described above. The following launch controls apply to Grok only.
 
 Orchestration is the workflow engine (deterministic). It does not consume the session’s `/effort`.
 

@@ -1,6 +1,6 @@
 # develop-feature lifecycle
 
-The Rhai workflow is the authority. This file is the human-readable map of that loop.
+This is the shared lifecycle. Grok executes `develop-feature.rhai`; Codex follows `SKILL.md` with native subagents.
 
 ## Sequence
 
@@ -33,13 +33,13 @@ GitHub: `gh issue view`; children via `## Parent #N`, sub-issues, or the parent 
 
 Parent branch is the integration branch. Each child starts from the current parent tip, not from the original base.
 
-Default names: `feat/{id}`. Children commit on the parent branch (`child_branches = false`). Override in `.grok/develop-feature.toml`.
+Default names: `feat/{id}`. Children commit on the parent branch (`child_branches = false`). Override in `.grok/develop-feature.toml`, or `.codex/develop-feature.toml` for Codex (which takes precedence over the Grok file).
 
 Worktrees are not used. Sequential children share the workspace so tests, servers, databases, and simulators do not collide. Grok’s `isolation_worktree` also does not merge edits back.
 
 ## Ongoing spec / continue
 
-Re-run `/develop-feature` on the same parent. Discovery keeps the full child list and marks finished children `integrated` (state file, closed/resolved ticket, or work already on the parent branch). The loop skips those and starts at the first unfinished child, on the existing parent branch.
+Re-run `/develop-feature` (Grok) or `$develop-feature` (Codex) on the same parent. Both share `.grok/develop-feature-state/`. Discovery keeps the full child list and marks finished children `integrated` (state file, closed/resolved ticket, or work already on the parent branch). The loop skips those and starts at the first unfinished child, on the existing parent branch.
 
 If a child looks only partly done, discovery stops instead of guessing.
 

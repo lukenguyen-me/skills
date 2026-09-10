@@ -2,7 +2,7 @@
 
 A collection of LLM coding-agent skills for various tasks and workflows.
 
-Each skill lives under `skills/<name>/` in the [Agent Skills](https://agentskills.io/specification) format, so the npm `skills` CLI can list and install them from this repo.
+General skills live under `skills/<name>/` in the [Agent Skills](https://agentskills.io/specification) format, so the npm `skills` CLI can list and install them from this repo. The develop-feature skill lives alongside its Grok workflow under `workflows/develop-feature/`.
 
 ## Install
 
@@ -72,9 +72,9 @@ Usage:
 claude /skill:playstore-submission-content
 ```
 
-## Grok Build workflows
+## Agent workflows
 
-This repo also ships Grok Build workflows (Rhai) under `workflows/`. They are not Agent Skills; install them into `~/.grok/workflows/` or a project's `.grok/workflows/`.
+This repo also ships workflows under `workflows/`. Grok uses the Rhai entry point; Codex uses the Agent Skill entry point with native subagents.
 
 ### develop-feature
 
@@ -82,6 +82,7 @@ Implement ordered child tickets onto one parent feature branch, strictly one chi
 
 ```bash
 ./workflows/develop-feature/install.sh --user
+./workflows/develop-feature/install.sh --codex --user
 ```
 
 Then, in the product repository:
@@ -89,6 +90,8 @@ Then, in the product repository:
 ```text
 /develop-feature {"ticket":"<parent-spec>"}
 ```
+
+For Codex, invoke `$develop-feature {"ticket":"<parent-spec>"}` with `gpt-5.6-sol`: **xhigh** for the orchestrator, **high** for workers.
 
 See [workflows/develop-feature/README.md](workflows/develop-feature/README.md).
 

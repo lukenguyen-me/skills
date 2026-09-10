@@ -1,5 +1,6 @@
 # Optional project config for /develop-feature
-# Copy to <repo>/.grok/develop-feature.toml and edit.
+# Grok: copy to <repo>/.grok/develop-feature.toml and edit.
+# Codex: copy to <repo>/.codex/develop-feature.toml; falls back to the Grok file.
 # Omit any key you want inferred from the repo.
 
 # Git
