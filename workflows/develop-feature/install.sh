@@ -14,7 +14,9 @@ Usage:
 
 Runtime
   --grok      Install the Grok Rhai workflow (default).
-  --codex     Install the Codex skill into ~/.agents/skills or .agents/skills.
+  --codex     Install the Codex skill into ~/.codex/skills or .codex/skills.
+              Not .agents/skills — Grok also scans that path and would run
+              the Codex skill instead of the Rhai workflow.
 
 Scopes
   --user      Install for all repositories (default).
@@ -72,15 +74,17 @@ EXAMPLE_TOML="$SRC_DIR/examples/develop-feature.toml.example"
 # Keep Codex as a native, self-contained skill; Rhai remains Grok-only.
 if [[ "$RUNTIME" == "codex" ]]; then
   if [[ "$SCOPE" == "user" ]]; then
-    DEST_SKILL="$HOME/.agents/skills/develop-feature"
+    DEST_SKILL="${CODEX_HOME:-$HOME/.codex}/skills/develop-feature"
     CODEX_TOML=""
+    OLD_AGENTS="$HOME/.agents/skills/develop-feature"
   else
     REPO_ROOT="$(git rev-parse --show-toplevel)" || {
       echo "--project requires a git repository (run from the target repo)" >&2
       exit 1
     }
-    DEST_SKILL="$REPO_ROOT/.agents/skills/develop-feature"
+    DEST_SKILL="$REPO_ROOT/.codex/skills/develop-feature"
     CODEX_TOML="$REPO_ROOT/.codex/develop-feature.toml"
+    OLD_AGENTS="$REPO_ROOT/.agents/skills/develop-feature"
   fi
   for resource in SKILL.md README.md scripts/git_state.py references/lifecycle.md examples/develop-feature.toml.example; do
     src="$SRC_DIR/$resource"
@@ -107,6 +111,10 @@ if [[ "$RUNTIME" == "codex" ]]; then
     cp "$EXAMPLE_TOML" "$CODEX_TOML"
   fi
   python3 "$DEST_SKILL/scripts/git_state.py" self-check >/dev/null
+  if [[ -e "$OLD_AGENTS" ]]; then
+    rm -rf "$OLD_AGENTS"
+    echo "Removed Grok-colliding copy at $OLD_AGENTS"
+  fi
   cat <<EOF
 Installed develop-feature for Codex ($SCOPE, $MODE)
 

@@ -20,7 +20,7 @@ Or, from the target repository:
 /path/to/skills/workflows/develop-feature/install.sh --codex --project
 ```
 
-This installs the skill and its resources into `~/.agents/skills/develop-feature/` or `<repo>/.agents/skills/develop-feature/`. `--copy` is the default; `--link` links the resources to this checkout. Re-run the installer to update a copied install. These are [Codex skill discovery locations](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills).
+This installs into `~/.codex/skills/develop-feature/` or `<repo>/.codex/skills/develop-feature/`. Do **not** put this skill in `.agents/skills/`: Grok also scans that path, and `/develop-feature` would run as a skill in the main session instead of the Rhai workflow.
 
 In the target repository, start the orchestrator with **gpt-5.6-sol / xhigh**:
 
@@ -69,14 +69,13 @@ cd /path/to/other-repo
 
 The installer overwrites the workflow script and git helper. It does not overwrite `.grok/develop-feature.toml`.
 
-After install, open `/workflows` and press `r` to reload, or start a new Grok session. The command is `/develop-feature`.
+After install, open `/workflows` and press `r` to reload, or start a new Grok session. Prefer `/workflow develop-feature` — that always launches the Rhai engine. `/develop-feature` is the same command only when no skill of that name is on Grok's skill path.
 
 ## Grok invoke
 
-From a Grok Build session in the **target product repository**:
+From a Grok Build session in the **target product repository**. This must open `/workflow runs` (a background Rhai run). If it instead starts implementing in the main chat with subagents, a skill is stealing the command — use the `/workflow` form:
 
 ```text
-/develop-feature {"ticket":"172"}
 /workflow develop-feature {"ticket":"172"}
 /workflow develop-feature --effort high --agent-budget 64 {"ticket":"172"}
 ```

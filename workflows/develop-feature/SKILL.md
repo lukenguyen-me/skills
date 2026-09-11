@@ -5,7 +5,7 @@ description: Implement a parent spec through its ordered child tickets, one chil
 
 # Develop feature (Codex runtime)
 
-Codex adapter. **Strategy is [references/lifecycle.md](references/lifecycle.md)** — read it before every stage. This file only covers how Codex runs that strategy.
+Codex adapter only. Grok must run `develop-feature.rhai` via `/workflow develop-feature`, not this skill. **Strategy is [references/lifecycle.md](references/lifecycle.md)** — read it before every stage. This file only covers how Codex runs that strategy.
 
 ## Runtime
 
