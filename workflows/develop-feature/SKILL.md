@@ -29,9 +29,8 @@ Follow lifecycle.md stages:
 2. If `plan`: return `PLAN` and stop.
 3. **Prepare**.
 4. **Each unfinished child**, in order: `/implement` as in lifecycle.md Child. Skip `integrated` children.
-5. **Final**.
-6. Return `READY FOR HUMAN QA`.
+5. Return `READY FOR HUMAN QA` (no extra final verify or review).
 
 ## Smoke
 
-Sequential workers only: prepare → SMOKE-1-1 implement → SMOKE-1-2 implement → final. Each replies OK with no tools or file edits. Label the result as smoke. No real discovery, git, or state.
+Sequential workers only: prepare → SMOKE-1-1 implement → SMOKE-1-2 implement. Each replies OK with no tools or file edits. Label the result as smoke. No real discovery, git, or state.

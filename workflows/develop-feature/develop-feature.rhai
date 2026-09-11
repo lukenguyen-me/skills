@@ -6,7 +6,7 @@ let meta = #{
         #{ title: "Discover", detail: "parent spec, ordered children, project verification" },
         #{ title: "Prepare", detail: "parent feature branch from the base branch" },
         #{ title: "Child", detail: "/implement on the parent branch — one child at a time" },
-        #{ title: "Final", detail: "integration verification and parent-spec review" },
+        #{ title: "Final", detail: "READY FOR HUMAN QA — no extra review" },
     ],
 };
 
@@ -146,11 +146,6 @@ fn stop_reason_of(r) {
     }
 }
 
-fn is_blocking(r) {
-    let st = status_of(r);
-    is_fail(st) || st == "blocking"
-}
-
 fn is_already_done(s) {
     let t = trimmed(s);
     t == "integrated" || t == "skipped" || t == "done" || t == "closed" || t == "resolved" || t == "completed"
@@ -172,38 +167,6 @@ let work_schema = #{
         "branch": #{ "type": "string" },
         "sha": #{ "type": "string" },
         "files_changed": #{ "type": "array", "items": #{ "type": "string" } },
-    },
-};
-
-let verify_schema = #{
-    "type": "object",
-    "required": ["status", "summary"],
-    "properties": #{
-        "status": #{ "type": "string", "description": "pass, fail, or stop" },
-        "summary": #{ "type": "string" },
-        "stop_reason": #{ "type": "string" },
-        "failed_commands": #{ "type": "array", "items": #{ "type": "string" } },
-    },
-};
-
-let review_schema = #{
-    "type": "object",
-    "required": ["status", "summary", "blocking_count"],
-    "properties": #{
-        "status": #{ "type": "string", "description": "pass, blocking, or stop" },
-        "summary": #{ "type": "string" },
-        "stop_reason": #{ "type": "string" },
-        "blocking_count": #{ "type": "integer" },
-        "blocking_issues": #{
-            "type": "array",
-            "items": #{
-                "type": "object",
-                "properties": #{
-                    "file": #{ "type": "string" },
-                    "issue": #{ "type": "string" },
-                },
-            },
-        },
     },
 };
 
@@ -279,8 +242,6 @@ if is_smoke_mode(mode) {
         si += 1;
     }
     phase("Final");
-    let fin = agent("Smoke test final review. Reply with OK. Do not use tools.", #{ label: "smoke-final", capability_mode: "read-only" });
-    if fin == () || !fin.success { finish("STOPPED", "smoke final agent failed", "STOPPED\n"); }
     let report = "";
     report += "READY FOR HUMAN QA\n\n";
     report += "Parent: SMOKE-1\n";
@@ -494,118 +455,7 @@ while idx < children.len() {
 
 // --------------------------------------------------------------------------- final
 phase("Final");
-log("All children integrated. Running final integration verification");
-
-let final_ctx = json_encode(#{
-    parent_id: parent_id,
-    parent_title: parent_title,
-    parent_ref: parent_ref,
-    parent_branch: parent_branch,
-    base_branch: base_branch,
-    helper_path: helper_path,
-    verify_commands: verify_commands,
-    integration_verify_commands: integration_verify_commands,
-    children: children,
-});
-
-let final_verify_prompt = worker_rules();
-final_verify_prompt += strategy_lookup();
-final_verify_prompt += "Follow the Final section of the strategy: integration verification against the parent-vs-base diff. Context JSON:\n" + final_ctx + "\n";
-final_verify_prompt += "status=pass with evidence. status=stop if a required human-operated test is the only remaining check — list it for human QA unless the ticket demanded it as an automated gate.\n";
-
-let final_verify = ();
-try {
-    final_verify = agent(final_verify_prompt, #{
-        label: "final-verify",
-        capability_mode: "all",
-        output_schema: verify_schema,
-    });
-} catch (e) {
-    finish("STOPPED", "final verify threw: " + e, report + "STOPPED at final verify\n" + e + "\n");
-}
-
-if is_fail(status_of(final_verify)) {
-    log("final verify failed; one repair cycle");
-    let integ_fix = worker_rules();
-    integ_fix += strategy_lookup();
-    integ_fix += "Follow Final: one repair/commit on the parent for integration failures. Summary: ";
-    integ_fix += json_encode(summary_of(final_verify));
-    integ_fix += "\nContext JSON:\n" + final_ctx + "\n";
-    let fixer = agent(integ_fix, #{
-        label: "final-repair",
-        capability_mode: "all",
-        output_schema: work_schema,
-    });
-    if !agent_ok(fixer) || is_stop(status_of(fixer)) {
-        finish("STOPPED", "final repair failed: " + stop_reason_of(fixer), report + "STOPPED at final repair\n");
-    }
-    final_verify = agent(final_verify_prompt, #{
-        label: "final-reverify",
-        capability_mode: "all",
-        output_schema: verify_schema,
-    });
-}
-if !is_success(status_of(final_verify)) && !is_stop(status_of(final_verify)) {
-    await_user("verification", "Final integration verification failed: " + summary_of(final_verify) + ". Fix, then resume.");
-    final_verify = agent(final_verify_prompt, #{
-        label: "final-reverify-resume",
-        capability_mode: "all",
-        output_schema: verify_schema,
-    });
-    if !is_success(status_of(final_verify)) && !is_stop(status_of(final_verify)) {
-        finish("STOPPED", "final verify still failing: " + summary_of(final_verify), report + "STOPPED at final verify\n");
-    }
-}
-log("Final verification: " + status_of(final_verify) + " — " + summary_of(final_verify));
-
-let final_review_prompt = worker_rules();
-final_review_prompt += strategy_lookup();
-final_review_prompt += "Follow the Final section: fresh review of the original parent spec against the full parent-vs-base diff. Context JSON:\n" + final_ctx + "\n";
-final_review_prompt += "status=pass when the parent spec is ready for human QA. status=blocking for gaps that must be fixed first.\n";
-
-let final_review = ();
-try {
-    final_review = agent(final_review_prompt, #{
-        label: "final-review",
-        capability_mode: "all",
-        output_schema: review_schema,
-    });
-} catch (e) {
-    finish("STOPPED", "final review threw: " + e, report + "STOPPED at final review\n" + e + "\n");
-}
-
-if is_blocking(final_review) {
-    log("final review blocking; one fix cycle");
-    let ffix = worker_rules();
-    ffix += strategy_lookup();
-    ffix += "Follow Final: one repair/commit on the parent for blocking spec gaps. Review summary: ";
-    ffix += json_encode(summary_of(final_review));
-    ffix += "\nContext JSON:\n" + final_ctx + "\n";
-    let ffixer = agent(ffix, #{
-        label: "final-spec-fix",
-        capability_mode: "all",
-        output_schema: work_schema,
-    });
-    if !agent_ok(ffixer) || is_stop(status_of(ffixer)) {
-        finish("STOPPED", "final spec fix failed: " + stop_reason_of(ffixer), report + "STOPPED at final spec fix\n");
-    }
-    final_verify = agent(final_verify_prompt, #{
-        label: "final-reverify-spec",
-        capability_mode: "all",
-        output_schema: verify_schema,
-    });
-    if !is_success(status_of(final_verify)) && !is_stop(status_of(final_verify)) {
-        finish("STOPPED", "verify failed after final spec fix: " + summary_of(final_verify), report + "STOPPED at final verify\n");
-    }
-    final_review = agent(final_review_prompt, #{
-        label: "final-rereview",
-        capability_mode: "all",
-        output_schema: review_schema,
-    });
-    if is_blocking(final_review) {
-        finish("STOPPED", "final review still blocking: " + summary_of(final_review), report + "STOPPED at final review\n" + summary_of(final_review) + "\n");
-    }
-}
+log("All children on " + parent_branch + ". READY FOR HUMAN QA");
 
 report += "\nREADY FOR HUMAN QA\n\n";
 report += "Parent: " + parent_id + " — " + parent_title + "\n";
@@ -620,9 +470,7 @@ while ri < child_results.len() {
     report += "  " + as_str(cr.status) + "  " + as_str(cr.id) + "\n";
     ri += 1;
 }
-report += "\nVerification: " + status_of(final_verify) + " — " + summary_of(final_verify) + "\n";
-report += "Final review: " + status_of(final_review) + " — " + summary_of(final_review) + "\n";
-report += "\nManual QA required before merging to " + base_branch + ".\n";
-report += "This workflow did not create a PR and did not merge to the base branch.\n";
+report += "\nEach child was implemented with /implement (including its review). No extra final review.\n";
+report += "Manual QA, then open the PR yourself. This workflow did not merge to " + base_branch + ".\n";
 
 finish("READY FOR HUMAN QA", "parent branch " + parent_branch + " is ready for manual QA", report);

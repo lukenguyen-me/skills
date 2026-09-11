@@ -1,6 +1,6 @@
 # develop-feature strategy
 
-Single source of truth for **what** to do. Grok (`develop-feature.rhai`) and Codex (`SKILL.md`) only differ in **how** they spawn workers. Read this file before Discover, Prepare, each Child, and Final.
+Single source of truth for **what** to do. Grok (`develop-feature.rhai`) and Codex (`SKILL.md`) only differ in **how** they spawn workers. Read this file before Discover, Prepare, and each Child.
 
 ## Sequence
 
@@ -9,14 +9,12 @@ discover
   → prepare parent branch from base
   → for each child in linearized order:
         /implement (tdd, tests, /code-review, commit on parent)
-  → final integration verify
-  → final review against the original parent spec
   → READY FOR HUMAN QA
 ```
 
 Child N+1 starts only after child N is committed on the parent and marked integrated. Never implement two children at once.
 
-There is no per-child verify agent and no per-child PR. `/implement` already typechecks, tests, and code-reviews. After all children, Final checks the original parent spec.
+There is no extra verify or review after a child. `/implement` already typechecks, tests, and code-reviews. After the last child, stop and tell the human to QA and open the PR.
 
 ## Boundaries
 
@@ -92,11 +90,7 @@ Done when the child's work is committed on the parent, the working tree is clean
 
 ## Final
 
-Done when (1) integration/e2e commands against the full parent-vs-base diff have evidence of pass, or a documented deferral to human QA for a manual-only check, and (2) a fresh review of the original parent spec finds no blocking gaps.
-
-On integration failure: one repair/commit on the parent, then reverify. On blocking spec gaps: one repair/commit, reverify, fresh review. Stop if blockers remain.
-
-Return `READY FOR HUMAN QA`. The human runs the product and opens the PR.
+No extra agents. The last child's `/implement` already committed (and merged, if `child_branches` is true). Return `READY FOR HUMAN QA` with the parent branch and child list. The human runs the product and opens the PR.
 
 ## Resume
 
