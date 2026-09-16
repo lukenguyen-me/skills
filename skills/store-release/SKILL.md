@@ -128,7 +128,7 @@ build identifier satisfies monotonicity, or this step was skipped.
   markdown in the same field shape as the store reference.
 - Always write version notes for each enabled store and locale from the
   verified delta.
-- Update App Store promotional text to highlight this release.
+- Write timely App Store promotional text for each App Store locale.
 - Update reviewer notes when the verified delta changes how a reviewer
   exercises the app.
 - If a privacy or review checklist lives with the store documents, update
@@ -141,9 +141,9 @@ build identifier satisfies monotonicity, or this step was skipped.
   implementation details into concrete behavior they can notice.
 - Keep the same factual claims across locales; phrase them naturally for each
   locale rather than translating word for word.
-- Keep the same factual claims across stores. Play version notes are a
-  compressed equivalent that fits 500 characters, not a truncation of the App
-  Store text.
+- Keep the same factual claims across stores for fields both stores have.
+  Play version notes are a compressed equivalent that fits 500 characters,
+  not a truncation of the App Store text.
 - Preserve document structure, field-limit annotations, current locales, and
   owner placeholders such as `[[OWNER:...]]`.
 - Do not invent owner, legal, privacy, contact, or seller facts.
@@ -170,7 +170,25 @@ Home lists load faster when you have hundreds of events.
 A crash that could happen while iCloud was syncing no longer occurs.
 ```
 
-Completion: each enabled store describes the same verified release, and
+Promotional text:
+
+- App Store only.
+- One timely claim: this release's lead user-visible result, or an
+  owner-supplied event or offer when the user named one.
+- Write for a visitor already on the product page. Search terms belong in
+  name, subtitle, and keywords.
+- Lead with the user-visible result. One or two sentences. Version notes
+  hold the rest of the delta.
+- Attributed accolades belong here when the user supplied them.
+
+Example:
+
+```text
+Add a task from the home screen in one step. Home lists stay fast with hundreds of events.
+```
+
+Completion: each enabled store describes the same verified release; each
+App Store locale has timely promotional text, or App Store was not enabled;
 owner-supplied facts remain explicit values or placeholders.
 
 ### 7. Validate the result

@@ -10,7 +10,7 @@ if the table below is not in context.
 | --- | --- | --- |
 | App name | 30 characters | Memorable product name. No keyword stuffing. |
 | Subtitle | 30 characters | Specific benefit. Strongest single differentiator. |
-| Promotional text | 170 characters | Highlight this release. Updatable without a new binary. |
+| Promotional text | 170 characters | Timely headline above the description. Updatable without a new binary. Does not affect search ranking. Follow the promotional-text rules in `SKILL.md`. |
 | Description | 4000 characters | Problem, benefits, capabilities, then a close. First ~255 characters show before Read More. |
 | Keywords | 100 UTF-8 bytes | Comma-separated discovery terms. |
 | Version notes | 4000 characters | Why a customer should update. Follow the version-notes rules in `SKILL.md`. |
