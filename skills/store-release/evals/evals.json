@@ -1,0 +1,38 @@
+{
+  "skill_name": "store-release",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Prepare store-release for version 2.0. The last tagged release is v1.9. Write App Store and Play Store version notes from the user-visible changes, update docs/store if those files exist, and sync Android/iOS version fields to 2.0.",
+      "expected_output": "Asks for nothing extra if 2.0 is already in the prompt. Uses v1.9 as the base. Version notes are source-verified, unlabeled customer sentences, equivalent across locales and stores, with Play notes at or under 500 characters. Public versions are 2.0. No tag, commit, upload, or publish.",
+      "files": [],
+      "expectations": [
+        "The target public version is 2.0 and was not inferred from tags or config",
+        "Version notes cite user-visible behavior verified in production source",
+        "Play Store version notes stay within 500 characters",
+        "The run does not create, fetch, push, or modify git tags"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write Play Store listing content for my Android app. I need the title, short description, full description, and What's New.",
+      "expected_output": "Asks exactly one blocking question for the public version and makes no edits until that version is given.",
+      "files": [],
+      "expectations": [
+        "The assistant asks which public version to prepare",
+        "No store documents or version files are edited before the version is given"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I need App Store What's New for 1.4 compared with 1.3. This is an iOS-only app and there are no docs/store files.",
+      "expected_output": "Paste-ready App Store version notes only, in fenced text fields, for detected locales. No Play Store copy. No version-file edits if none exist. Claims are user-facing and not labeled Feature/Fix/Improvement.",
+      "files": [],
+      "expectations": [
+        "Output includes App Store version notes for 1.4",
+        "Output does not include Play Store fields",
+        "Version notes do not use Feature:, Fix:, or Improvement: labels"
+      ]
+    }
+  ]
+}

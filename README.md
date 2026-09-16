@@ -18,22 +18,15 @@ npx skills add lukenguyen-me/skills --skill write-to-human
 
 ## Available Skills
 
-### appstore-release-notes
+### store-release
 
-Generate compact App Store release notes from git history, tags, commits, and changed files. Outputs clear hyphen bullets labeled as Feature, Fix, or Improvement.
+Prepare App Store and Play Store release content for a public version. Inspects the source-verified change since the last release, writes version notes, refreshes listing copy when the release makes it inaccurate, and syncs version configuration when those files exist.
 
-Usage:
-```bash
-claude /skill:appstore-release-notes
-```
-
-### appstore-submission-content
-
-A skill for generating complete, ready-to-paste App Store Connect text content. Covers all localizable fields (App Name, Subtitle, Description, Keywords, etc.), enforces Apple character rules, detects multi-language support, and outputs structured markdown.
+Replaces `appstore-release-notes`, `appstore-submission-content`, and `playstore-submission-content`.
 
 Usage:
 ```bash
-claude /skill:appstore-submission-content
+claude /skill:store-release
 ```
 
 ### commit-message
@@ -61,15 +54,6 @@ Write every message to a human in Simplified Technical English (ASD-STE100). Lea
 Usage:
 ```bash
 claude /skill:write-to-human
-```
-
-### playstore-submission-content
-
-Generate complete, ready-to-paste Google Play Store text content for Android app submissions. Covers App Title, Short Description, Full Description, and What's New with strict Play Store character and emoji rules enforced. Supports 51 languages and detects multi-language projects automatically.
-
-Usage:
-```bash
-claude /skill:playstore-submission-content
 ```
 
 ## Agent workflows
