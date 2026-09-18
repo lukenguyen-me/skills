@@ -113,7 +113,7 @@ The workflow infers what it can:
 
 - **Tickets** from `docs/agents/issue-tracker.md` (GitHub, GitLab, or local `.scratch/`), then from the parent body’s `## Parent` / `## Blocked by` children (Matt Pocock `to-spec` / `to-tickets` shape).
 - **Base branch** from `origin/HEAD`, then `main` / `master` / `develop`.
-- **Branch names** from the toml templates, else `feat/{id}` and `feat/{parent-id}-{child-id}`, else repo docs (`conventional-git`, `AGENTS.md`).
+- **Branch names** from the toml templates, else `{type}/{id}-{slug}` (for example `feat/172-add-user-authentication`), else repo docs (`conventional-git`, `AGENTS.md`). A new branch always includes the conventional type, the issue number, and a short title summary — not the issue number alone. Child branches, when enabled, use the same shape with the child ticket. An existing branch for that issue is reused. A project toml that still says `feat/{id}` keeps the old number-only names until you update it.
 - **Verify commands** from the ticket, toml, `AGENTS.md` / `CLAUDE.md`, then package scripts / Makefile / CI. It does not assume npm, pnpm, bun, or any stack.
 
 If the existing tracker already names parent and children, you do not need extra config.

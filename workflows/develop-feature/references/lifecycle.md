@@ -33,6 +33,7 @@ Read `.codex/develop-feature.toml` first, then `.grok/develop-feature.toml`. Mis
 ```text
 python3 <helper> info
 python3 <helper> state-read --parent <id>
+python3 <helper> name-branch --id <id> --title <title> [--type feat]
 python3 <helper> assert-not-base --branch <parent_branch> --base <base_branch>
 python3 <helper> prepare-parent --parent <id> --branch <parent_branch> --base <base_branch>
 python3 <helper> state-mark --parent <id> --child <id> --status integrated
@@ -70,7 +71,7 @@ Order by `Blocked by` (topological), then numeric/lexical id. If there are no ch
 
 Keep every child in the list. Mark a child `integrated` if any of: state file says integrated; tracker issue closed / local Status is resolved, completed, done, or closed; parent branch git history clearly contains that child's work. Open / ready-for-agent / claimed / in-progress is not done. If overlapping commits make it unclear, stop rather than redo or skip.
 
-Reuse an existing parent branch and its commits. Infer base from `origin/HEAD`, then `main`/`master`/`develop`. Branch template: toml, else `feat/{id}`. Infer verify commands from ticket criteria, toml, AGENTS.md/CLAUDE.md, repo scripts, CI — do not assume a package manager. Put full/e2e commands in integration commands.
+Reuse an existing parent branch and its commits. Infer base from `origin/HEAD`, then `main`/`master`/`develop`. Name a new parent branch `{type}/{id}-{slug}` — conventional type, issue number, hyphenated title — never the issue number alone (`feat/172-add-user-authentication`, not `feat/172`). Type from the ticket (feat if unclear). Slug: lowercase, hyphens, from the title, keep the description under 50 characters. Toml `parent_branch_template` / `child_branch_template` override the pattern; placeholders `{type}`, `{id}`, `{slug}`, `{parent-id}`, `{child-id}`. If a branch for this issue already exists, reuse it. Run helper `name-branch --id <id> --title <title>` and use the returned `branch`. Child branches (when `child_branches`) use the same shape with the child id and title. Infer verify commands from ticket criteria, toml, AGENTS.md/CLAUDE.md, repo scripts, CI — do not assume a package manager. Put full/e2e commands in integration commands.
 
 Do not edit product files. Helper `info` and `state-read` are allowed.
 

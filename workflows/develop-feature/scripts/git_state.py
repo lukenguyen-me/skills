@@ -28,6 +28,25 @@ PROTECTED_BRANCHES = frozenset(
     }
 )
 
+CONVENTIONAL_TYPES = frozenset(
+    {
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "perf",
+        "test",
+        "build",
+        "ci",
+        "chore",
+        "revert",
+    }
+)
+
+DEFAULT_BRANCH_TEMPLATE = "{type}/{id}-{slug}"
+SLUG_MAX_LEN = 50
+
 STATE_DIRNAME = ".grok/develop-feature-state"
 
 
@@ -73,6 +92,112 @@ def sanitize_id(value: str) -> str:
     text = re.sub(r"[^A-Za-z0-9._-]+", "-", text)
     text = text.strip("-._")
     return text or "ticket"
+
+
+def issue_token(value: str) -> str:
+    text = value.strip().lstrip("#")
+    text = sanitize_id(text).lower()
+    return text or "ticket"
+
+
+def slugify_summary(title: str, issue: str = "", max_len: int = SLUG_MAX_LEN) -> str:
+    text = title.strip().lower()
+    token = issue_token(issue) if issue else ""
+    if token:
+        text = re.sub(rf"^#?{re.escape(token)}\s*[:\-–—.]+\s*", "", text)
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+    text = text.strip("-")
+    if not text:
+        return "work"
+    if len(text) <= max_len:
+        return text
+    trimmed = text[:max_len].rstrip("-")
+    if "-" in trimmed:
+        trimmed = trimmed.rsplit("-", 1)[0]
+    return trimmed or text[:max_len]
+
+
+def conventional_type(value: str) -> str:
+    kind = (value or "").strip().lower()
+    return kind if kind in CONVENTIONAL_TYPES else "feat"
+
+
+def render_branch_template(
+    template: str,
+    *,
+    kind: str,
+    issue: str,
+    slug: str,
+    parent_id: str = "",
+    child_id: str = "",
+) -> str:
+    rendered = template
+    for key, val in (
+        ("{type}", kind),
+        ("{slug}", slug),
+        ("{parent-id}", parent_id or issue),
+        ("{child-id}", child_id or issue),
+        ("{id}", issue),
+    ):
+        rendered = rendered.replace(key, val)
+    return rendered
+
+
+def conventional_branch_name(
+    issue: str,
+    title: str,
+    *,
+    kind: str = "feat",
+    template: str = DEFAULT_BRANCH_TEMPLATE,
+    parent_id: str = "",
+    child_id: str = "",
+) -> str:
+    issue_part = issue_token(issue)
+    return render_branch_template(
+        template or DEFAULT_BRANCH_TEMPLATE,
+        kind=conventional_type(kind),
+        issue=issue_part,
+        slug=slugify_summary(title, issue_part),
+        parent_id=issue_token(parent_id) if parent_id else "",
+        child_id=issue_token(child_id) if child_id else "",
+    )
+
+
+def matches_issue_branch(branch: str, issue: str) -> bool:
+    token = issue_token(issue)
+    name = branch.strip()
+    if name.startswith("origin/"):
+        name = name[len("origin/") :]
+    if "/" not in name:
+        return False
+    rest = name.split("/", 1)[1]
+    return rest == token or rest.startswith(token + "-")
+
+
+def local_branch_names(root: Path) -> list[str]:
+    out = git(
+        "for-each-ref",
+        "--format=%(refname:short)",
+        "refs/heads/",
+        "refs/remotes/",
+        cwd=root,
+        check=False,
+    )
+    names: list[str] = []
+    seen: set[str] = set()
+    for line in out.splitlines():
+        name = line.strip()
+        if name.startswith("origin/"):
+            name = name[len("origin/") :]
+        if not name or name == "HEAD" or name in seen:
+            continue
+        seen.add(name)
+        names.append(name)
+    return names
+
+
+def existing_issue_branches(root: Path, issue: str) -> list[str]:
+    return [name for name in local_branch_names(root) if matches_issue_branch(name, issue)]
 
 
 def is_protected(name: str) -> bool:
@@ -382,6 +507,48 @@ def cmd_assert_not_base(args: argparse.Namespace) -> int:
     return emit({"action": "assert-not-base", "branch": args.branch, "base": args.base})
 
 
+def cmd_name_branch(args: argparse.Namespace) -> int:
+    minted = conventional_branch_name(
+        args.id,
+        args.title,
+        kind=args.type,
+        template=args.template,
+        parent_id=args.parent_id,
+        child_id=args.child_id,
+    )
+    if is_protected(minted):
+        raise HelperError(
+            f"refusing protected branch name {minted!r}",
+            {"branch": minted},
+        )
+    existing: list[str] = []
+    if not args.no_reuse:
+        try:
+            existing = existing_issue_branches(git_root(), args.id)
+        except HelperError:
+            existing = []
+    branch = minted
+    reused = False
+    if minted in existing:
+        branch = minted
+        reused = True
+    elif existing:
+        branch = existing[0]
+        reused = True
+    return emit(
+        {
+            "action": "name-branch",
+            "branch": branch,
+            "minted": minted,
+            "existing": existing,
+            "reused": reused,
+            "type": conventional_type(args.type),
+            "id": issue_token(args.id),
+            "slug": slugify_summary(args.title, args.id),
+        }
+    )
+
+
 def cmd_self_check(_args: argparse.Namespace) -> int:
     """Non-mutating checks used by the package smoke test."""
     root = git_root()
@@ -395,6 +562,20 @@ def cmd_self_check(_args: argparse.Namespace) -> int:
         "state_path_parent": str(state_path(root, "FEAT/123")).endswith(
             f"{STATE_DIRNAME}/FEAT-123.json"
         ),
+        "slug": slugify_summary("Add user authentication", "172")
+        == "add-user-authentication",
+        "slug_strips_id": slugify_summary("172: Add user authentication", "172")
+        == "add-user-authentication",
+        "branch_includes_summary": conventional_branch_name(
+            "172", "Add user authentication"
+        )
+        == "feat/172-add-user-authentication",
+        "branch_not_id_only": conventional_branch_name("172", "Add user authentication")
+        != "feat/172",
+        "fix_type": conventional_branch_name("87", "Login race condition", kind="fix")
+        == "fix/87-login-race-condition",
+        "issue_prefix_not_substring": matches_issue_branch("feat/1720-extra", "172")
+        is False,
     }
     failed = [key for key, value in checks.items() if value is False]
     return emit({"action": "self-check", "checks": checks, "failed": failed}, ok=not failed)
@@ -447,6 +628,26 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--branch", required=True)
     p.add_argument("--base", required=True)
 
+    p = sub.add_parser(
+        "name-branch",
+        help="mint <type>/<issue>-<summary> from a ticket id and title",
+    )
+    p.add_argument("--id", required=True, help="issue number or ticket id")
+    p.add_argument("--title", default="", help="ticket title used for the slug")
+    p.add_argument("--type", default="feat", help="conventional type (feat, fix, ...)")
+    p.add_argument(
+        "--template",
+        default=DEFAULT_BRANCH_TEMPLATE,
+        help="placeholders: {type} {id} {slug} {parent-id} {child-id}",
+    )
+    p.add_argument("--parent-id", default="")
+    p.add_argument("--child-id", default="")
+    p.add_argument(
+        "--no-reuse",
+        action="store_true",
+        help="do not return an existing branch for this issue",
+    )
+
     return parser
 
 
@@ -462,6 +663,7 @@ def main(argv: list[str] | None = None) -> int:
         "state-read": cmd_state_read,
         "state-mark": cmd_state_mark,
         "assert-not-base": cmd_assert_not_base,
+        "name-branch": cmd_name_branch,
     }
     try:
         return commands[args.command](args)

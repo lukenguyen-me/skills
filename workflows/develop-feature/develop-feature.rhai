@@ -196,6 +196,7 @@ let discovery_schema = #{
                     "title": #{ "type": "string" },
                     "ref": #{ "type": "string" },
                     "status": #{ "type": "string" },
+                    "branch": #{ "type": "string", "description": "{type}/{id}-{slug} when child_branches is true" },
                     "blocked_by": #{ "type": "array", "items": #{ "type": "string" } },
                 },
             },

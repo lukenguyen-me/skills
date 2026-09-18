@@ -5,8 +5,10 @@
 
 # Git
 base_branch = "main"
-parent_branch_template = "feat/{id}"
-child_branch_template = "feat/{parent-id}-{child-id}"
+# <type>/<issue>-<summary>, e.g. feat/172-add-user-authentication
+# Placeholders: {type} {id} {slug} {parent-id} {child-id}
+parent_branch_template = "{type}/{id}-{slug}"
+child_branch_template = "{type}/{id}-{slug}"
 # merge-no-ff | ff | commit-on-parent
 integrate = "merge-no-ff"
 # Default false: /implement commits on the parent feature branch, no per-child
