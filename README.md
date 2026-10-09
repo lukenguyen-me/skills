@@ -10,10 +10,27 @@ requires no CLI, MCP server, or orchestration service.
 
 ## Install globally in Codex
 
-Keep this checkout wherever you maintain personal tools. From its root, create
-one user-level symlink:
+Choose one of the following methods to make Luke Mode available in every project.
+
+### Skills CLI
+
+With Node.js, npm, and Git installed, run from any directory:
 
 ```sh
+npx skills add lukenguyen-me/luke-mode --skill luke-mode --agent codex --global
+```
+
+The [Skills CLI](https://github.com/vercel-labs/skills#install-a-skill) downloads
+the skill and installs it for Codex. `--global` makes it available across projects.
+
+### Git clone
+
+With Git installed, run these commands in a macOS or Linux terminal. Clone into
+a directory where you keep personal tools:
+
+```sh
+git clone https://github.com/lukenguyen-me/luke-mode.git
+cd luke-mode
 luke_mode_repo="$(pwd -P)"
 mkdir -p "$HOME/.agents/skills"
 if [ -e "$HOME/.agents/skills/luke-mode" ] || [ -L "$HOME/.agents/skills/luke-mode" ]; then
@@ -23,11 +40,14 @@ else
 fi
 ```
 
-Open Codex in any existing project and select `$luke-mode` or find it in `/skills`.
-If discovery has not refreshed, restart Codex. Keep the checkout at the symlink's
-target; edits here update the installed skill. Avoid installing a second copy
-under another skill root. To remove this symlink, use
+Keep the checkout at the symlink's target; edits there update the installed
+skill. To remove this manual installation, use
 `unlink "$HOME/.agents/skills/luke-mode"`; the checkout remains.
+
+### Activate
+
+Open Codex in any existing project and select `$luke-mode` or find it in `/skills`.
+If discovery has not refreshed, restart Codex.
 
 Codex supports global `.agents/skills` discovery and symlinked skill folders.
 Luke's `agents/openai.yaml` sets `allow_implicit_invocation: false`, so ordinary
