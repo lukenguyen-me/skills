@@ -15,6 +15,40 @@ skills, configuring models, or delegating work.
 
 ## Start and route
 
+Luke Mode has four companion skills. Route requested setup, toolkit sync, and
+explicitly named verification-authoring workflows before selecting an
+engineering playbook:
+
+| Requested stage | Companion skill |
+| --- | --- |
+| `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [setup-luke-mode](../setup-luke-mode/SKILL.md) |
+| Sync or update Matt Pocock's skill set, including newly added skills | [sync-matt-pocock-skills](../sync-matt-pocock-skills/SKILL.md) |
+| `create-verification-skill`: generate and prove a project-local app verification skill | [create-verification-skill](../create-verification-skill/SKILL.md) |
+| `maintain-verification-skill`: audit and repair an existing verification skill and feature map | [maintain-verification-skill](../maintain-verification-skill/SKILL.md) |
+
+The verification companions retain PStack's explicit-only invocation policy.
+Dispatch them when the user names the skill explicitly, either as its native
+command or an argument to Luke, such as `$luke-mode create-verification-skill`.
+Otherwise offer the native command as the next action. A missing verification
+recipe during engineering work uses the composition fallback; it does not
+authorize authoring or maintenance.
+
+Read and follow the selected companion for each requested stage. Install all four
+alongside `luke-mode`; if a sibling link is unavailable, resolve the named skill
+through the active harness's catalog and discovery rules. Report a missing
+companion rather than claiming that its work ran. `Setup OAuth for this app`
+and `implement offline sync` remain engineering requests. Setup and sync are separate operations;
+run both only when the user requests both, with sync before setup.
+
+Route an explicitly named `implement-spec <spec-ref>` execution request to the
+[whole-spec contract](references/implement-spec.md) and installed Matt workflow.
+Naming it as Luke's argument or selecting its native skill alongside Luke
+explicitly invokes that user-only workflow. Matt remains an upstream dependency
+for this owner choice; missing requirements leave it pending. Ordinary
+implementation routes through Implement, which resolves the target and
+automatically selects Luke-owned whole-spec execution for a parent spec with
+implementation children. Read-only and plan-only scope still takes precedence.
+
 1. Read applicable project instructions and inspect only the state needed for
    the request. Preserve existing changes. Identify the requested outcome,
    acceptance evidence, and any unsettled product or architecture decisions.
@@ -25,11 +59,7 @@ skills, configuring models, or delegating work.
    across modules needs dependency tracing. Revisit the assessment if scope grows.
    Work in small verified steps. Use additional expertise or independent review
    when it improves confidence in the outcome.
-3. If the request explicitly configures Luke Mode, such as `setup` alone,
-   `configure Luke's models`, or `check Luke's Matt toolkit setup`, read
-   [setup](references/setup.md) for model roles and repository toolkit readiness.
-   `Setup OAuth for this app` is application work, not Luke configuration.
-4. Otherwise select one primary playbook by the requested deliverable. Read
+3. Select one primary playbook by the requested deliverable. Read
    its file before doing the work. Announce the route in one sentence, with
    any material fallback or planned delegation. Gather facts yourself; ask only
    for decisions or information the environment cannot establish.
@@ -77,6 +107,11 @@ and the selected harness adapter.
 
 Delegate only a bounded task whose benefit you can name. Keep code modifications
 and test runs sequential, with one owner of mutable project state at a time.
+The [whole-spec mode](references/implement-spec.md#scoped-concurrency) selected
+by Implement, or by an explicit Matt workflow request,
+permits concurrency across isolated worktrees and resources, with one writer
+per worktree and one integration writer. Its preflight must establish isolation
+and native capacity before that exception applies.
 Complete changes and checks before reviewers read a stable snapshot. Pass scope,
 context pointers, permitted writes, verification, and a compact result contract.
 Give delegates no authority to expand scope or start more agents. Coordinate a
@@ -92,6 +127,8 @@ independent fact gathering while waiting. Respect decisions already made.
 Default delivery is workspace changes and verification. Commits, PRs, tracker
 updates, and other external actions follow the user's request or existing
 authorization; invoking Luke does not grant blanket permission for them.
+Authorized whole-spec execution includes the local Git history needed for its
+integration branch; external delivery still follows established authorization.
 
 End with the outcome, what was verified and how, what was not verified, and
 remaining risks or decisions. Name material fallbacks. Distinguish direct review

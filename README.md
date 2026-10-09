@@ -24,10 +24,41 @@ Coordinate engineering requests with playbooks, compatible installed skills, and
 verified outcomes. Invoke explicitly with `$luke-mode` in Codex or `/luke-mode`
 in Cursor Cloud. Luke Mode is maintained in this repository.
 
-Install globally for Codex:
+Luke Mode has four companion skills, installed beside the main skill:
+
+- [setup-luke-mode](skills/setup-luke-mode/SKILL.md): configure Luke's model roles
+  and check Matt's per-repository setup. Invoke `$setup-luke-mode` or `$luke-mode setup`.
+- [sync-matt-pocock-skills](skills/sync-matt-pocock-skills/SKILL.md): refresh Matt's
+  full upstream skill set, including new skills. Invoke `$sync-matt-pocock-skills`
+  or `$luke-mode sync Matt's skills`.
+- [create-verification-skill](skills/create-verification-skill/SKILL.md): create
+  and prove a project-local app verification skill and feature map, adapted from
+  PStack. Invoke `$create-verification-skill` or `$luke-mode create-verification-skill`.
+- [maintain-verification-skill](skills/maintain-verification-skill/SKILL.md): check
+  and repair an existing verification skill against source and live behavior,
+  adapted from PStack. Invoke `$maintain-verification-skill` or
+  `$luke-mode maintain-verification-skill`.
+
+The verification companions retain explicit-only invocation. Installing them
+makes the workflows available; creating a project's `verify-<app>` skill is a
+separate requested action.
+
+Ask Luke to implement a ticket or spec. The Implement playbook resolves the
+target: a parent spec with implementation children automatically selects
+[whole-spec mode](skills/luke-mode/references/implement-spec.md); an individual
+ticket keeps its own scope. This mode belongs to Luke and uses permitted testing
+and review primitives, so Matt's separate `implement-spec` installation is optional.
+To select Matt's original workflow explicitly, use
+`$luke-mode implement-spec <spec-path-or-issue>` (Cursor: `/luke-mode implement-spec`).
+That choice requires his installed workflow and dependencies; use the sync
+companion when their installation or refresh is requested.
+
+Install all five globally for Codex:
 
 ```sh
-npx skills add lukenguyen-me/skills --skill luke-mode --agent codex --global
+npx skills add lukenguyen-me/skills \
+  --skill luke-mode setup-luke-mode sync-matt-pocock-skills \
+  create-verification-skill maintain-verification-skill --agent codex --global
 ```
 
 See the [Luke Mode guide](docs/luke-mode/README.md) for Cursor Cloud packaging,

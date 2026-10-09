@@ -29,7 +29,12 @@ parent-run evidence, not a subagent catalog or proof of a delegate's model.
 Invoke Luke explicitly with `/luke-mode`. The prepared Cursor package sets
 `disable-model-invocation: true` in `SKILL.md`. Codex's `agents/openai.yaml` alone
 does not configure Cursor invocation. Use the repository's `scripts/package-luke-mode-cursor.py`
-to prepare a complete copy with the native Cursor policy before installation.
+to prepare the main skill plus sibling `setup-luke-mode` and
+`sync-matt-pocock-skills`, `create-verification-skill`, and
+`maintain-verification-skill` copies before installation. The main skill and
+verification companions are explicit-only; setup and sync support matching
+requests and routing from Luke. Naming a verification companion in the user's
+Luke request explicitly selects that workflow.
 
 Start discovery with the live catalog and applicable project instructions.
 For missing candidates, look in the owning repository's `.cursor/skills/` and
@@ -90,8 +95,12 @@ do not receive prior conversation history. Existing `.cursor/agents/` definition
 can be used when their model and scope match. Setup saves model preferences;
 creating permanent custom agents is separate requested work.
 
-Keep mutations and test runs sequential. Prefer foreground tasks for dependent
-work. Reviewers inspect completed changes; use an available native read-only
+Keep mutations and test runs sequential, except when the selected
+[whole-spec contract](../references/implement-spec.md#scoped-concurrency)
+establishes isolated worktrees and resources. Native background tasks may serve
+independent tickets when exposed; dependent integration and review await
+completed results. Verify each worker's owning checkout and resource isolation
+inside this Cloud run. Reviewers inspect completed changes; use an available native read-only
 definition or permission control, and otherwise describe the brief as a prompt
 constraint. Inspect returned diffs, artifacts, and model evidence. Never substitute
 a built-in fast worker for an exact configured role just because it is available.

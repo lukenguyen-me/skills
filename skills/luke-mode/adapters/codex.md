@@ -18,8 +18,12 @@ names and descriptions, then use targeted name or description searches in the
 user roots for the affected app or surface. Match purpose and scope rather than
 requiring a `verify-*` name. Load only relevant candidates.
 
-Luke's `agents/openai.yaml` disables implicit invocation. Install the skill in
-one discovery location; two same-name installations can create ambiguous choices.
+Luke's `agents/openai.yaml` disables implicit invocation for the main skill.
+Its setup and sync sub-skills permit discovery for their scoped requests and
+routing from Luke. The `create-verification-skill` and
+`maintain-verification-skill` companions disable implicit invocation and run
+when explicitly named, directly or through Luke. Install all five beside one
+another in one skill root; two same-name installations can create ambiguous choices.
 Project instructions remain project-owned; Luke does not install an always-on
 `AGENTS.md` rule.
 
@@ -63,4 +67,9 @@ runtime limits and prevent unplanned further delegation.
 
 Read-only commands can still create caches, start services, or touch remote
 state. Choose commands consistent with the user's scope. Run tests and edits
-sequentially; reviewers inspect a stable diff and current verification evidence.
+sequentially unless the selected
+[whole-spec contract](../references/implement-spec.md#scoped-concurrency)
+establishes isolated worktrees and resources. Use each command's actual working
+directory controls; a worktree path in a brief alone does not enforce it. Native
+agents may share a default CWD. One writer owns integration, and reviewers
+inspect a stable diff and current verification evidence.

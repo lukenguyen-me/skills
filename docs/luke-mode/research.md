@@ -4,6 +4,8 @@ Research date: 2026-10-09. PStack snapshot:
 `3a604672c46cd8187d2b19980eae0a34f9f91138`. Matt Pocock snapshot:
 `b0618bc436ad893b3c5e84e55fba86586d34a404`. The inspected local Codex CLI was
 `0.162.0`; runtime capabilities remain authoritative on another installation.
+The later `implement-spec` integration was checked against Matt's snapshot
+`49dd158d1076134a641b33efb035946536778336` on the same date.
 
 ## PStack
 
@@ -24,8 +26,22 @@ skill repair, and automatic PR creation are outside V1.
 [Automate Me](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/automate-me/SKILL.md)
 
 Project-specific verification recipes should take priority over invented generic
-checks. Creating such a skill is a separate task when none exists.
-[Verification-skill pattern](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/create-verification-skill/SKILL.md)
+checks. Luke now includes adapted `create-verification-skill` and
+`maintain-verification-skill` companions. Both retain PStack's explicit-only
+policy and include its MIT notice; creation remains a separate requested task
+when no project recipe exists. The feature-map examples come from the same
+snapshot. Creation proves one feature and retains evidence after cleanup;
+maintenance covers the full map against source and live behavior.
+[Creation](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/create-verification-skill/SKILL.md),
+[maintenance](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/maintain-verification-skill/SKILL.md),
+[license](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/LICENSE)
+
+Luke's versions use native harness discovery and optional bounded Worker
+delegation instead of requiring PStack agents or unlimited parallel readers.
+Maintenance delivers workspace corrections by default, with a PR only when
+requested or already authorized. An inaccessible feature is reported as
+unverified and keeps a full maintenance pass blocked. Neither workflow runs
+merely because ordinary engineering verification finds a missing recipe.
 
 ## Matt Pocock
 
@@ -36,6 +52,33 @@ user rather than Matt's automatic final commit.
 [Organization](https://github.com/mattpocock/skills/blob/b0618bc436ad893b3c5e84e55fba86586d34a404/README.md#reference),
 [invocation rules](https://github.com/mattpocock/skills/blob/b0618bc436ad893b3c5e84e55fba86586d34a404/skills/productivity/writing-for-agents/SKILL-MECHANICS.md),
 [Implement](https://github.com/mattpocock/skills/blob/b0618bc436ad893b3c5e84e55fba86586d34a404/skills/engineering/implement/SKILL.md)
+
+Matt's new `implement-spec` is a user-only workflow over a ticket dependency
+graph, with concurrent worktree implementers, one integration branch, TDD,
+merger delegation, and final code review. Luke adapts that sequencing as a mode
+inside Implement: resolving a parent spec with implementation children selects
+Luke-owned graph execution automatically, using permitted primitives. A child
+ticket stays scoped to itself. This mode does not require or implicitly invoke
+Matt's user-only workflow. Explicitly naming `implement-spec` instead selects
+the installed Matt workflow under the shared contract; no Matt files are copied
+into Luke.
+[Workflow](https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/implement-spec/SKILL.md),
+[Codex policy](https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/implement-spec/agents/openai.yaml)
+
+The contract permits concurrent writing only in isolated owned worktrees and
+runtime resources, with a single integration writer. It computes the frontier
+from verified integrations, avoiding stale GitHub blocker counts. Candidates
+must refresh and re-prove if the integration tip advances; required skipped
+tests remain gaps. The integrated app is verified before one full-spec review,
+and corrections receive focused rechecks rather than an automatic broad review
+loop. Resume restores the original baseline. User changes and dirty worktrees
+are preserved; external delivery follows existing authorization. These Luke
+constraints address the upstream usage notes' shared-resource, stale-blocker,
+skipped-fixture, and review-loop cases. Luke-owned graph execution can proceed
+sequentially when concurrency is unavailable and the user's model and review
+requirements permit it. The explicit Matt path retains its installed procedure
+and required capabilities; each path has one workflow owner.
+[Usage notes](https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/docs/engineering/implement-spec.md)
 
 Installed versions can differ from upstream. The inspected local installation
 included TDD, but lacked `grilling`, `diagnosing-bugs`, and `code-review`; `grill-me`
@@ -110,7 +153,13 @@ environment setup and the harness's authorized branch/PR delivery.
 Six routes: Explore, Design, Implement, Fix, Refactor, Review. Performance work
 and bounded prototypes fit those routes initially. Work adapts to uncertainty
 and impact, with beneficial delegation and sequential modifications/tests.
+Implement selects whole-spec mode for parent specs with implementation children;
+an explicit `implement-spec` command selects Matt's original workflow. Whole-spec
+execution permits concurrency only across independently owned worktrees and
+resources, under one integration writer and native capacity.
 Setup configures four portable model roles: Reasoning, Coding, Worker, and
 Reviewer, using exact models per harness, and checks Matt's per-repository setup.
+Four companion workflows cover setup, Matt toolkit sync, and explicitly named
+verification creation and maintenance.
 The human keeps product and consequential architecture decisions. Verification
 and the authorized workspace delivery are the default completion boundary.

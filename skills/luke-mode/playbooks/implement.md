@@ -4,6 +4,20 @@ Deliver the specified behavior with evidence. Follow the sequence of Matt's
 `implement`: scope, TDD, checks, code review, delivery. His user-only workflow is
 inspiration; installed primitives own their detailed procedures.
 
+First resolve the supplied ticket or spec and its authoritative implementation
+children. A parent spec with buildable children automatically selects the
+[whole-spec mode](../references/implement-spec.md), owned by Luke. An individual
+ticket stays in the steps below even when it links to a parent and siblings.
+A settled spec without implementation children also uses these ordinary steps;
+decomposition, when needed, is a Design decision or an explicit `to-tickets`
+handoff. Keep read-only and plan-only scope intact.
+
+An explicitly named `implement-spec` selects Matt's installed workflow through
+the same contract. That is a separate owner choice; ordinary parent detection
+does not bypass Matt's explicit-invocation policy. Both whole-spec paths apply
+Luke's role, scoped concurrency, verification, and delivery rules. Do not wrap
+these single-ticket steps around every ticket in a whole-spec run.
+
 1. Read the supplied spec, ticket, or contract and the affected code. Resolve
    ambiguous references before starting. Assess blast radius before edits;
    establish acceptance criteria and a review baseline that includes the

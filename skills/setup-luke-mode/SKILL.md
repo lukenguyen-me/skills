@@ -1,16 +1,30 @@
+---
+name: setup-luke-mode
+description: Set up Luke Mode's model roles and check Matt Pocock's toolkit configuration for the current repository. Use when setting up Luke Mode, configuring its models, or checking its toolkit readiness.
+---
+
 # Setup Luke Mode
 
-Luke's native setup command (`$luke-mode setup` in Codex, `/luke-mode setup` in
-Cursor Cloud) configures four model roles and checks Matt Pocock's toolkit setup
-for the current repository. A model-only request, such as `configure models`,
-runs only the model stages below. A toolkit-only request runs only
+This is Luke Mode's setup sub-skill. Install it alongside `luke-mode`, which
+supplies the shared references below. If a sibling link is unavailable, resolve
+`luke-mode` through the active harness's skill catalog and use that installation's
+references. Keep the working directory in the user's project.
+Read applicable project instructions before configuration.
+
+Invoke with `$setup-luke-mode` in Codex or `/setup-luke-mode` in Cursor Cloud.
+`$luke-mode setup` and `/luke-mode setup` route here as well. Full setup configures
+four model roles and checks Matt Pocock's toolkit setup for the current
+repository. A model-only request, such as `configure models`, runs only the
+model stages below. A toolkit-only request runs only
 [repository setup](#set-up-matts-toolkit-for-this-repository).
 
-Read [harness selection](harnesses.md), [models](models.md), and the selected
-adapter before proposing settings. Model configuration writes only the chosen
-Luke models file. Matt's installed setup skill owns repository configuration;
-use the invocation rules below. Preserve the harness's global defaults and
-installed skill files.
+Read [harness selection](../luke-mode/references/harnesses.md),
+[models](../luke-mode/references/models.md), and the selected adapter before
+proposing settings. Model configuration writes only the chosen Luke models
+file. Matt's installed setup skill owns repository configuration; use the
+invocation rules below. Preserve the harness's global defaults and installed
+skill files. Installing or updating Matt's toolkit belongs to
+[sync-matt-pocock-skills](../sync-matt-pocock-skills/SKILL.md) when requested.
 
 ## Discover and propose
 
@@ -79,15 +93,16 @@ model does not switch the parent session. If the user wants that model as the
 parent, provide the harness's supported launch or model-picker instructions.
 
 Model configuration is done when all four choices are accepted, persisted, and
-accurately described.
-If writing is blocked, return the exact accepted draft and pending step without
-claiming model configuration completed. Re-running setup updates the same profile.
+accurately described. If writing is blocked, return the exact accepted draft and
+pending step without claiming model configuration completed. Re-running setup
+updates the same profile.
 
 ## Set up Matt's toolkit for this repository
 
 Matt's setup is per repository; a saved personal model profile does not establish
-toolkit readiness in another project. Read [composition](composition.md) before
-resolving or invoking `setup-matt-pocock-skills`.
+toolkit readiness in another project. Read
+[composition](../luke-mode/references/composition.md) before resolving or invoking
+`setup-matt-pocock-skills`.
 
 1. Inspect the current repository's `AGENTS.md` or `CLAUDE.md` and the setup files
    they reference, normally under `docs/agents/`. Check tracker configuration,
@@ -97,7 +112,7 @@ resolving or invoking `setup-matt-pocock-skills`.
 2. When setup is needed, resolve the installed `setup-matt-pocock-skills` skill,
    its resources, and invocation policy. If it is missing, disabled, or
    incompatible, report the prerequisite and leave repository setup pending.
-   Installation or enabling a skill is separate authorized work.
+   A requested sync can install missing skill files; setup alone does not.
 3. Follow the resolved invocation policy. The upstream version is user-only:
    unless the user explicitly invokes it, show the native command
    (`$setup-matt-pocock-skills` in Codex, `/setup-matt-pocock-skills` in Cursor) as

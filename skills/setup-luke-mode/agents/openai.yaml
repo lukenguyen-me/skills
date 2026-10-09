@@ -1,0 +1,5 @@
+interface:
+  display_name: "Setup Luke Mode"
+  short_description: "Configure Luke models and check Matt toolkit setup"
+policy:
+  allow_implicit_invocation: true

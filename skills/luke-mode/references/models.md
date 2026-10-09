@@ -54,6 +54,11 @@ distinguish a requested setting from an observed setting.
 If delegation is absent and the request has no explicit model or independence
 requirement, work sequentially in the parent and disclose the limitation. Do not
 start a nested CLI, remote task, or new orchestration service as a substitute.
+The [whole-spec mode](implement-spec.md) has its own capability preflight.
+Luke-owned graph execution can use disclosed sequential parent work when the
+requirements allow it. An explicitly requested Matt workflow still requires its
+native implementation, integration, and review capabilities; parent execution
+does not silently satisfy that different owner choice.
 
 ## Role use
 
@@ -74,7 +79,13 @@ Plan the allocation before spawning. Each brief contains the task, owning
 directory, permitted writes, relevant absolute pointers, acceptance evidence,
 selected primitive if any, and a request for findings plus gaps. Specify no
 nested delegation. Use disjoint outputs for read-heavy tasks; serialize editing
-and test execution. Wait for and inspect results before advancing a dependent
-step. A failure or missing report remains a gap. Retry only when new information
+and test execution. For [whole-spec execution](implement-spec.md#scoped-concurrency)
+selected by Implement or an explicit Matt workflow request, independent
+worktrees and runtime resources permit concurrent Coding owners, with one
+writer per worktree and a single integration writer. Reserve native capacity
+for integration and the chosen review process; review roles run after
+implementation owners stop mutating the reviewed snapshot.
+Wait for and inspect results before advancing a dependent step. A failure or
+missing report remains a gap. Retry only when new information
 or a recoverable failure justifies another attempt; do not repeat unsuccessful
 delegation without addressing its cause.

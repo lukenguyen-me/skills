@@ -45,7 +45,7 @@ Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 
 ## Setup and portability
 
-Run `$luke-mode configure models` in a disposable configuration environment, or
+Run `$setup-luke-mode configure models` in a disposable configuration environment, or
 pass a temporary models-file path. Verify that it proposes four exact role choices,
 requests confirmation, and writes only the accepted Luke profile. It should
 preserve an existing other-harness profile and read back what it saved. Already
@@ -56,6 +56,7 @@ For full setup, use a disposable repository and temporary model preferences.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
+| `$setup-luke-mode` | Runs the setup stages directly, using Luke's shared harness/model references; does not enter an application playbook or update installed skills. |
 | `$luke-mode setup`; Matt's repository guidance and referenced configuration already satisfy the installed skills | Reuses existing toolkit settings, configures or reuses personal models, and reports both stages ready without rerunning Matt setup. |
 | `$luke-mode setup`; repository configuration is missing and the installed setup skill is user-only | Configures personal models and shows `$setup-matt-pocock-skills` as the pending repository action; makes no repository or tracker writes and does not claim full setup complete. |
 | `$luke-mode setup`; `setup-matt-pocock-skills` is missing, disabled, or incompatible | Reports the prerequisite and toolkit setup as pending; does not install, enable, or invent a replacement setup. Independent model configuration can finish. |
@@ -69,6 +70,80 @@ Luke skill works without application-specific paths or repository scaffolding.
 Repeat ordinary work without a models file to check direct execution. A profile
 for another harness must not be mistaken for a Codex profile.
 
+## Matt toolkit sync
+
+Use isolated skill roots and a disposable project. Preserve unrelated markers,
+local customizations, and the initial installer metadata for comparison.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| `$sync-matt-pocock-skills` with one established Skills CLI installation | Resolves its agent, scope, source, and target; fetches the current official inventory; refreshes existing entries and adds new ones, including setup; verifies resources and provenance. |
+| `$luke-mode sync Matt's skills` | Routes to the sync sub-skill; does not treat the request as application implementation or model setup. |
+| An unrelated skill and a customized Matt skill exist in the target | Leaves the unrelated skill untouched; backs up and reconciles customizations; surfaces unresolved conflicts before replacement. |
+| Existing Matt plugin installation | Uses the host's update controls and verifies the plugin revision/discovery; adds no duplicate file installation. |
+| Conflicting project/global installs or uncertain provenance | Establishes the intended target before writes; does not overwrite a same-name local skill based only on its name. |
+| Network or plugin refresh is unavailable | Reports the pending sync and preserves the existing usable installation; does not claim latest from stale local files. |
+| Sync requested alone | Leaves Luke's models, repository instructions, and tracker configuration unchanged; does not invoke Matt's user-only setup. |
+| `$luke-mode sync Matt's skills, then setup Luke Mode` | Syncs first, then checks setup against the refreshed requirements; honors Matt's installed invocation policy. |
+| Installer reports success but the expected inventory has missing skills/resources | Reports an incomplete sync and the missing entries; installer exit status alone does not establish completeness. |
+
+## Whole-spec execution
+
+Use a disposable Git repository, compatible testing and review primitives, a
+configured local tracker, and tickets with explicit blocker edges and agreed
+public test seams. Install Matt's original workflow for its explicit-path cases.
+Retain the starting SHA, per-ticket candidate and integrated SHAs, worker
+reports, command outputs, review results, and artifacts. Distinguish packaging
+checks from actual delegated execution and integration.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| `$luke-mode Implement ticket #123`; the resolved ticket is a parent spec with implementation children | Automatically selects Luke-owned whole-spec mode inside Implement; resolves the graph, seams, evidence, model controls, and isolation. Composes permitted primitives without invoking Matt's user-only workflow or wrapping ordinary Implement around every child. |
+| `$luke-mode Implement docs/spec.md`; the file authoritatively lists implementation children; Matt's `implement-spec` is absent | Selects Luke-owned whole-spec mode automatically. The original workflow's absence does not block this owner choice or cause automatic installation. |
+| `$luke-mode Implement ticket #124`; this individual child links to its parent and siblings | Uses single-ticket Implement; does not expand to the parent graph or sibling implementation. |
+| A ticket is titled `spec`, or a supplied contract has a prose checklist but no authoritative implementation children | Uses ordinary Implement for settled behavior; resolves ambiguity or recommends decomposition when needed. Does not invent a ticket graph. |
+| `$luke-mode implement-spec docs/spec.md` or Luke together with explicit `$implement-spec docs/spec.md` | Explicitly selects the installed Matt workflow as owner under the whole-spec contract; validates its actual dependencies, tracker, graph, seams, model controls, and isolation before mutations. |
+| Parent-spec request or explicit `implement-spec` request with `Inspect the graph only; do not implement` | Honors plan-only scope; no branches, worktrees, commits, implementers, tracker writes, or application edits. |
+| Luke-owned mode; optional `tdd` or `code-review` is unavailable | Uses a disclosed direct fallback when equivalent evidence and the user's model/independence requirements permit it. An explicitly required primitive remains pending. |
+| Explicit Matt mode; missing, disabled, or incompatible `implement-spec`, `tdd`, or `code-review` | Leaves the explicit workflow pending with the actual prerequisite; no automatic installation, substitute workflow, or claim of execution. |
+| Tracker configuration is missing or a ticket's seam is unconfirmed | Identifies the missing setup or seam before affected writes. Setup remains explicit; prior confirmed seams are reused without repeated confirmation. |
+| Luke-owned mode; concurrency or delegation is unavailable, but an owned integration checkout and permitted review are available | Discloses sequential execution of the same parent graph; verifies each integration checkpoint before releasing dependents. Does not shrink the request to one child. |
+| A required model override, independent review capability, or safe checkout is unavailable; or explicit Matt mode lacks its required delegation/worktrees | Stops the affected requirement before mutations. Does not silently substitute the parent for a required role or claim Luke-owned execution ran Matt's workflow. |
+| Tickets A and B are independent; C is blocked by A; the remote tracker still reports A open after its verified integration | Starts isolated A/B work within native capacity, integrates one candidate at a time, and releases C after A's verified merge without waiting for remote closure. Logs actual concurrency and SHAs. |
+| Two ready tickets share a file, public contract, database, migration, port, or fixture | Serializes the overlapping work; records resource waits separately from declared graph edges. Disjoint work can continue. A worktree does not establish service isolation. |
+| Candidate B proved against tip X, but integration advanced to Y before landing B | Checks ancestry under the single writer, returns B for refresh/re-proof, and lands only a candidate containing Y by fast-forward. No force reset or speculative conflict resolution on the integration branch. |
+| A worker reports success but its required test skipped for missing gitignored fixtures | Records the gap; supplies an authorized isolated environment running the candidate/integration tip or leaves proof pending. Original-checkout evidence at another revision is insufficient. |
+| A merge lands but its integration check fails; a dependent ticket is ready according to the tracker | Keeps the merged ticket outside the verified blocker set and freezes integration advancement; repairs in scope or reports the blocked frontier. Does not launch the dependent. |
+| Blocker is missing, cyclic, external without integration evidence, or closed on the tracker but absent from Git | Stops the affected graph requirement; remote status alone does not satisfy the blocker. No ticket is silently dropped. |
+| Existing dirty user worktree; a new worker checkout is based on the wrong tip | Preserves user changes, creates a fresh owned checkout or merges normally, and avoids destructive resets. Commands execute in the assigned worktree despite a shared default CWD. |
+| Resume a partially integrated spec | Restores the original review SHA, verifies recorded integrated commits and current evidence, and dispatches unfinished work. Does not redefine the whole-spec baseline as the resumed HEAD. |
+| All tickets land; review finds two in-scope issues | Verifies the assembled app, runs one full-spec review with the chosen process's required Reviewer axes, sends corrections to one Coding owner, and performs focused checks plus affected integration verification. Luke's permitted direct fallback is disclosed; explicit Matt mode retains its required procedure. No duplicate review panel or automatic broad loop. |
+| Authorized PR delivery; local-only delivery with PR-based tracker conventions | Opens an authorized draft only after the first integration and readies it after proof/review. Without external authority, reports the local branch and pending delivery; tracker conventions alone do not grant permission. |
+| Completion or blocked handoff with active delegates and dirty owned worktrees | Waits for or stops delegates, tears down owned processes, removes only clean owned worktrees, retains recovery paths and proof, and reports incomplete tickets/checks and delivery accurately. |
+
+## Verification creation and maintenance
+
+Use disposable apps with real documented launch commands and control surfaces.
+Retain source fixtures, generated recipes, drive outputs, and post-cleanup
+artifacts. These scenarios exercise the workflow, not just Markdown packaging.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| `$create-verification-skill` in an app with no verifier | Discovers the app from source, writes a project-local skill and linked feature map, drives one mapped user path, and retains evidence after cleanup. Does not claim the whole map was exercised. |
+| `$luke-mode create-verification-skill for this app` | Treats the named companion as explicitly invoked and routes creation before an application playbook. Uses the current app's compatible project skill root. |
+| Ordinary Luke implementation; no project verifier exists | Uses documented checks and real controls under the fallback rules. Does not invoke a creation or maintenance companion implicitly. |
+| App cannot launch or its required driver is unavailable | Names the actual prerequisite and any generated draft; does not claim creation complete or make unrelated app repairs. |
+| A verifier already exists at the intended target; unrelated skill files are present | Preserves the existing target and unrelated files; offers the maintenance workflow rather than overwriting the verifier. |
+| `$maintain-verification-skill` or `$luke-mode maintain-verification-skill`; stale command and unindexed feature | Accounts for every feature file, reconciles the index, checks source, proves every feature and mapped entry point, and re-drives corrected commands. Changes remain in the verifier directory. |
+| Source looks clean but the live user path regressed | Runs the live pass anyway, reports the product failure with evidence, and preserves the expected behavior instead of rewriting the map to match a defect. |
+| Native delegation unavailable | Performs the complete source pass directly and discloses the limit; the coordinator still owns sequential driving and teardown. |
+| Doctor fails because its recipe drifted | Corrects the in-scope recipe, restarts only what changed, and retries once. A remaining failure is blocked, with retained artifacts and no stranded owned processes. |
+| One feature needs unavailable auth or an unsupported OS | Records the attempted route and concrete missing prerequisite; calls the feature unverified and the full maintenance outcome blocked. |
+| A harness repair works once but cleanup deletes the evidence | Repairs artifact placement or cleanup and repeats the affected proof before claiming success. Evidence survives final teardown. |
+| Clean pass; changed pass without requested delivery; changed pass with an authorized PR | Clean makes no branch or PR; changed leaves proven workspace corrections by default; authorized PR delivery includes at most one PR. |
+| Target verifier is user-only and has not been explicitly invoked | Reports the required native invocation; maintenance does not bypass the verifier's policy by reading its instructions. |
+| Several applicable verifiers or duplicate PStack/Luke companion names | Resolves the intended target and installation before writes. A similarly named global skill is not silently overwritten. |
+
 ## Cursor Cloud compatibility
 
 Prepare the Cursor package in a disposable project or sync its personal
@@ -77,6 +152,11 @@ profile, task cards or returned model metadata, final diff, and check artifacts.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
+| Package the main skill and all four companions | Creates five sibling skill directories, preserves all resources, licenses, and cross-skill links, and applies explicit-only metadata to the main skill and verification companions. Setup and sync retain normal discovery. |
+| `/setup-luke-mode` or `/sync-matt-pocock-skills` in a Cloud run | Discovers the selected sub-skill and shared Luke references; uses the Cloud environment's actual roots and capabilities. |
+| `/create-verification-skill` or `/luke-mode maintain-verification-skill` in a Cloud run | Selects the explicitly named workflow, uses the Cloud checkout's actual verification controls, and preserves evidence there. The laptop's runtime is not proof. |
+| `/luke-mode Implement ticket #123`; the target is a parent spec with implementation children | Selects Luke-owned whole-spec mode without an extra command or original Matt workflow installation; applies the Cloud profile, native capacity, isolation, and fallback rules. |
+| `/luke-mode implement-spec docs/spec.md` in a Cloud run | Resolves Matt's workflow inside the run, applies the Cloud role profile and shared whole-spec contract, and verifies actual worktree/resource isolation. Luke's five-skill package does not supply Matt's dependency. |
 | Fresh Cloud session; ordinary prompt without `/luke-mode` | Native discovery honors the prepared `disable-model-invocation: true`; Luke remains inactive. |
 | `/luke-mode Explain refresh token rotation. Leave files unchanged.` | Reads the Cloud adapter, selects Explore, inspects actual project sources, and leaves files and Git state unchanged. |
 | Cloud metadata identifies a GPT parent; models file contains different `Codex` and `Cursor Cloud` profiles | Selects `Cursor Cloud` by runtime identity, without inferring Codex from GPT or a `.codex/skills/` installation path. |
