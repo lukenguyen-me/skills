@@ -40,6 +40,12 @@ repeated after the update. The six new [blast-radius and evidence scenarios](../
 remain unrun; the earlier behavioral results do not validate these changes in
 a live session.
 
+Full setup now also checks Matt's per-repository configuration and observes
+`setup-matt-pocock-skills`'s explicit invocation policy. Model-only setup remains
+available. Package checks were repeated after this update; the new
+[setup scenarios](../scenarios/routing.md#setup-and-portability) remain unrun.
+Earlier model-profile validation covers only the personal model stage.
+
 Native Codex skill discovery was not verified: the sandbox blocked the optional
 app-server check, which was skipped. No global installation or live inference
 with the saved role mappings was performed. The model checks establish

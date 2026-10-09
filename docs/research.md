@@ -47,6 +47,14 @@ point. Luke composes it when compatible; uncommitted work, absent tracker setup,
 or unavailable delegation capabilities can require a disclosed direct review.
 [Code Review](https://github.com/mattpocock/skills/blob/b0618bc436ad893b3c5e84e55fba86586d34a404/skills/engineering/code-review/SKILL.md)
 
+`setup-matt-pocock-skills` configures repository tracker guidance, domain docs,
+and triage labels when applicable. It is user-only in both its frontmatter and
+Codex policy. Luke's full setup checks repository readiness and hands off for
+explicit invocation when needed; model-only setup stays portable. The installed
+Matt workflow owns its drafts, confirmations, and writes.
+[Setup](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md),
+[Codex policy](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/agents/openai.yaml)
+
 ## Codex and portability
 
 Codex supports progressive disclosure, explicit `$skill` invocation, user-level
@@ -76,6 +84,6 @@ Six routes: Explore, Design, Implement, Fix, Refactor, Review. Performance work
 and bounded prototypes fit those routes initially. Work adapts to uncertainty
 and impact, with beneficial delegation and sequential modifications/tests.
 Setup configures four portable model roles: Reasoning, Coding, Worker, and
-Reviewer, using exact models per harness. The human keeps product and
-consequential architecture decisions. Verification and local delivery are the
-default completion boundary.
+Reviewer, using exact models per harness, and checks Matt's per-repository setup.
+The human keeps product and consequential architecture decisions. Verification
+and local delivery are the default completion boundary.

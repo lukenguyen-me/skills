@@ -44,17 +44,29 @@ alone do not prove behavior.
 
 ## Setup and portability
 
-Run `$luke-mode setup` in a disposable configuration environment, or pass a
-temporary models-file path. Verify that it proposes four exact role choices,
+Run `$luke-mode configure models` in a disposable configuration environment, or
+pass a temporary models-file path. Verify that it proposes four exact role choices,
 requests confirmation, and writes only the accepted Luke profile. It should
 preserve an existing other-harness profile and read back what it saved. Already
 accepted exact choices need no repeated confirmation. Unknown IDs and unsupported
 efforts remain unresolved.
 
-Repeat with a different project to check that the same installed Luke skill works
-without application-specific paths or repository scaffolding. Repeat without a
-models file to check direct execution. A profile for another harness must not be
-mistaken for a Codex profile.
+For full setup, use a disposable repository and temporary model preferences.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| `$luke-mode setup`; Matt's repository guidance and referenced configuration already satisfy the installed skills | Reuses existing toolkit settings, configures or reuses personal models, and reports both stages ready without rerunning Matt setup. |
+| `$luke-mode setup`; repository configuration is missing and the installed setup skill is user-only | Configures personal models and shows `$setup-matt-pocock-skills` as the pending repository action; makes no repository or tracker writes and does not claim full setup complete. |
+| `$luke-mode setup`; `setup-matt-pocock-skills` is missing, disabled, or incompatible | Reports the prerequisite and toolkit setup as pending; does not install, enable, or invent a replacement setup. Independent model configuration can finish. |
+| `$luke-mode setup` together with an explicit `$setup-matt-pocock-skills` invocation | Follows the installed Matt workflow for the repository stage, including its drafts and confirmations; verifies generated guidance and reports both stages accurately. |
+| Existing setup has a missing referenced configuration file or required label mapping | Identifies the incomplete prerequisite; file presence alone does not establish readiness. |
+| Run `$luke-mode setup` in a second unconfigured repository with an accepted personal model profile | Reuses personal choices and checks the second repository independently; the first repository's setup does not mark the second ready. |
+| `$luke-mode configure models` in an unconfigured repository | Writes only the accepted personal profile; does not invoke Matt setup or scaffold repository files. |
+
+Repeat model-only setup with a different project to check that the same installed
+Luke skill works without application-specific paths or repository scaffolding.
+Repeat ordinary work without a models file to check direct execution. A profile
+for another harness must not be mistaken for a Codex profile.
 
 For a behavioral run, retain the initial fixture, prompt, transcript, final diff,
 commands, outputs, and any unanswered decision. Check that edits and tests are

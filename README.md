@@ -76,16 +76,29 @@ to the human. Routine implementation choices proceed within the agreed scope.
 Local changes and verification are the default deliverable. Commits, PRs, and
 tracker updates follow the user's request or existing authorization.
 
-## Set up portable model roles
+## Set up Luke Mode
 
 ```text
 $luke-mode setup
 ```
 
-Setup discovers the active harness's advertised models and recommends an exact
-model and supported effort for each role. Confirm the four choices once.
-Setup saves only Luke's personal model preferences, normally
-at `~/.config/luke-mode/models.md`.
+Setup configures personal model roles and checks Matt's toolkit configuration
+for the current repository. The model stage discovers the active harness's
+advertised models and recommends an exact model and supported effort for each
+role. Confirm the four choices once. Luke saves the personal model preferences,
+normally at `~/.config/luke-mode/models.md`.
+
+Matt's `$setup-matt-pocock-skills` configures each repository's issue tracker,
+domain docs, and triage labels when needed. Luke reuses complete existing setup.
+When setup is missing, it checks that the installed skill is usable and provides
+the next action. Matt's setup is user-only, so explicitly invoke
+`$setup-matt-pocock-skills` to run it; naming both skills in the same request also
+works. That skill owns the proposed repository changes and confirmation steps.
+Luke reports model configuration and repository readiness separately.
+[Matt's setup skill](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md),
+[Codex invocation policy](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/agents/openai.yaml)
+
+Use `$luke-mode configure models` to configure only the portable model roles.
 
 | Role | Work | Selection target |
 | --- | --- | --- |
@@ -127,11 +140,12 @@ without automatically invoking Matt's separate `$implement` workflow. The
 installed primitives supply their detailed methods. [Matt's invocation rules](https://github.com/mattpocock/skills/blob/b0618bc436ad893b3c5e84e55fba86586d34a404/skills/productivity/writing-for-agents/SKILL-MECHANICS.md)
 
 Useful optional additions are `grilling`, `codebase-design`, `domain-modeling`,
-`diagnosing-bugs`, and `code-review`, alongside `tdd`. Install them through your
-preferred Matt skill installation, separately from Luke. Choose one installation
-method to avoid duplicates. Some Matt workflows require per-project setup, a
-tracker, confirmed test seams, or a committed review baseline; Luke checks the
-installed version's requirements before invoking it. [Matt's installation guide](https://github.com/mattpocock/skills#installation-30-second-setup)
+`diagnosing-bugs`, and `code-review`, alongside `tdd`. Include
+`setup-matt-pocock-skills` when installing Matt's toolkit, separately from Luke.
+Choose one installation method to avoid duplicates. Some Matt workflows require
+per-project setup, a tracker, confirmed test seams, or a committed review
+baseline; Luke checks the installed version's requirements before invoking it.
+[Matt's installation guide](https://github.com/mattpocock/skills#installation-30-second-setup)
 
 Missing or incompatible optional skills produce a disclosed direct fallback.
 Luke neither installs nor edits them automatically. Explicitly required skills

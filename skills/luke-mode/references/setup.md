@@ -1,10 +1,14 @@
-# Setup Luke's model roles
+# Setup Luke Mode
 
-This is a prompt-driven setup inside `$luke-mode`, not a CLI. Configure the four
-portable roles for the active harness. Read [models](models.md) and the relevant
-harness adapter before proposing settings. Setup changes Luke's personal models
-file only; it does not configure an application, alter other skills, or change
-the harness's global defaults.
+`$luke-mode setup` configures four personal model roles and checks Matt Pocock's
+toolkit setup for the current repository. A model-only request, such as
+`$luke-mode configure models`, runs only the model stages below. A toolkit-only
+request runs only [repository setup](#set-up-matts-toolkit-for-this-repository).
+
+Read [models](models.md) and the relevant harness adapter before proposing model
+settings. Model configuration writes only Luke's personal models file. Matt's
+installed setup skill owns repository configuration; use the invocation rules
+below. Preserve the harness's global defaults and installed skill files.
 
 ## Discover and propose
 
@@ -68,6 +72,41 @@ against a catalog and which were actually observed in a run. Choosing a Reasonin
 model does not switch the parent session. If the user wants that model as the
 parent, provide the harness's supported launch or model-picker instructions.
 
-Done when all four choices are accepted, persisted, and accurately described.
+Model configuration is done when all four choices are accepted, persisted, and
+accurately described.
 If writing is blocked, return the exact accepted draft and pending step without
-claiming setup completed. Re-running setup updates the same profile.
+claiming model configuration completed. Re-running setup updates the same profile.
+
+## Set up Matt's toolkit for this repository
+
+Matt's setup is per repository; a saved personal model profile does not establish
+toolkit readiness in another project. Read [composition](composition.md) before
+resolving or invoking `setup-matt-pocock-skills`.
+
+1. Inspect the current repository's `AGENTS.md` or `CLAUDE.md` and the setup files
+   they reference, normally under `docs/agents/`. Check tracker configuration,
+   domain layout, and any required triage-label mapping against the installed
+   Matt skills' requirements. Reuse complete existing configuration; rerun setup
+   only for missing configuration or a requested reconfiguration.
+2. When setup is needed, resolve the installed `setup-matt-pocock-skills` skill,
+   its resources, and invocation policy. If it is missing, disabled, or
+   incompatible, report the prerequisite and leave repository setup pending.
+   Installation or enabling a skill is separate authorized work.
+3. Follow the resolved invocation policy. The upstream version is user-only:
+   unless the user explicitly invokes it, show `$setup-matt-pocock-skills` as
+   the next action and explain that it configures this repository. Keep
+   repository setup pending. If the request already explicitly invokes both
+   skills, proceed without asking the user to invoke it again. Reading its files
+   does not bypass its policy.
+4. When invocation is permitted, announce and follow the installed setup skill;
+   let it own repository discovery, choices, drafts, and writes. Honor its
+   confirmation steps and existing user decisions. Its possible changes include
+   project instructions, `docs/agents/`, and tracker labels; model confirmation
+   alone does not authorize those changes.
+5. After an authorized run, read back the generated project guidance and its
+   referenced configuration to verify the installed skills' prerequisites.
+   Report personal model configuration and repository toolkit readiness
+   separately. Full setup is complete when the personal profile is saved and
+   verified, and repository prerequisites are verified or explicitly skipped by
+   the user. A pending toolkit stage still permits ordinary work under the
+   composition fallback rules.

@@ -22,9 +22,10 @@ working directory in the user's project.
    across modules needs dependency tracing. Revisit the assessment if scope grows.
    Work in small verified steps. Use additional expertise or independent review
    when it improves confidence in the outcome.
-3. If the request explicitly configures Luke Mode, such as `setup` alone or
-   `configure Luke's models`, read [setup](references/setup.md). `Setup OAuth
-   for this app` is application work, not Luke configuration.
+3. If the request explicitly configures Luke Mode, such as `setup` alone,
+   `configure Luke's models`, or `check Luke's Matt toolkit setup`, read
+   [setup](references/setup.md) for model roles and repository toolkit readiness.
+   `Setup OAuth for this app` is application work, not Luke configuration.
 4. Otherwise select one primary playbook by the requested deliverable. Read
    its file before doing the work. Announce the route in one sentence, with
    any material fallback or planned delegation. Gather facts yourself; ask only
