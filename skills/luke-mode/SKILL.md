@@ -1,0 +1,91 @@
+---
+name: luke-mode
+description: Coordinate an engineering request with playbooks, compatible installed skills, and verified outcomes. Use only when the user explicitly invokes $luke-mode.
+---
+
+# Luke Mode
+
+Coordinate the explicitly requested task and its follow-ups. Finish or hand back
+that task before treating an unrelated request as a new Luke Mode invocation.
+Resolve the links below from this skill's installation directory; keep the
+working directory in the user's project.
+
+## Start and route
+
+1. Read applicable project instructions and inspect only the state needed for
+   the request. Preserve existing changes. Identify the requested outcome,
+   acceptance evidence, and any unsettled product or architecture decisions.
+2. Work in small verified steps. Match investigation and verification depth to
+   uncertainty, the impact of a mistake, and project requirements. Use additional
+   expertise or independent review when it improves confidence in the outcome.
+3. If the request explicitly configures Luke Mode, such as `setup` alone or
+   `configure Luke's models`, read [setup](references/setup.md). `Setup OAuth
+   for this app` is application work, not Luke configuration.
+4. Otherwise select one primary playbook by the requested deliverable. Read
+   its file before doing the work. Announce the route in one sentence, with
+   any material fallback or planned delegation. Gather facts yourself; ask only
+   for decisions or information the environment cannot establish.
+
+| Requested deliverable | Playbook |
+| --- | --- |
+| An explanation or diagnosis, without an application change | [Explore](playbooks/explore.md) |
+| Requirements, a plan, or architecture choices | [Design](playbooks/design.md) |
+| Defined new or changed behavior | [Implement](playbooks/implement.md) |
+| Correction of a defect or measured regression | [Fix](playbooks/fix.md) |
+| Structural change with preserved behavior | [Refactor](playbooks/refactor.md) |
+| Findings about specified code or changes | [Review](playbooks/review.md) |
+
+Read-only and plan-only requests constrain the route. `Review this bug fix`
+means Review; `explain why this fails` means Explore. A behavior change is
+Implement or Fix, even if called a refactor. If that intent is genuinely
+ambiguous, clarify before editing. Performance diagnosis belongs to Explore;
+correcting a measured regression belongs to Fix. A bounded prototype can serve
+Design when the user authorizes a runnable experiment.
+
+For compound work, follow dependency order and re-route at a real phase boundary.
+Proceed with implementation only within the user's authorization and settled
+decisions. Design alone ends with a design, not code.
+
+## Compose and delegate
+
+Read [composition](references/composition.md) before using another skill or
+choosing a fallback. Matt Pocock's installed skills remain the source of their
+engineering practices. The playbooks borrow workflow sequencing from his
+user-invoked skills; they compose permitted primitives without invoking a
+user-only workflow on the user's behalf.
+
+| Portable role | Responsibility and selection target |
+| --- | --- |
+| Reasoning | Architecture, complex debugging, design trade-offs; strongest available model |
+| Coding | Feature implementation and refactoring; balanced coding model |
+| Worker | Tests, mechanical edits, simple investigations; fast, lower-cost model |
+| Reviewer | Independent code review and verification; capable review model |
+
+A role does not require a new agent. Do bounded work directly when delegation
+adds more coordination than useful isolation or speed. Before delegation, or
+when the user requires a particular role/model, read [models](references/models.md)
+and the active harness adapter. V1's adapter is [Codex](adapters/codex.md).
+
+Delegate only a bounded task whose benefit you can name. Keep code modifications
+and test runs sequential, with one owner of mutable project state at a time.
+Complete changes and checks before reviewers read a stable snapshot. Pass scope,
+context pointers, permitted writes, verification, and a compact result contract.
+Give delegates no authority to expand scope or start more agents. Coordinate a
+composed skill's required reviewers within the harness's actual capabilities;
+avoid duplicate investigations or review panels.
+
+## Decisions and delivery
+
+The human settles unresolved product requirements and consequential architecture
+choices. Present the smallest useful decision with a recommendation; continue
+independent fact gathering while waiting. Respect decisions already made.
+
+Default delivery is local work and verification. Commits, PRs, tracker updates,
+and other external actions follow the user's request or existing authorization;
+invoking Luke does not grant blanket permission for them.
+
+End with the outcome, the evidence that supports it, and remaining gaps or
+decisions. Name material fallbacks. Distinguish direct review from independent
+review and model diversity. Failed, missing, or inconclusive checks remain gaps;
+a delegate's success report is not proof. Never claim completion beyond the
+observed evidence.

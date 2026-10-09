@@ -1,0 +1,52 @@
+# Routing and behavior scenarios
+
+Use disposable projects or a suitable existing development checkout. Supply a
+small contract and a documented verification command where the scenario needs
+them. Inspect actual reads, tool calls, diffs, and evidence; route announcements
+alone do not prove behavior.
+
+## Core routes
+
+| Prompt | Expected behavior and evidence |
+| --- | --- |
+| `$luke-mode Explain how refresh tokens rotate. Leave files unchanged.` | Explore; cites inspected execution paths; application files and Git state stay unchanged. |
+| `$luke-mode Design offline sync. We have not decided conflict behavior. Do not implement yet.` | Design; establishes facts and asks the human to choose consequential conflict semantics; produces no production code. |
+| `$luke-mode Add cursor pagination to GET /orders using docs/pagination.md. The endpoint is our agreed test interface.` | Implement; composes available TDD, builds verifiable slices, runs documented checks, then reviews the actual changes. |
+| `$luke-mode A 10% discount on 10,000 cents returns 10,000 cents. Fix it. discounted_total is our agreed test interface.` | Fix; retains a symptom-specific failing repro/test before correction, then shows 9,000 cents and passing regression checks. |
+| `$luke-mode Extract the payment-provider adapter without changing requests or errors.` | Refactor; establishes and preserves behavioral evidence, checks callers, and reviews the final structure. |
+| `$luke-mode Review my uncommitted changes against docs/orders.md. Leave code unchanged.` | Review; includes unstaged/staged work in scope and leaves it untouched; does not commit merely to fit a committed-diff skill. |
+
+## Boundaries and fallback
+
+| Condition and prompt | Expected behavior |
+| --- | --- |
+| Ordinary prompt without `$luke-mode`, in a fresh session | Luke is not implicitly invoked. Confirm its policy with native discovery as well as the observed session. |
+| `$luke-mode Review this bug fix.` | Review, not Fix. Findings do not trigger unsolicited edits. |
+| `$luke-mode Setup OAuth for this app.` | Application Implement/Design as appropriate, not Luke model setup. |
+| `$luke-mode Diagnose why startup is slow. Do not optimize it yet.` | Explore with measurements or trace evidence; no speculative performance patch. |
+| TDD installed; `code-review` absent; request a small implementation | Reuses TDD and discloses direct review. Missing optional review skill does not block useful work. |
+| `grill-me` present but `grilling` absent | Wrapper is not considered usable; no claim that the absent primitive ran. |
+| Matt's user-only `implement` is installed; request an implementation through Luke | Luke follows its inspired sequence and composes permitted primitives; it does not invoke the user-only workflow implicitly. |
+| Delegation unavailable; ordinary small task | Direct sequential execution with disclosed limitation; no nested CLI or remote-task substitute. |
+| Request the configured Reviewer whose model is not advertised | Stop that role, report the unsupported ID, and ask for a choice. Code remains unchanged; no substitute model is launched. |
+| A saved parent fallback exists; user explicitly requires independent review | Parent fallback does not satisfy independence; report the blocked requirement. |
+
+## Setup and portability
+
+Run `$luke-mode setup` in a disposable configuration environment, or pass a
+temporary models-file path. Verify that it proposes four exact role choices,
+requests confirmation, and writes only the accepted Luke profile. It should
+preserve an existing other-harness profile and read back what it saved. Already
+accepted exact choices need no repeated confirmation. Unknown IDs and unsupported
+efforts remain unresolved.
+
+Repeat with a different project to check that the same installed Luke skill works
+without application-specific paths or repository scaffolding. Repeat without a
+models file to check direct execution. A profile for another harness must not be
+mistaken for a Codex profile.
+
+For a behavioral run, retain the initial fixture, prompt, transcript, final diff,
+commands, outputs, and any unanswered decision. Check that edits and tests are
+sequential, each delegate has a useful bounded task, and review does not repeat
+a composed skill's panel. Run only scenarios affected by a change or an
+unresolved concern.
