@@ -4,6 +4,7 @@ Use disposable projects or a suitable existing development checkout. Supply a
 small contract and a documented verification command where the scenario needs
 them. Inspect actual reads, tool calls, diffs, and evidence; route announcements
 alone do not prove behavior.
+Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 
 ## Core routes
 
@@ -67,6 +68,31 @@ Repeat model-only setup with a different project to check that the same installe
 Luke skill works without application-specific paths or repository scaffolding.
 Repeat ordinary work without a models file to check direct execution. A profile
 for another harness must not be mistaken for a Codex profile.
+
+## Cursor Cloud compatibility
+
+Prepare the Cursor package in a disposable project or sync its personal
+installation. Keep the actual run transcript, advertised tool schemas, selected
+profile, task cards or returned model metadata, final diff, and check artifacts.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| Fresh Cloud session; ordinary prompt without `/luke-mode` | Native discovery honors the prepared `disable-model-invocation: true`; Luke remains inactive. |
+| `/luke-mode Explain refresh token rotation. Leave files unchanged.` | Reads the Cloud adapter, selects Explore, inspects actual project sources, and leaves files and Git state unchanged. |
+| Cloud metadata identifies a GPT parent; models file contains different `Codex` and `Cursor Cloud` profiles | Selects `Cursor Cloud` by runtime identity, without inferring Codex from GPT or a `.codex/skills/` installation path. |
+| `/luke-mode configure models`; only a confirmed `Codex` profile exists | Proposes Cloud choices from native evidence or intentional inheritance, saves under `Cursor Cloud` after acceptance, and preserves the Codex section. |
+| Cloud run sees a models file containing only `Codex`; request ordinary bounded work | Treats the Cloud profile as absent and works directly in the current session; does not apply Codex role settings. |
+| Laptop personal preferences are absent in the VM; repository `.luke-mode/models.md` has a Cloud profile | Resolves the repository file and Cloud section, independently of any laptop config or synced skill location. |
+| Explicit models path differs from existing repository and personal files | Uses the explicit file as one profile source; no role merging or fallback to another harness section. |
+| Native Task tool exposes a configured Cloud model and an effort parameter | Passes exact supported settings, then inspects delegate model evidence. Uses native Cursor parameter syntax only when the actual schema requires it. |
+| Cloud catalog exposes a model, but native delegation cannot apply its selected effort | Leaves the required setting unresolved or uses already-confirmed `inherit` for effort; does not invent a tool argument. |
+| Cursor substitutes a configured Reviewer model or exposes no model evidence; the user requires that exact Reviewer | Keeps the exact-model requirement unresolved and stops dependent work. The parent metadata value does not prove which model reviewed. |
+| Native delegation is absent | Ordinary work uses direct sequential execution; an independent-review requirement remains pending. No nested CLI or new remote agent is started. |
+| Applicable verification skill exists only in scoped project `.cursor/skills/` | Discovers it for the affected package, checks native policy and Cloud dependencies, invokes it when permitted, and retains outputs. |
+| `/luke-mode setup`; Matt setup is installed but user-only and repository configuration is missing | Provides `/setup-matt-pocock-skills` as the pending action; model confirmation does not authorize its repository writes. |
+| Cloud runtime identity is unavailable and only generic tools or a GPT model name are known | Leaves harness-specific profiles unresolved; asks before setup or model-dependent delegation, while ordinary direct work can proceed. |
+
+## Retain evidence
 
 For a behavioral run, retain the initial fixture, prompt, transcript, final diff,
 commands, outputs, and any unanswered decision. Check that edits and tests are

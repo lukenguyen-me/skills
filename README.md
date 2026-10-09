@@ -1,12 +1,12 @@
 # Luke Mode
 
-Luke Mode is an explicitly invoked personal engineering skill for Codex. Describe
-an outcome, and it selects a playbook, composes compatible installed skills,
-and works toward evidence you can inspect.
+Luke Mode is an explicitly invoked engineering skill for Codex and Cursor Cloud.
+Describe an outcome, and it selects a playbook, composes compatible installed
+skills, and works toward evidence you can inspect.
 
 Matt Pocock's skills remain the engineering toolkit. Luke adds routing, sequencing,
 and optional model-aware delegation. It contains none of Matt's skill files and
-requires no CLI, MCP server, or orchestration service.
+requires no custom MCP server or orchestration service.
 
 ## Install globally in Codex
 
@@ -53,6 +53,40 @@ Codex supports global `.agents/skills` discovery and symlinked skill folders.
 Luke's `agents/openai.yaml` sets `allow_implicit_invocation: false`, so ordinary
 engineering prompts do not activate it. [Codex skill documentation](https://developers.openai.com/codex/skills)
 
+## Install for Cursor Cloud
+
+From a Luke Mode checkout, use Python 3.9 or later to prepare a complete Cursor
+skill in the project you will give to the Cloud Agent:
+
+```sh
+python3 scripts/package-cursor.py "/absolute/path/to/your-project/.cursor/skills/luke-mode"
+```
+
+Replace the project path with your checkout. Include the generated directory in
+the repository version supplied to Cursor Cloud. The helper copies all playbooks,
+references, and adapters, and adds Cursor's `disable-model-invocation: true`
+frontmatter. It leaves the source skill unchanged and refuses an existing
+destination. Inspect any previous Luke installation before updating; use one
+Luke copy in the Cloud run's discovery locations.
+
+For a personal installation, prepare the package in Cursor's own user skill root:
+
+```sh
+python3 scripts/package-cursor.py "$HOME/.cursor/skills/luke-mode"
+```
+
+Then turn on **Sync Skills for Cloud Agents** in Cursor Settings → Agents →
+Context and Tools. Only `~/.cursor/skills/` participates in that sync; a Codex
+installation in `~/.agents/skills/` and your personal Luke models file stay local.
+Project skill files are available through the cloned repository. Prepare any
+required Matt skills for the same Cloud environment as well.
+[Cursor skill discovery and sync](https://cursor.com/docs/skills)
+
+In the Cloud Agent chat, select `/luke-mode` and submit your request. Use
+`/luke-mode setup` for full setup or `/luke-mode configure models` for just the
+roles. Confirm native discovery in a Cloud run; package checks do not exercise
+Cursor's live skill loader.
+
 ## Use
 
 ```text
@@ -64,6 +98,8 @@ $luke-mode Simplify the payment adapter while preserving its behavior.
 $luke-mode Review my uncommitted changes against the requirements in docs/orders.md.
 ```
 
+In Cursor Cloud, use `/luke-mode` for the same requests.
+
 Luke works in small verified steps and adapts investigation and verification to
 the task's complexity, uncertainty, and impact. Before edits, it assesses affected
 modules, callers, interfaces, shared state, and regression risks; trivial changes
@@ -73,8 +109,9 @@ Most small tasks need no agents. Code changes and test runs are sequential.
 
 Unresolved product requirements and consequential architecture choices belong
 to the human. Routine implementation choices proceed within the agreed scope.
-Local changes and verification are the default deliverable. Commits, PRs, and
-tracker updates follow the user's request or existing authorization.
+Workspace changes and verification are the default deliverable. Commits, PRs,
+and tracker updates follow the user's request or existing authorization,
+including the delivery settings of an authorized Cloud run.
 
 ## Set up Luke Mode
 
@@ -82,11 +119,11 @@ tracker updates follow the user's request or existing authorization.
 $luke-mode setup
 ```
 
-Setup configures personal model roles and checks Matt's toolkit configuration
+Setup configures model roles and checks Matt's toolkit configuration
 for the current repository. The model stage discovers the active harness's
 advertised models and recommends an exact model and supported effort for each
-role. Confirm the four choices once. Luke saves the personal model preferences,
-normally at `~/.config/luke-mode/models.md`.
+role. Confirm the four choices once. Luke normally saves model preferences at
+`~/.config/luke-mode/models.md`.
 
 Matt's `$setup-matt-pocock-skills` configures each repository's issue tracker,
 domain docs, and triage labels when needed. Luke reuses complete existing setup.
@@ -94,7 +131,8 @@ When setup is missing, it checks that the installed skill is usable and provides
 the next action. Matt's setup is user-only, so explicitly invoke
 `$setup-matt-pocock-skills` to run it; naming both skills in the same request also
 works. That skill owns the proposed repository changes and confirmation steps.
-Luke reports model configuration and repository readiness separately.
+In Cursor Cloud, the Matt command is `/setup-matt-pocock-skills`. Luke reports
+model configuration and repository readiness separately.
 [Matt's setup skill](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md),
 [Codex invocation policy](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/agents/openai.yaml)
 
@@ -108,14 +146,35 @@ Use `$luke-mode configure models` to configure only the portable model roles.
 | Reviewer | Independent code review and verification | Capable review model |
 
 The role names are portable; their model IDs are harness-specific. Setup preserves
-separate harness profiles. `inherit` is a valid deliberate choice. Without setup,
+separate `## Codex` and `## Cursor Cloud` profiles. It selects by execution harness,
+even when Cursor uses a GPT model. Codex choices never serve as a missing Cloud
+profile. `inherit` is a valid deliberate choice. Without setup,
 Luke can work directly in the current session. Four roles do not require four
 agents, and a saved mapping does not imply its model ran during direct execution.
+
+For settings that travel with the repository, explicitly choose this optional
+save location in the Cloud chat:
+
+```text
+/luke-mode configure models. Save the profile to .luke-mode/models.md.
+```
+
+Model lookup uses an explicit path first, then the repository's
+`.luke-mode/models.md` if present, then the personal file. Each selected file
+keeps harness profiles separate; missing roles are not merged from another file.
+Create or commit the repository file only when that shared configuration is
+desired. Personal config files are not included in Cursor skill sync.
 
 The Reasoning mapping also serves as the suggested parent model for difficult
 tasks. Change the parent through Codex's `/model` picker or `codex --model MODEL`;
 setup cannot switch an already running parent. Native subagent capabilities and
 model defaults depend on the current session. [Codex subagent documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents)
+
+In Cursor Cloud, choose the parent through Cursor's run settings or model picker.
+Luke uses the native subagent model controls exposed in that run. Cursor can
+substitute unavailable subagent models; Luke reports a mismatch or missing
+execution evidence and keeps an explicit exact-model requirement unresolved.
+[Cursor subagent models](https://cursor.com/docs/subagents#model-configuration)
 
 Luke stops affected delegation when a selected model, effort, or capability is
 unavailable. It reports the mismatch and asks for a choice. It uses a fallback
@@ -161,12 +220,13 @@ was not, check outcomes, material fallbacks, and remaining risks. Passing builds
 unit tests, or reviewer agreement establish only what their evidence covers;
 acceptance criteria need checks that exercise the affected behavior.
 
-The core and playbooks are Markdown. Harness details live in
-[the Codex adapter](skills/luke-mode/adapters/codex.md). V1 targets Codex; Claude Code
-and Cursor adapters are not implemented or claimed as validated. In particular,
-Codex's invocation policy does not enforce explicit-only behavior in Claude Code.
-A future adapter must configure Claude's own invocation control and validate its
-delegation behavior.
+The core and playbooks are Markdown. [Harness selection](skills/luke-mode/references/harnesses.md)
+routes to [Codex](skills/luke-mode/adapters/codex.md) or
+[Cursor Cloud](skills/luke-mode/adapters/cursor-cloud.md). Cursor packaging and
+local package checks are implemented; live Cloud discovery, delegation, and
+model overrides still need validation in Cursor. Claude Code and Cursor's local
+editor/CLI adapters are not implemented. Codex metadata alone does not enforce
+another harness's invocation policy.
 
 Try the [routing and behavior scenarios](scenarios/routing.md). See
 [research and design choices](docs/research.md) for provenance and limitations,

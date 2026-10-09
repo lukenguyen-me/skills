@@ -75,8 +75,35 @@ guarantee. Parent model selection uses launch settings or the model picker.
 
 The shared core keeps models abstract and harness mechanics in adapters. Claude
 Code needs its own invocation controls; blindly using Codex metadata would not
-preserve explicit-only behavior. Claude and Cursor support are future work.
+preserve explicit-only behavior. Claude Code support remains future work.
 [Claude skill controls](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
+
+## Cursor Cloud
+
+Cursor's skill format supports explicit slash-command invocation using
+`disable-model-invocation: true`. The Cursor package is generated from the shared
+source with that frontmatter field, retaining Codex metadata and all linked
+resources. Cloud delivery uses actual project files or personal skill sync from
+`~/.cursor/skills/`; `.agents` user skills and arbitrary personal config do not
+sync. The optional repository models file carries separately keyed harness
+profiles into a clone.
+[Skills and sync](https://cursor.com/docs/skills)
+
+Native subagents are supported in Cloud and use independent context. Runtime
+schemas decide launch controls. Cursor documents exact model selection and
+native model-parameter syntax, but restrictions can trigger model substitution.
+Luke records base IDs and effort separately, checks execution evidence, and keeps
+an exact-model requirement unresolved when it cannot establish the chosen model.
+[Subagents](https://cursor.com/docs/subagents),
+[Cloud catalog](https://cursor.com/docs/cloud-agent/api/endpoints#list-models)
+
+The managed VM's preview metadata API and optional Cloud MCP can expose current
+runtime and serving-model evidence. Those values do not enumerate models or
+verify a subagent. Cloud model configuration is separate from application
+environment setup and the harness's authorized branch/PR delivery.
+[Metadata](https://cursor.com/docs/cloud-agent/metadata),
+[Cloud capabilities](https://cursor.com/docs/cloud-agent/capabilities),
+[Environment setup](https://cursor.com/docs/cloud-agent/setup)
 
 ## Agreed V1
 
@@ -86,4 +113,4 @@ and impact, with beneficial delegation and sequential modifications/tests.
 Setup configures four portable model roles: Reasoning, Coding, Worker, and
 Reviewer, using exact models per harness, and checks Matt's per-repository setup.
 The human keeps product and consequential architecture decisions. Verification
-and local delivery are the default completion boundary.
+and the authorized workspace delivery are the default completion boundary.

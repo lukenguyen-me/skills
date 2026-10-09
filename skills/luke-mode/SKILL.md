@@ -1,6 +1,6 @@
 ---
 name: luke-mode
-description: Coordinate an engineering request with playbooks, compatible installed skills, and verified outcomes. Use only when the user explicitly invokes $luke-mode.
+description: Coordinate an engineering request with playbooks, compatible installed skills, and verified outcomes. Use only when the user explicitly invokes Luke Mode.
 ---
 
 # Luke Mode
@@ -9,6 +9,9 @@ Coordinate the explicitly requested task and its follow-ups. Finish or hand back
 that task before treating an unrelated request as a new Luke Mode invocation.
 Resolve the links below from this skill's installation directory; keep the
 working directory in the user's project.
+Use the harness's native skill command: `$luke-mode` in Codex or `/luke-mode` in
+Cursor Cloud. Read [harness selection](references/harnesses.md) before resolving
+skills, configuring models, or delegating work.
 
 ## Start and route
 
@@ -70,7 +73,7 @@ behalf.
 A role does not require a new agent. Do bounded work directly when delegation
 adds more coordination than useful isolation or speed. Before delegation, or
 when the user requires a particular role/model, read [models](references/models.md)
-and the active harness adapter. V1's adapter is [Codex](adapters/codex.md).
+and the selected harness adapter.
 
 Delegate only a bounded task whose benefit you can name. Keep code modifications
 and test runs sequential, with one owner of mutable project state at a time.
@@ -86,9 +89,9 @@ The human settles unresolved product requirements and consequential architecture
 choices. Present the smallest useful decision with a recommendation; continue
 independent fact gathering while waiting. Respect decisions already made.
 
-Default delivery is local work and verification. Commits, PRs, tracker updates,
-and other external actions follow the user's request or existing authorization;
-invoking Luke does not grant blanket permission for them.
+Default delivery is workspace changes and verification. Commits, PRs, tracker
+updates, and other external actions follow the user's request or existing
+authorization; invoking Luke does not grant blanket permission for them.
 
 End with the outcome, what was verified and how, what was not verified, and
 remaining risks or decisions. Name material fallbacks. Distinguish direct review

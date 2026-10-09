@@ -2,10 +2,22 @@
 
 ## Profile and resolution
 
-Use the models file explicitly supplied by the user, otherwise
-`~/.config/luke-mode/models.md` if it exists. Read only the active harness's
-profile. A profile for Codex is not a profile for Claude Code. Preserve user
-instructions and harness/repository constraints above saved preferences.
+Resolve the active harness through [harness selection](harnesses.md). Select one
+models file in this order: the user's explicit path, the owning repository root's
+`.luke-mode/models.md` if present, then `~/.config/luke-mode/models.md` if present.
+Resolve explicit relative paths from the user's working directory. Report the
+selected path when model routing matters. Keep one source for the whole profile;
+do not fill missing roles from a second file.
+
+Read only the heading matching the active harness: `Codex` or `Cursor Cloud`.
+A file containing only another harness's settings has no active profile, even
+when the model provider or identifier is available in both harnesses. Preserve
+other headings during setup. User instructions and harness/repository constraints
+take priority over saved preferences.
+
+The repository file is optional and makes preferences available to Cloud runs
+that clone it. Create it only when the user chooses that save path. A local
+personal file does not travel with the repository or Cursor skill sync.
 
 An absent profile is an unconfigured state: continue ordinary work in the current
 session and say so when model routing matters. Setup is optional. A supplied
@@ -23,7 +35,8 @@ For a delegated or explicitly required role:
    supports them and the user chose inheritance.
 2. Validate the identifier and effort against the active tool's advertised
    capabilities or a current harness catalog. A cached catalog is a hint, not
-   proof of live access. Do not rewrite model IDs to encode reasoning effort.
+   proof of live access. Save model IDs and effort separately; the adapter may
+   translate them into its documented native invocation syntax.
 3. Confirm the tool supports the required override and context mode. A
    full-history fork may require inheritance; use a fresh bounded context for a
    different model when supported. Never claim an unsupported override took effect.

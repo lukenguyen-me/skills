@@ -1,14 +1,16 @@
 # Setup Luke Mode
 
-`$luke-mode setup` configures four personal model roles and checks Matt Pocock's
-toolkit setup for the current repository. A model-only request, such as
-`$luke-mode configure models`, runs only the model stages below. A toolkit-only
-request runs only [repository setup](#set-up-matts-toolkit-for-this-repository).
+Luke's native setup command (`$luke-mode setup` in Codex, `/luke-mode setup` in
+Cursor Cloud) configures four model roles and checks Matt Pocock's toolkit setup
+for the current repository. A model-only request, such as `configure models`,
+runs only the model stages below. A toolkit-only request runs only
+[repository setup](#set-up-matts-toolkit-for-this-repository).
 
-Read [models](models.md) and the relevant harness adapter before proposing model
-settings. Model configuration writes only Luke's personal models file. Matt's
-installed setup skill owns repository configuration; use the invocation rules
-below. Preserve the harness's global defaults and installed skill files.
+Read [harness selection](harnesses.md), [models](models.md), and the selected
+adapter before proposing settings. Model configuration writes only the chosen
+Luke models file. Matt's installed setup skill owns repository configuration;
+use the invocation rules below. Preserve the harness's global defaults and
+installed skill files.
 
 ## Discover and propose
 
@@ -38,16 +40,18 @@ entitlement guarantee. Keep an unknown role unresolved instead of inventing an I
 
 ## Confirm and save
 
-Show one four-row table with exact model IDs, supported effort, and any unverified
-access. Ask for confirmation or role-specific changes, unless the user already
-accepted those exact settings. Default fallback is `stop`. An optional `parent`
-fallback must be explicitly accepted, means direct execution in the current
-session, and cannot satisfy an independent-review requirement.
+Show the active harness, save path, and one four-row table with exact model IDs,
+supported effort, and any unverified access. Ask for confirmation or role-specific
+changes, unless the user already accepted those exact settings. Default fallback
+is `stop`. An optional `parent` fallback must be explicitly accepted, means direct
+execution in the current session, and cannot satisfy an independent-review requirement.
 
-Write the accepted active profile to `~/.config/luke-mode/models.md`, or the user's
-explicit path. Obtain any filesystem permission the harness requires. Preserve
-other profiles. Leave no unresolved placeholders in a saved profile. Use this
-Markdown structure, shown here with valid intentional inheritance choices:
+Write to the user's explicit path, otherwise the existing selected repository
+models file, otherwise `~/.config/luke-mode/models.md`. Creating
+`.luke-mode/models.md` is an opt-in save choice for cloud portability. Obtain any
+filesystem permission the harness requires. Preserve other profiles. Leave no
+unresolved placeholders in a saved profile. Use this Markdown structure, shown
+here with valid intentional inheritance choices:
 
 ```markdown
 # Luke Mode models
@@ -65,7 +69,9 @@ Markdown structure, shown here with valid intentional inheritance choices:
 For an exact mapping, replace `inherit` with the selected real identifier and
 supported effort. For a harness without a per-agent effort control, record
 `inherit` for effort and explain that limitation. Keep a separate heading for
-each configured harness; use `Codex` for this adapter.
+each configured harness; use `Codex` or `Cursor Cloud` as selected by the adapter.
+Change the example heading to `Cursor Cloud` for a Cloud profile; retain an
+existing `Codex` section unchanged.
 
 Read back the saved profile and report its path. Say which values were validated
 against a catalog and which were actually observed in a run. Choosing a Reasoning
@@ -93,7 +99,8 @@ resolving or invoking `setup-matt-pocock-skills`.
    incompatible, report the prerequisite and leave repository setup pending.
    Installation or enabling a skill is separate authorized work.
 3. Follow the resolved invocation policy. The upstream version is user-only:
-   unless the user explicitly invokes it, show `$setup-matt-pocock-skills` as
+   unless the user explicitly invokes it, show the native command
+   (`$setup-matt-pocock-skills` in Codex, `/setup-matt-pocock-skills` in Cursor) as
    the next action and explain that it configures this repository. Keep
    repository setup pending. If the request already explicitly invokes both
    skills, proceed without asking the user to invoke it again. Reading its files
@@ -105,8 +112,8 @@ resolving or invoking `setup-matt-pocock-skills`.
    alone does not authorize those changes.
 5. After an authorized run, read back the generated project guidance and its
    referenced configuration to verify the installed skills' prerequisites.
-   Report personal model configuration and repository toolkit readiness
-   separately. Full setup is complete when the personal profile is saved and
+   Report model-profile configuration and repository toolkit readiness
+   separately. Full setup is complete when the model profile is saved and
    verified, and repository prerequisites are verified or explicitly skipped by
    the user. A pending toolkit stage still permits ordinary work under the
    composition fallback rules.

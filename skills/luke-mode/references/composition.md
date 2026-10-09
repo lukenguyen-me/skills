@@ -11,8 +11,8 @@ the selected skill's actual directory.
 Before invoking a candidate, check:
 
 - Its name, description, and invocation policy. Read `agents/openai.yaml` for
-  Codex policy and relevant frontmatter for other harnesses. User-only skills
-  require explicit invocation by the user; opening their files is not a bypass.
+  Codex policy and `disable-model-invocation` frontmatter for Cursor. User-only
+  skills require explicit invocation by the user; opening their files is not a bypass.
 - Required supporting resources and skills. Resolve the relevant dependency
   chain before starting; a wrapper with a missing primitive is not usable.
 - Preconditions, scope, side effects, tool capabilities, model requirements,
@@ -23,8 +23,8 @@ If duplicate names resolve to different skills, prefer an explicitly selected
 path; otherwise identify which fits the task and disclose an ambiguous choice.
 Do not silently assume a project-specific skill is Matt's skill.
 
-Invoke through the harness's skill mechanism when available. In Codex without a
-Skill tool, read and follow the permitted skill's `SKILL.md` and needed resources.
+Invoke through the harness's skill mechanism when available. Without a Skill
+tool, read and follow the permitted skill's `SKILL.md` and needed resources.
 Announce its use. Adapt tool names only when the available tool preserves the
 required behavior. A critical missing capability is a compatibility failure.
 
