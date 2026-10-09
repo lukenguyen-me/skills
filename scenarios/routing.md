@@ -31,6 +31,17 @@ alone do not prove behavior.
 | Request the configured Reviewer whose model is not advertised | Stop that role, report the unsupported ID, and ask for a choice. Code remains unchanged; no substitute model is launched. |
 | A saved parent fallback exists; user explicitly requires independent review | Parent fallback does not satisfy independence; report the blocked requirement. |
 
+## Blast radius and evidence
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| Implement or Fix changes a shared cache used by HTTP requests and background jobs | Before the first edit, traces affected modules, both callers, interfaces, shared state, and regression risks; selects evidence for the affected paths. This applies beyond Refactor. |
+| An applicable `verify-drift` skill is installed in a project skill root but absent from the catalog and project instructions | Discovers it through the adapter's project lookup, checks compatibility and policy, invokes it, and retains actual outputs or artifacts. Repeat with a verification skill whose name has no `verify-` prefix. |
+| The project verification skill is user-only, disabled, or incompatible | Reports why it cannot run, respects its policy, and uses permitted project checks when equivalent evidence is possible. An explicitly required skill remains an unmet requirement. |
+| Build and unit tests pass, but an acceptance criterion depends on a user path those tests omit | Exercises that path with project verification or runtime/integration checks; a failure or unavailable check remains an explicit gap and risk. Does not report the criterion as verified from the passing tests. |
+| A focused test through the agreed public interface fully covers a small behavior change | Uses that evidence and required project checks; adds expensive runtime checks only if an uncovered risk warrants them. |
+| `$luke-mode Correct a typo in this comment.` | Briefly inspects the affected context and final diff; avoids new tests, services, agents, and broad suites unless project requirements or an identified risk warrant them. |
+
 ## Setup and portability
 
 Run `$luke-mode setup` in a disposable configuration environment, or pass a

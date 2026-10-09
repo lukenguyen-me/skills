@@ -13,6 +13,11 @@ own catalog paths: use those pointers rather than scanning every plugin cache.
 Resolve symlinks and read the selected skill's invocation policy. Do not treat
 Claude-only installations as active Codex skills.
 
+For verification discovery without a named candidate, inspect project skill
+names and descriptions, then use targeted name or description searches in the
+user roots for the affected app or surface. Match purpose and scope rather than
+requiring a `verify-*` name. Load only relevant candidates.
+
 Luke's `agents/openai.yaml` disables implicit invocation. Install the skill in
 one discovery location; two same-name installations can create ambiguous choices.
 Project instructions remain project-owned; Luke does not install an always-on

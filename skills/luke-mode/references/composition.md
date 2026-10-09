@@ -51,11 +51,15 @@ updating, and editing another skill are separate work, never an automatic repair
 
 ## Verify the actual outcome
 
-Look first for applicable project verification skills named in project
-instructions or describing the affected app and surface. Resolve them with the
-same policy. Prefer their established recipes over a new generic harness. Without
-one, use documented scripts, existing tests, and available controls for the real
-user path. Creating a verification skill is separate requested work.
+Before edits, discover project verification skills from project instructions
+and available-skills metadata, matching the affected app and surface (for example,
+`verify-drift`). Use the active harness adapter's discovery rules when the catalog
+omits a candidate. Resolve policy and compatibility before proceeding. During
+verification, invoke applicable, permitted skills; reading instructions alone
+provides no execution evidence. If none can be used, disclose why and use
+documented scripts, existing tests, and available controls for the real user path
+under the fallback rules above. Creating a verification skill is separate
+requested work.
 
 Choose evidence before edits and retain commands, relevant outputs, and artifact
 locations after execution. Evidence must match the task: failing then passing
@@ -63,7 +67,18 @@ symptom for Fix, changed behavior for Implement, equivalent behavior for Refacto
 and inspected sources for Explore or Review. Review assesses evidence; agreement
 between reviewers is not a replacement for it. Redact secrets in reported output.
 
-Record passed, failed, and unrun checks distinctly. Investigate failures in scope;
-identify unrelated baseline failures or missing access. Do not mark acceptance
-criteria verified from a build result, old artifact, mock-only path, or worker
-self-report. Inspect a delegate's diff and evidence before accepting its result.
+Choose the least costly checks that establish the affected behavior and cover
+the identified regression risks. A focused behavioral test can suffice when it
+exercises the acceptance criteria; use runtime or integration checks when they
+depend on wiring, shared state, or a user interaction that those tests omit.
+For trivial edits, a focused inspection or check is enough unless project
+requirements or risk justify broader verification. Widen checks when new changes,
+failures, or unresolved risks warrant it.
+
+Successful compilation or passing unit tests alone do not prove feature
+correctness: identify which acceptance criteria the evidence actually exercises.
+Record passed, failed, and unrun checks distinctly, with remaining risks.
+Investigate failures in scope; identify unrelated baseline failures or missing
+access. Do not mark acceptance criteria verified from a build result, old artifact,
+mock-only path, or worker self-report. Inspect a delegate's diff and evidence
+before accepting its result.

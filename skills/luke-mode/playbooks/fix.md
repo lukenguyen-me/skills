@@ -7,7 +7,8 @@ Deliver a correction tied to the reported symptom. Follow Matt's
    symptom. Compose `diagnosing-bugs` when installed and compatible. Without it,
    use the project's existing tests or control surface to establish a causal
    feedback loop; this is a direct fallback, not an invocation of that skill.
-2. Trace the mechanism and test the explanation against the repro. Use
+2. Trace the mechanism and test the explanation against the repro. Assess blast
+   radius before the fix and include affected paths in verification. Use
    Reasoning for complex debugging only when helpful. For a performance
    regression, measure a comparable baseline before changing code.
 3. At an agreed public interface, compose `tdd` for a meaningful regression

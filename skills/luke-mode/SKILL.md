@@ -15,9 +15,13 @@ working directory in the user's project.
 1. Read applicable project instructions and inspect only the state needed for
    the request. Preserve existing changes. Identify the requested outcome,
    acceptance evidence, and any unsettled product or architecture decisions.
-2. Work in small verified steps. Match investigation and verification depth to
-   uncertainty, the impact of a mistake, and project requirements. Use additional
-   expertise or independent review when it improves confidence in the outcome.
+2. Before edits, assess blast radius: affected modules, callers, interfaces,
+   shared state, and regression risks. Use this to bound the change and choose
+   evidence. Match depth to complexity, uncertainty, impact, and project
+   requirements: an obvious isolated edit needs only a brief check; a change
+   across modules needs dependency tracing. Revisit the assessment if scope grows.
+   Work in small verified steps. Use additional expertise or independent review
+   when it improves confidence in the outcome.
 3. If the request explicitly configures Luke Mode, such as `setup` alone or
    `configure Luke's models`, read [setup](references/setup.md). `Setup OAuth
    for this app` is application work, not Luke configuration.
@@ -48,11 +52,12 @@ decisions. Design alone ends with a design, not code.
 
 ## Compose and delegate
 
-Read [composition](references/composition.md) before using another skill or
-choosing a fallback. Matt Pocock's installed skills remain the source of their
-engineering practices. The playbooks borrow workflow sequencing from his
-user-invoked skills; they compose permitted primitives without invoking a
-user-only workflow on the user's behalf.
+Read [composition](references/composition.md) before edits, using another skill,
+or choosing a fallback; it owns verification selection and skill compatibility.
+Matt Pocock's installed skills remain the source of their engineering practices.
+The playbooks borrow workflow sequencing from his user-invoked skills; they
+compose permitted primitives without invoking a user-only workflow on the user's
+behalf.
 
 | Portable role | Responsibility and selection target |
 | --- | --- |
@@ -84,8 +89,8 @@ Default delivery is local work and verification. Commits, PRs, tracker updates,
 and other external actions follow the user's request or existing authorization;
 invoking Luke does not grant blanket permission for them.
 
-End with the outcome, the evidence that supports it, and remaining gaps or
-decisions. Name material fallbacks. Distinguish direct review from independent
-review and model diversity. Failed, missing, or inconclusive checks remain gaps;
-a delegate's success report is not proof. Never claim completion beyond the
-observed evidence.
+End with the outcome, what was verified and how, what was not verified, and
+remaining risks or decisions. Name material fallbacks. Distinguish direct review
+from independent review and model diversity. Failed, missing, or inconclusive
+checks remain gaps; a delegate's success report is not proof. Never claim
+completion beyond the observed evidence.

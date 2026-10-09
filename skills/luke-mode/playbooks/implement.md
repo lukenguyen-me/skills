@@ -5,8 +5,9 @@ Deliver the specified behavior with evidence. Follow the sequence of Matt's
 inspiration; installed primitives own their detailed procedures.
 
 1. Read the supplied spec, ticket, or contract and the affected code. Resolve
-   ambiguous references before starting. Establish acceptance criteria and a
-   review baseline that includes the requested working-tree changes.
+   ambiguous references before starting. Assess blast radius before edits;
+   establish acceptance criteria and a review baseline that includes the
+   requested working-tree changes.
 2. Settle product or architecture forks through Design only when needed.
    Preserve prior agreement on test interfaces. If `tdd` requires approval of a
    new seam, obtain it before writing those tests.
@@ -15,9 +16,10 @@ inspiration; installed primitives own their detailed procedures.
    Worker can own bounded mechanical work or test execution when delegation
    earns its cost. Keep the owner and tests sequential.
 4. Run focused tests and applicable type checks as work develops. At the end,
-   run the project's required checks and full relevant test suite once. Use
-   applicable project verification to exercise the changed user path. Report
-   unavailable checks precisely instead of substituting a compile result.
+   run the project's required checks and verification selected from the blast
+   radius. Run the full relevant suite once for substantive changes; a trivial
+   isolated edit needs only focused evidence unless risk or project requirements
+   warrant more.
 5. Compose `code-review` after implementation and verification when its scope,
    prerequisites, and fan-out fit. Otherwise review the actual diff directly
    against the requirements and project standards, and disclose that fallback.

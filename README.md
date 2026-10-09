@@ -45,7 +45,9 @@ $luke-mode Review my uncommitted changes against the requirements in docs/orders
 ```
 
 Luke works in small verified steps and adapts investigation and verification to
-the task's uncertainty and impact. Delegate when a separate context, expertise,
+the task's complexity, uncertainty, and impact. Before edits, it assesses affected
+modules, callers, interfaces, shared state, and regression risks; trivial changes
+need only a brief check. Delegate when a separate context, expertise,
 or independent review improves the work; keep routine steps with their owner.
 Most small tasks need no agents. Code changes and test runs are sequential.
 
@@ -91,7 +93,8 @@ live access.
 
 The playbooks take workflow sequencing from Matt's user-invoked skills. Implement
 follows `implement`'s order: defined scope, TDD at agreed public interfaces,
-focused checks during work, a final relevant suite, then code review and delivery.
+focused checks during work, final verification scaled to risk and project
+requirements, then code review and delivery.
 
 Luke automatically composes **permitted primitives** such as `tdd`,
 `diagnosing-bugs`, `codebase-design`, and `code-review` when installed and compatible.
@@ -117,10 +120,12 @@ ran the same process.
 
 ## Verification and portability
 
-Luke prefers applicable project verification skills, then the project's documented
-commands and existing tests or control surfaces. Its report names checks run,
-their outcomes, material fallbacks, and remaining gaps. A passing build or a
-reviewer's agreement alone does not establish changed behavior.
+Luke discovers and invokes applicable, permitted project verification skills,
+then uses the project's documented commands and existing tests or control
+surfaces when a skill cannot be used. Its report names what was verified, what
+was not, check outcomes, material fallbacks, and remaining risks. Passing builds,
+unit tests, or reviewer agreement establish only what their evidence covers;
+acceptance criteria need checks that exercise the affected behavior.
 
 The core and playbooks are Markdown. Harness details live in
 [the Codex adapter](skills/luke-mode/adapters/codex.md). V1 targets Codex; Claude Code

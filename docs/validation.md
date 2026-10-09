@@ -33,6 +33,13 @@ unfinished endings. The package contains Markdown and Codex metadata only.
 
 ## Remaining coverage
 
+The P0 instruction update adds proportional blast-radius assessment across
+change-making routes, project verification skill invocation and discovery, and
+acceptance evidence beyond build or unit-test success. Package checks were
+repeated after the update. The six new [blast-radius and evidence scenarios](../scenarios/routing.md#blast-radius-and-evidence)
+remain unrun; the earlier behavioral results do not validate these changes in
+a live session.
+
 Native Codex skill discovery was not verified: the sandbox blocked the optional
 app-server check, which was skipped. No global installation or live inference
 with the saved role mappings was performed. The model checks establish
