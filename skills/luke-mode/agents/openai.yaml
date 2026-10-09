@@ -1,0 +1,5 @@
+interface:
+  display_name: "Luke Mode"
+  short_description: "Route engineering work and compose installed skills"
+policy:
+  allow_implicit_invocation: false

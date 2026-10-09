@@ -18,6 +18,21 @@ npx skills add lukenguyen-me/skills --skill write-to-human
 
 ## Available Skills
 
+### luke-mode
+
+Coordinate engineering requests with playbooks, compatible installed skills, and
+verified outcomes. Invoke explicitly with `$luke-mode` in Codex or `/luke-mode`
+in Cursor Cloud. Luke Mode is maintained in this repository.
+
+Install globally for Codex:
+
+```sh
+npx skills add lukenguyen-me/skills --skill luke-mode --agent codex --global
+```
+
+See the [Luke Mode guide](docs/luke-mode/README.md) for Cursor Cloud packaging,
+setup, model roles, and verification coverage.
+
 ### store-release
 
 Prepare App Store and Play Store release content for a public version. Inspects the source-verified change since the last release, writes version notes, refreshes listing copy when the release makes it inaccurate, and syncs version configuration when those files exist.
