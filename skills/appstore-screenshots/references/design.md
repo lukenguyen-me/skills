@@ -2,6 +2,10 @@
 
 ## Visual specification
 
+This reference covers the screenshot carousel. Read
+[creative-assets.md](creative-assets.md) for Header and Search Results layouts;
+they use their own landscape compositions and template safe areas.
+
 Use one bold, solid brand background, white uppercase headlines, and a heavy/black
 sans-serif font. Put the action verb above the smaller benefit descriptor, centred
 in the top quarter. Keep font, sizes, spacing, device position, and background
@@ -43,7 +47,9 @@ The bundled composer supports **portrait phone captures**. For tablets,
 landscape, desktop, or an existing branded device-frame system, adapt/reuse the
 project's composer while retaining exact text, real UI, fixed layout, and safe
 areas. The export and showcase helpers accept either orientation. Build a
-scaffold for each target layout rather than recropping a phone design into a tablet.
+scaffold for each target layout rather than recropping a phone design into a tablet
+or a creative asset. Use `export --anchor center` for a planned central focal point;
+the default `--anchor top` preserves screenshot headlines.
 
 ```sh
 python3 "$SKILL_DIR/scripts/layout.py" compose \

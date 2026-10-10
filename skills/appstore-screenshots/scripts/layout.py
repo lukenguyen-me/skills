@@ -91,9 +91,11 @@ def compose(screenshot, output, font, verb, desc, background, width=1290, height
     return save_rgb(canvas, output)
 
 
-def export_image(source, output, width, height, background="white"):
+def export_image(source, output, width, height, background="white", anchor="top"):
     if width <= 0 or height <= 0:
         raise ValueError("Export dimensions must be positive")
+    if anchor not in {"top", "center"}:
+        raise ValueError("Crop anchor must be top or center")
     image = open_rgb(source, background)
     original = image.size
     target_ratio = width / height
@@ -103,14 +105,15 @@ def export_image(source, output, width, height, background="white"):
         crop = (left, 0, left + crop_width, image.height)
     else:
         crop_height = min(image.height, max(1, round(image.width / target_ratio)))
-        crop = (0, 0, image.width, crop_height)
+        top = (image.height - crop_height) // 2 if anchor == "center" else 0
+        crop = (0, top, image.width, top + crop_height)
     image = image.crop(crop).resize((width, height), Image.Resampling.LANCZOS)
-    return {**save_rgb(image, output), "source_size": original, "crop_box": crop}
+    return {**save_rgb(image, output), "source_size": original, "crop_box": crop, "crop_anchor": anchor}
 
 
 def showcase(sources, output):
     if not sources:
-        raise ValueError("Provide at least one approved screenshot")
+        raise ValueError("Provide at least one approved image")
     thumbs = []
     for path in sources:
         image = open_rgb(path)
@@ -140,11 +143,13 @@ def main():
     compose_parser.add_argument("--verb-size", type=int)
     compose_parser.add_argument("--desc-size", type=int)
     compose_parser.add_argument("--safe-width", type=float, default=0.70)
-    export_parser = commands.add_parser("export", help="Top-centred crop, exact resize, opaque RGB output")
+    export_parser = commands.add_parser("export", help="Aspect-preserving crop, exact resize, opaque RGB output")
     export_parser.add_argument("--source", required=True)
     export_parser.add_argument("--width", type=int, required=True)
     export_parser.add_argument("--height", type=int, required=True)
     export_parser.add_argument("--background", default="white")
+    export_parser.add_argument("--anchor", choices=("top", "center"), default="top",
+                               help="Vertical crop anchor: top for screenshots, center for central creative artwork")
     showcase_parser = commands.add_parser("showcase", help="Side-by-side preview without added branding")
     showcase_parser.add_argument("--sources", nargs="+", required=True)
     for subparser in (compose_parser, export_parser, showcase_parser):

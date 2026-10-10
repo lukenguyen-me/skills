@@ -20,10 +20,14 @@ npx skills add lukenguyen-me/skills --skill write-to-human
 
 ### appstore-screenshots
 
-Create benefit-led App Store screenshots from an app repository. Discovers and
-runs existing screenshot automation, then uses consistent scaffolds and a chosen
-image provider: Gemini, GPT Image, Grok, or a custom adapter. Supports review,
-resuming saved progress, exact-size exports, and a showcase preview.
+Create benefit-led App Store screenshots from an app repository, plus one Header
+and one Search Results creative image per requested locale for iOS/iPadOS.
+Asks whether to prepare all app locales or just one when locale scope is unspecified,
+and keeps the user's choice on resume.
+Discovers and runs existing screenshot automation, then uses consistent scaffolds
+and a chosen image provider: Gemini, GPT Image, Grok, or a custom adapter. Supports
+placement-specific dimensions and Apple template safe areas, separate asset
+review, resuming saved progress, exact-size exports, and a showcase preview.
 
 Inspired by [aso-appstore-screenshots](https://github.com/adamlyttleapps/claude-skill-aso-appstore-screenshots).
 See [the skill](skills/appstore-screenshots/SKILL.md) for the workflow and helpers.

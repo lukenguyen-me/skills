@@ -221,6 +221,25 @@ class ScreenshotTests(unittest.TestCase):
         with Image.open(result["output"]) as output:
             self.assertEqual(output.getpixel((0, 0)), (37, 99, 235))
 
+    def test_center_export_preserves_creative_focal_point(self):
+        source = self.root / "central-artwork.png"
+        image = Image.new("RGB", (150, 200), "red")
+        image.paste("blue", (0, 50, 150, 150))
+        image.save(source)
+        result = layout.export_image(source, self.root / "creative.png", 150, 100, anchor="center")
+        self.assertEqual(result["crop_anchor"], "center")
+        self.assertEqual(result["crop_box"], (0, 50, 150, 150))
+        self.assert_artifact(result, (150, 100))
+        with Image.open(result["output"]) as output:
+            self.assertEqual(output.getpixel((75, 0)), (0, 0, 255))
+            self.assertEqual(output.getpixel((75, 99)), (0, 0, 255))
+
+    def test_unknown_crop_anchor_fails_without_creating_output(self):
+        output = self.root / "invalid-anchor.png"
+        with self.assertRaisesRegex(ValueError, "Crop anchor"):
+            layout.export_image(self.references[0], output, 150, 100, anchor="unknown")
+        self.assertFalse(output.exists())
+
     def test_layout_refuses_to_overwrite(self):
         output = self.root / "approved.png"
         output.write_bytes(self.image)
