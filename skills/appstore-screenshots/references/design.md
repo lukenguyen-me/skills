@@ -1,4 +1,4 @@
-# Layout, enhancement, and export
+# Layout, rendering, and export
 
 ## Visual specification
 
@@ -26,8 +26,10 @@ corresponding display slot. `1290 × 2796` portrait is a useful iPhone starting
 target when compatible with the selected slot, not an exhaustive size rule. Check
 iPad requirements when the app supports it. Use opaque RGB PNG/JPEG.
 
-Choose generation settings from the selected model's supported sizes. When its
-output ratio differs from the store target, plan the final top-centred crop. If
+For local code rendering, use the exact target canvas and safe area directly.
+For image-provider enhancement, choose settings from the selected model's
+supported sizes. When its output ratio differs from the store target, plan the
+final top-centred crop. If
 the source is wider, the retained width fraction is
 `(target_width / target_height) / (source_width / source_height)`; if narrower,
 height is removed from the bottom. For 9:16 → 1290:2796, about 82% of the width
@@ -43,10 +45,12 @@ in app assets/system fonts and record its path; the helper has no mandatory
 macOS-only font or bundled proprietary font. Resolve `SKILL_DIR` to the installed
 skill's absolute path and run commands from the app repository.
 
-The bundled composer supports **portrait phone captures**. For tablets,
-landscape, desktop, or an existing branded device-frame system, adapt/reuse the
-project's composer while retaining exact text, real UI, fixed layout, and safe
-areas. The export and showcase helpers accept either orientation. Build a
+The `render` command accepts editable layers in either orientation; read
+[code-rendering.md](code-rendering.md) for recipes and the local design loop.
+The simpler `compose` command supports **portrait phone captures**. For other
+canvases, use `render` or adapt/reuse an existing composer while retaining exact
+text, real UI, fixed layout, and safe areas. The export and showcase helpers accept
+either orientation. Build a
 scaffold for each target layout rather than recropping a phone design into a tablet
 or a creative asset. Use `export --anchor center` for a planned central focal point;
 the default `--anchor top` preserves screenshot headlines.
@@ -63,11 +67,14 @@ python3 "$SKILL_DIR/scripts/layout.py" compose \
 Set `--verb-size` and `--desc-size` to the same pixel sizes for every scaffold in
 one layout. Defaults scale with canvas width. The helper fails for text overflow;
 shorten wording with the user's agreement or reduce the **whole set's** sizes,
-rather than making one headline inconsistent. Keep scaffolds as internal
-intermediates. Inspect the real UI placement before enhancement.
+rather than making one headline inconsistent. In code mode, this command is a
+starting layout to refine through editable rendering. In image-provider mode,
+keep scaffolds internal and inspect real UI placement before enhancement.
 
-## Provider-neutral enhancement prompts
+## Enhancement prompts for image-provider mode
 
+Use this section only for complete scaffold enhancement. Code mode follows the
+local rendering loop; hybrid generates decoration separately and composes locally.
 Tailor these prompts to inspected image content. Resolve bracketed fields before
 submitting them; do not invent a panel to satisfy a placeholder.
 
@@ -112,8 +119,10 @@ Retain prompt files and actual reference paths for reproducibility.
 
 ## Export before review
 
-Normalize **every** generated candidate immediately. The helper preserves aspect
-ratio, crops symmetrically at the sides or trims the bottom, flattens alpha, and
+Check **every** candidate before review. An exact-size local RGB render is already
+an export; retain it and record that no final crop was applied. Otherwise normalize
+immediately. The helper preserves aspect ratio, crops symmetrically at the sides
+or trims the bottom, flattens alpha, and
 reports source dimensions/crop bounds. It never stretches the whole source:
 
 ```sh
@@ -128,9 +137,9 @@ spelling, real controls/data, crisp text, device proportions, crop safety,
 background consistency, and variation from the style reference. Prompt adherence
 is not proof of UI preservation; reject or restore faithful composition if
 generation invents content. Show only valid export-sized variants for selection.
-Regenerate after a specific correction, with at most two automatic retries per
-pairing before reporting the repeated issue and asking for direction. User-requested
-revisions begin a new bounded attempt.
+Revise the design or prompt after a specific correction, with at most two automatic
+retries per pairing before reporting the repeated issue and asking for direction.
+User-requested revisions begin a new bounded attempt.
 
 Copy the chosen inspected export to its ordered final target/locale path and
 save approval in state. Preserve earlier approved files when revising.

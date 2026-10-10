@@ -1,5 +1,10 @@
 # Image provider adapters
 
+Read this reference for selected **hybrid** or **image-provider** work. Code mode
+uses [code-rendering.md](code-rendering.md) and skips provider discovery, keys,
+and generation calls. Hybrid generates separate decorative assets; image-provider
+mode enhances a complete scaffold.
+
 Select the user's provider independently of the screenshot workflow. This skill
 supports connected image tools, three bundled HTTP adapters, and a custom command
 adapter. Provider identity and transport are separate: GPT Image can use an
@@ -14,10 +19,11 @@ a custom choice with readiness and material limits. Honour a named provider even
 if unavailable: resolve that integration or explain the blocker. Ask for a choice
 only when the session/state has not already established one.
 
-Verify the selected model's reference-edit support, maximum reference count,
-output sizes/ratios, and concurrency from its tool schema/current official docs.
+Verify reference-edit support when enhancing scaffolds, maximum reference count,
+output sizes/ratios, and concurrency from the model's tool schema/current official docs.
 The HTTP helper routes requests; it does not prove model access or availability.
-No model is hardcoded as a permanent default. Save the selected ID in state.
+No model is hardcoded as a permanent default. Prompt-only generation is sufficient
+for hybrid decoration. Save the selected ID in state.
 
 ## Shared request and result contract
 

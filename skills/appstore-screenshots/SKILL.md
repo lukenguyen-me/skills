@@ -1,6 +1,6 @@
 ---
 name: appstore-screenshots
-description: Create App Store screenshots and Header and Search Results creative assets from an app repository. Discover and run screenshot automation, pair real captures with benefits, and enhance consistent layouts through Gemini, GPT Image, Grok, or a custom image provider. Use for a complete store image set or either creative placement alone.
+description: Create App Store screenshots and Header and Search Results creative assets from an app repository. Capture real UI and render editable designs locally through code, with optional hybrid or image-provider modes. Use with any coding agent for a complete store image set or either creative placement alone.
 license: MIT
 ---
 
@@ -14,8 +14,11 @@ placements as not applicable after checking current Apple support.
 
 Inspired by Adam Lyttle's
 [aso-appstore-screenshots](https://github.com/adamlyttleapps/claude-skill-aso-appstore-screenshots).
-The benefit discovery, scaffold → enhance, and first-approved style reference
-processes are retained under the included [MIT license](LICENSE).
+The benefit discovery and first-approved style reference processes, plus the
+optional scaffold → enhance path, are retained under the included [MIT license](LICENSE).
+
+Default to local code rendering. Any coding agent that can write design code and
+execute a renderer can prepare the files; image-generation tools are optional.
 
 ## 1. Resume from saved evidence
 
@@ -29,7 +32,7 @@ the fields in [references/state.md](references/state.md). Read existing state
 before analysis. Reuse earlier ASO memory if available, importing relevant facts
 with their provenance; the workflow must also work without an agent memory API.
 
-Summarize saved benefits, capture coverage, pairings, provider, brand colour,
+Summarize saved benefits, capture coverage, pairings, rendering mode, brand colour,
 requested asset types, and approved outputs. Check that referenced files exist
 and that captures still represent the current UI. Resume the first incomplete
 or stale phase. Honour requests to change one item without restarting the set.
@@ -110,16 +113,27 @@ Record creative capture choices in their briefs. Prefer distinct captures for
 the screenshot story. Present the pairings for confirmation and save the approved
 mapping. A missing suitable capture returns to the automated capture phase.
 
-## 5. Choose the image provider and visual specification
+## 5. Resolve rendering mode and visual specification
 
-Read [references/providers.md](references/providers.md). Discover connected
-image tools and usable API adapters. If no selection already exists, ask the user
-to choose **Gemini**, **GPT Image**, **Grok**, or another provider, showing which
-are ready and which need setup. Record the chosen provider, model, transport,
-capabilities, and variant count (default three unless already specified). Keep
-that selection on resume. Never silently
-switch providers when a call fails. A prompt-only model is usable for separate
-decorative assets; reference editing is required for full scaffold enhancement.
+Honour a requested or saved mode; otherwise use **code** without a provider-choice
+question. Record the mode, renderer, editable source paths, and variant count
+(default three unless already specified) in `rendering` state:
+
+- **Code:** compose the complete artwork locally from exact copy, real captures,
+  brand assets, and drawn elements. Read [references/code-rendering.md](references/code-rendering.md).
+- **Hybrid:** generate separate decorative assets, then render the final text,
+  device, and real UI locally. Read the code-rendering reference and
+  [references/providers.md](references/providers.md).
+- **Image provider:** retain scaffold enhancement for a requested generative
+  finish. Read [references/providers.md](references/providers.md).
+
+Discover a runnable renderer for code/hybrid. The bundled Pillow helper supports
+both orientations; existing HTML/CSS/SVG, canvas, or 3D composers are also suitable.
+Use project dependencies where possible. Code mode requires neither image-provider
+credentials nor an image tool. Select a provider only for hybrid/image-provider
+work, reusing earlier selections. Preserve legacy provider runs as described in
+the state reference. A failed call or unavailable renderer does not authorize a
+mode or vendor change.
 
 Read [references/design.md](references/design.md) for layout, prompt templates,
 helper commands, and screenshot export checks. When Header or Search Results
@@ -129,55 +143,61 @@ current pages and templates, and save the sources and check date.
 
 Infer one background colour from brand assets and the captures, explain the
 choice, and permit an override. Use one font and fixed text sizes within each
-screenshot layout. Share brand and font choices with
-the creative assets while sizing their content for each placement. Confirm only
+screenshot layout. Share brand and font choices with the creative assets while
+sizing their content for each placement. Confirm only
 unresolved display/locale targets; check Apple's current specifications rather
 than treating old size tables as exhaustive. Configure layout for the supported
-generation aspect ratio and final
-crop before scaffolding so text and important UI survive export.
+rendering canvas and any final crop before composing so text and important UI
+survive export. Local rendering can use the exact target dimensions directly.
 
-## 6. Scaffold, enhance, and review
+## 6. Render, inspect, revise, and review
 
 Run this phase for the screenshot pairings in scope. Asset-only requests can
-proceed directly to phase 7 once their positioning, sources, and provider are ready.
+proceed directly to phase 7 once their positioning, sources, and rendering tools
+are ready.
 
-1. Compose deterministic scaffolds using the bundled helper or a compatible
-   existing composer. They anchor the wording, brand colour, device placement,
-   and real capture. Inspect them internally; user review starts with enhanced
-   export-sized candidates.
-2. Generate the saved variant count for the first pairing. Use parallel calls
-   when the selected transport supports them within its
-   limits. Save each output locally through the provider adapter. Keep request
-   files and metadata free of credentials.
-3. Immediately normalize each candidate to its target dimensions and inspect
-   the **exported** files. Reject altered headlines, invented UI/data, clipping,
+1. Create editable designs for the first pairing using the saved variant count.
+   In code/hybrid mode, render final compositions with distinct, intentional
+   design alternatives; hybrid adds only separately generated decorative assets.
+   Retain exact copy and genuine UI. In image-provider mode, compose scaffolds
+   internally and enhance through the selected adapter using the design reference.
+   Keep design sources, asset paths, render commands, and provider request files.
+2. Render each candidate locally or save its actual provider result. Inspect it,
+   revise the editable design or enhancement prompt, and rerun when needed. A
+   successful command alone does not establish visual quality. User review starts
+   with finished, inspected candidates at export size.
+3. Check each candidate at its target dimensions and normalize when needed;
+   exact-size local RGB renders already meet the export format. Inspect the
+   **exported** files. Reject altered headlines, invented UI/data, clipping,
    unreadable text, or brand/layout drift. Ask the user to choose among valid
-   candidates or give revisions. If all fail, correct the prompt/layout and make
-   a bounded retry; stop repeated failed generation with the concrete issue.
+   candidates or give revisions. If all fail, correct the design/prompt and make
+   a bounded retry as described in the design reference.
 4. Save the approved export to `final/<target>/<locale>/01-<benefit>.png` and
-   record it as the style reference. Later calls include their own scaffold plus
-   this first approved image. Revisions also include the selected candidate when
-   the provider supports three references. Use the capability fallback in the
-   provider reference if it accepts fewer inputs.
+   record it and its editable source as the style reference. In code/hybrid mode,
+   reuse its typography, palette, frame, and spacing in later designs. In
+   image-provider mode, later calls include their own scaffold and the approved
+   image, using the provider reference for reference-count limits.
 5. Repeat for remaining pairings, preserving approvals and saving state after
-   every capture, selection, generation result, and approval. A changed headline,
-   capture, brand, or style marks only dependent outputs stale.
+   every capture, selection, render/generation result, and approval. A changed
+   headline, capture, brand, or style marks only dependent outputs stale.
 
 ## 7. Create Header and Search Results images
 
 Run this phase for creative placements in scope using the static-image recipe in
 [references/creative-assets.md](references/creative-assets.md).
-Reuse the chosen provider, approved brand treatment, and suitable real captures.
-Use dedicated landscape scaffolds with the placement's template safe area.
-The portrait phone composer is for screenshots; use a compatible local composer
-for these layouts. Keep exact copy and real UI authoritative during enhancement.
+Reuse the rendering mode, approved brand treatment, and suitable real captures.
+Render dedicated landscape designs with the placement's template safe area.
+The local `render` helper accepts these canvases; the portrait `compose` helper
+is a screenshot starting layout. Hybrid/provider work follows the selected mode's
+recipe. Keep exact copy and real UI authoritative throughout.
 
-Generate the saved variant count for each placement, normalize each candidate to
-its own export size, and inspect both the full image and its placement preview.
+Render or generate the saved variant count for each placement, check its export
+format, and inspect both the full image and its placement preview.
 Review the Header and Search Results candidates separately. Existing approval
 covers an unchanged asset; revisions invalidate only dependent outputs. Save one
 approved final per requested placement/locale, with its sources, prompt,
-dimensions, preview evidence, and approval in `creative_assets` state.
+dimensions, editable source/render command or provider request, preview evidence,
+and approval in `creative_assets` state.
 
 Completion: each requested placement/locale has one inspected, approved static
 image or a concrete blocker. Apple submission/review status is separate from
@@ -190,8 +210,9 @@ Check shared brand treatment, faithful UI, placement-specific dimensions/formats
 and absence of transparency across all requested images.
 Create a side-by-side showcase from the approved files. Add a link only if the
 user supplied or the repository established it; avoid the inspiration author's
-personal branding. Report the final directory, display targets, provider/model,
-and any incomplete items. Include the two creative assets and their placement
+personal branding. Report the final directory, display targets, rendering mode,
+renderer and editable design paths, provider/model when used, and any incomplete
+items. Include the two creative assets and their placement
 mapping in a full iOS/iPadOS delivery; list them separately from the ordered
 screenshot carousel. Report any App Store Connect previews still pending.
 Keep raw captures and working variants outside `final/`.

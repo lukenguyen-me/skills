@@ -84,29 +84,33 @@ upload is requested. A local template check is not proof of Apple's rendered cro
    paths or capture IDs, optional exact copy, export size, and template safe area.
    Reuse the strongest inspected capture for Search Results when suitable.
    Header art can express positioning without requiring another UI capture.
-2. Compose a dedicated landscape scaffold with a project composer or a small
-   local Pillow composition. Use approved brand assets and real captures, keep
-   their proportions, and place essential content within the template guide.
-   The bundled portrait `compose` command cannot make these layouts. Plan the
-   provider's output ratio and final crop before enhancement; a resized portrait
-   screenshot is not a creative scaffold.
-3. Enhance through the selected provider using the prompt below. Include the
-   scaffold first and an approved brand/style image second when supported.
-   If no style exists for an asset-only request, establish it with the first
-   approved creative. With limited reference support, use the fallbacks in
-   [providers.md](providers.md); composite exact UI/copy locally when necessary.
-4. Export each variant immediately at its placement size. Use `--anchor center`
+2. Create a dedicated, editable landscape design with the bundled `render`
+   command or an existing composer. Read [code-rendering.md](code-rendering.md)
+   for local recipes. Use approved brand assets and real captures, retain their
+   proportions, and place essential content within the template guide. The
+   portrait `compose` command is not suitable for these landscape layouts.
+3. Follow the selected rendering mode. **Code:** render the finished design
+   locally at exact dimensions. **Hybrid:** generate decorative assets separately,
+   then render exact copy and real UI locally. **Image provider:** use the design
+   as a scaffold and enhance using the prompt below, planning the output ratio and
+   crop first. Include an approved style image when supported; use the fallbacks
+   in [providers.md](providers.md) for reference limits. For asset-only work,
+   establish the brand style with the first approved creative in any mode.
+4. Check each variant at its placement size. Exact-size local RGB renders already
+   meet the export format; otherwise normalize immediately. Use `--anchor center`
    when the planned focal point is central; use the planned anchor for Universal.
    The helper removes alpha and preserves proportions, but cannot prove text or
    UI safety. Save its crop bounds, then inspect the resulting file.
 5. Review valid candidates separately for Header and Search Results. Use the
    saved variant count and the bounded retry policy in [design.md](design.md).
+   Revise local design sources or enhancement prompts after observed problems.
    Check faithful UI, exact optional copy, brand consistency, safe areas, and
    local placement previews before user selection.
 6. Save one selected export per requested placement/locale:
    `final/creative/<locale>/header.png` and
    `final/creative/<locale>/search-results.png`. Keep drafts and previews outside
-   `final/`. Record separate design approval and Apple review/publication status.
+   `final/`. Keep editable sources, render commands, and asset provenance with
+   the record; track design approval and Apple review/publication status separately.
    A requested universal file remains 5244 × 2950 PNG and maps to both placements;
    do not count it as a screenshot or quietly substitute it for two dedicated images.
 
@@ -125,6 +129,8 @@ python3 "$SKILL_DIR/scripts/layout.py" export \
 ```
 
 ### Enhancement prompt
+
+Use this prompt for **image-provider** scaffold enhancement only.
 
 ```text
 Create a polished static [HEADER / SEARCH RESULTS] creative for [APP / AUDIENCE].

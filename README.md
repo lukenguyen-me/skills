@@ -24,8 +24,11 @@ Create benefit-led App Store screenshots from an app repository, plus one Header
 and one Search Results creative image per requested locale for iOS/iPadOS.
 Asks whether to prepare all app locales or just one when locale scope is unspecified,
 and keeps the user's choice on resume.
-Discovers and runs existing screenshot automation, then uses consistent scaffolds
-and a chosen image provider: Gemini, GPT Image, Grok, or a custom adapter. Supports
+Discovers and runs existing screenshot automation, then renders editable artwork
+locally through code by default. Works with any coding agent that can run a
+renderer. Optional hybrid mode generates decoration and composes exact copy/UI
+locally; image-provider mode enhances scaffolds through Gemini, GPT Image, Grok,
+or a custom adapter. Supports
 placement-specific dimensions and Apple template safe areas, separate asset
 review, resuming saved progress, exact-size exports, and a showcase preview.
 
@@ -37,9 +40,11 @@ npx skills add lukenguyen-me/skills --skill appstore-screenshots
 ```
 
 From the app repository, invoke `$appstore-screenshots` in Codex or
-`/appstore-screenshots` in Claude Code. Helpers require Python 3.10+ and Pillow;
-API adapters use environment credentials, while connected image tools use their
-existing authentication.
+`/appstore-screenshots` in Claude Code, or load the skill in another coding agent.
+The bundled renderer supports editable layers, device frames, real panel crops,
+shadows, and both portrait and landscape canvases. Helpers require Python 3.10+
+and Pillow; code mode needs no image-provider key. Optional API adapters use
+environment credentials, while connected image tools use existing authentication.
 
 ### luke-mode
 

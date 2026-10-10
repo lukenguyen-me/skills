@@ -6,6 +6,7 @@ import io
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -47,6 +48,19 @@ class ScreenshotTests(unittest.TestCase):
             self.references.append(str(path))
         self.image = png_bytes()
         self.response = {"data": [{"b64_json": base64.b64encode(self.image).decode()}]}
+
+    def local_recipe(self, layers, **updates):
+        directory = self.root / "designs"
+        directory.mkdir(exist_ok=True)
+        recipe = directory / "design.json"
+        recipe.write_text(json.dumps({"width": 300, "height": 160, "background": "white",
+                                      "supersample": 1, "layers": layers, **updates}))
+        return recipe
+
+    def local_font(self):
+        path = self.root / "font.ttf"
+        path.write_bytes(ImageFont.load_default(size=12).font_bytes)
+        return path
 
     def request(self, provider="gpt-image", **updates):
         return {"provider": provider, "model": "selected-image-model", "prompt": "Exact headline and UI",
@@ -266,6 +280,149 @@ class ScreenshotTests(unittest.TestCase):
         landscape.write_bytes(png_bytes("green", (160, 90)))
         result = layout.showcase([self.references[0], landscape], self.root / "showcase.png")
         self.assert_artifact(result, (272, 138))
+
+    def test_local_render_needs_no_credentials_or_network_and_preserves_inputs(self):
+        font = self.local_font()
+        original = Path(self.references[0]).read_bytes()
+        recipe = self.local_recipe([
+            {"type": "text", "text": "TRACK", "font": "../font.ttf", "size": 32,
+             "box": [20, 20, 180, 50], "fill": "black"},
+            {"type": "image", "source": "../ref-0.png", "box": [220, 40, 40, 80], "essential": True},
+        ], background="#2563EB")
+        with patch.dict(os.environ, {}, clear=True), patch("urllib.request.urlopen") as network:
+            result = layout.render_design(recipe, self.root / "local.png")
+            network.assert_not_called()
+        self.assert_artifact(result, (300, 160))
+        self.assertEqual(result["fonts"], [str(font.resolve())])
+        self.assertEqual(result["sources"], [str(Path(self.references[0]).resolve())])
+        self.assertEqual(Path(self.references[0]).read_bytes(), original)
+        with Image.open(result["output"]) as output:
+            self.assertEqual(output.getpixel((240, 80)), (255, 0, 0))
+            self.assertEqual(output.getpixel((0, 0)), (37, 99, 235))
+
+    def test_local_render_cli_resolves_sources_beside_recipe_from_another_directory(self):
+        recipe = self.local_recipe([
+            {"type": "image", "source": "../ref-0.png", "box": [0, 0, 40, 80]},
+        ])
+        working = self.root / "other working directory"
+        working.mkdir()
+        command = subprocess.run([sys.executable, str(SCRIPTS / "layout.py"), "render",
+                                  "--recipe", str(recipe), "--output", "local.png"],
+                                 cwd=working, check=True, capture_output=True, text=True)
+        result = json.loads(command.stdout)
+        self.assert_artifact(result, (300, 160))
+        self.assertEqual(Path(result["output"]), (working / "local.png").resolve())
+        self.assertEqual(result["sources"], [str(Path(self.references[0]).resolve())])
+
+    def test_local_device_contains_complete_capture_without_stretching(self):
+        source = self.root / "two-panels.png"
+        image = Image.new("RGB", (40, 80), "red")
+        image.paste("blue", (0, 40, 40, 80))
+        image.save(source)
+        recipe = self.local_recipe([
+            {"type": "device", "source": "../two-panels.png", "box": [50, 30, 100, 100],
+             "bezel": 10, "radius": 12},
+        ])
+        result = layout.render_design(recipe, self.root / "device.png")
+        with Image.open(result["output"]) as output:
+            self.assertEqual(output.getpixel((85, 45)), (255, 0, 0))
+            self.assertEqual(output.getpixel((85, 115)), (0, 0, 255))
+            self.assertEqual(output.getpixel((70, 80)), (20, 20, 20))
+
+    def test_local_breakout_crops_real_pixels_and_adds_shadow(self):
+        source = self.root / "panels.png"
+        image = Image.new("RGB", (40, 80), "red")
+        image.paste("blue", (0, 40, 40, 80))
+        image.save(source)
+        original = source.read_bytes()
+        recipe = self.local_recipe([
+            {"type": "image", "source": "../panels.png", "crop": [0, 40, 40, 40],
+             "box": [50, 40, 80, 80], "radius": 12,
+             "shadow": {"offset": [8, 8], "blur": 6, "color": "#00000099"}},
+        ])
+        result = layout.render_design(recipe, self.root / "breakout.png")
+        self.assertEqual(source.read_bytes(), original)
+        with Image.open(result["output"]) as output:
+            self.assertEqual(output.getpixel((90, 80)), (0, 0, 255))
+            self.assertNotEqual(output.getpixel((135, 80)), (255, 255, 255))
+
+    def test_local_image_alpha_is_composited_onto_opaque_background(self):
+        source = self.root / "transparent.png"
+        image = Image.new("RGBA", (40, 80), (255, 0, 0, 0))
+        image.paste((0, 255, 0, 255), (0, 20, 40, 60))
+        image.save(source)
+        recipe = self.local_recipe([
+            {"type": "image", "source": "../transparent.png", "box": [10, 10, 80, 80], "radius": 12},
+        ], background="blue")
+        result = layout.render_design(recipe, self.root / "opaque.png")
+        self.assert_artifact(result, (300, 160))
+        with Image.open(result["output"]) as output:
+            self.assertEqual(output.getpixel((50, 15)), (0, 0, 255))
+            self.assertEqual(output.getpixel((50, 50)), (0, 255, 0))
+
+    def test_essential_safe_area_and_unplanned_edge_clipping_fail_before_output(self):
+        for layer, message in (
+            ({"type": "text", "box": [0, 0, 30, 30]}, "safe area"),
+            ({"type": "rect", "box": [0, 0, 30, 30], "essential": True, "bleed": True}, "safe area"),
+            ({"type": "image", "box": [280, 0, 40, 80]}, "exceeds the canvas"),
+        ):
+            with self.subTest(layer=layer):
+                recipe = self.local_recipe([layer], safe_area=[10, 10, 280, 140])
+                output = self.root / "unsafe.png"
+                with self.assertRaisesRegex(ValueError, message):
+                    layout.render_design(recipe, output)
+                self.assertFalse(output.exists())
+
+    def test_local_text_overflow_fails_without_shrinking_or_truncating(self):
+        self.local_font()
+        for text, box in (("TRACK EVERY DETAIL", [20, 20, 30, 60]), ("TRACK\nDETAILS", [20, 20, 250, 15])):
+            with self.subTest(text=text):
+                recipe = self.local_recipe([
+                    {"type": "text", "text": text, "font": "../font.ttf", "size": 40, "box": box},
+                ])
+                output = self.root / "overflow.png"
+                with self.assertRaisesRegex(ValueError, "Text overflows"):
+                    layout.render_design(recipe, output)
+                self.assertFalse(output.exists())
+
+    def test_invalid_source_crop_and_device_cover_are_rejected(self):
+        for layer, message in (
+            ({"type": "image", "crop": [0, 0, 41, 80]}, "crop exceeds"),
+            ({"type": "device", "fit": "cover"}, "devices require contain"),
+        ):
+            with self.subTest(layer=layer):
+                recipe = self.local_recipe([{**layer, "source": "../ref-0.png", "box": [20, 20, 100, 100]}])
+                output = self.root / "bad-capture.png"
+                with self.assertRaisesRegex(ValueError, message):
+                    layout.render_design(recipe, output)
+                self.assertFalse(output.exists())
+
+    def test_local_render_allows_explicit_device_bleed(self):
+        recipe = self.local_recipe([
+            {"type": "device", "source": "../ref-0.png", "box": [40, 50, 100, 200],
+             "bezel": 4, "radius": 12, "bleed": True},
+        ])
+        result = layout.render_design(recipe, self.root / "bleed.png")
+        with Image.open(result["output"]) as output:
+            self.assertEqual(output.getpixel((90, 159)), (255, 0, 0))
+
+    def test_local_render_handles_actual_store_canvases_and_supersampling(self):
+        for width, height, scale in ((1290, 2796, 1), (3840, 1646, 1), (1920, 1280, 2)):
+            with self.subTest(size=(width, height)):
+                recipe = self.local_recipe([
+                    {"type": "ellipse", "box": [20, 20, 100, 100], "fill": "blue", "opacity": 128},
+                ], width=width, height=height, supersample=scale)
+                result = layout.render_design(recipe, self.root / f"canvas-{width}.png")
+                self.assert_artifact(result, (width, height))
+                with Image.open(result["output"]) as output:
+                    self.assertEqual(output.getpixel((70, 70)), (127, 127, 255))
+
+    def test_local_render_never_overwrites_approved_files(self):
+        output = self.root / "approved-local.png"
+        output.write_bytes(self.image)
+        with self.assertRaises(FileExistsError):
+            layout.render_design(self.root / "missing-recipe.json", output)
+        self.assertEqual(output.read_bytes(), self.image)
 
 
 if __name__ == "__main__":
