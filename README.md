@@ -18,6 +18,22 @@ npx skills add lukenguyen-me/skills --skill write-to-human
 
 ## Available Skills
 
+### prepare-app-icons
+
+Adapt an existing logo or app icon into Apple app icons, Android adaptive launcher
+resources, and web favicons. Checks current official platform guidance, preserves
+the artwork, and handles each platform's spacing, masks, transparency, and export
+formats. Includes a local Python/Pillow exporter, previews, and optional PWA and
+Google Play listing assets. Apple guidance covers Icon Composer and platform
+catalogs; the bundled exporter supplies an iOS/iPadOS catalog and Composer layers.
+
+```sh
+npx skills add lukenguyen-me/skills --skill prepare-app-icons
+```
+
+Invoke `$prepare-app-icons` in Codex or `/prepare-app-icons` in Claude Code with an
+existing image and the target platforms. See [the skill](skills/prepare-app-icons/SKILL.md).
+
 ### appstore-screenshots
 
 Create benefit-led App Store screenshots from an app repository, plus one Header
