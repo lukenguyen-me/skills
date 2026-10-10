@@ -309,6 +309,22 @@ def export_bundle(args):
                 raise ValueError("Monochrome source must have transparent surroundings, not an opaque tile.")
         monochrome = Image.new("RGBA", mono_source.size, "white")
         monochrome.putalpha(mono_source.getchannel("A"))
+    artwork_bytes = None
+    artwork_edit = None
+    if args.artwork_report:
+        artwork_bytes = Path(args.artwork_report).read_bytes()
+        evidence = json.loads(artwork_bytes)
+        if not isinstance(evidence, dict):
+            raise ValueError("Artwork report must be a JSON object.")
+        for field in ("provider", "model"):
+            if not isinstance(evidence.get(field), str) or not evidence[field].strip():
+                raise ValueError(f"Artwork report requires a nonempty {field}.")
+        digest = evidence.get("sha256")
+        roles = [role for role, info in inputs.items() if info["sha256"] == digest]
+        if not roles:
+            raise ValueError("Artwork report output hash must match a supplied raster input.")
+        artwork_edit = {"provider": evidence["provider"], "model": evidence["model"],
+                        "sha256": digest, "input_roles": roles, "bundle_copy": "artwork-edit.json"}
     guideline_bytes = None
     guidelines = {"status": "pending", "reason": "The exporter does not check current online guidance."}
     if args.guidelines:
@@ -474,6 +490,8 @@ def export_bundle(args):
         create_preview(root, panels, favicons, files)
         if guideline_bytes is not None:
             (root / "guideline-check.json").write_bytes(guideline_bytes)
+        if artwork_bytes is not None:
+            (root / "artwork-edit.json").write_bytes(artwork_bytes)
         for role, info in inputs.items():
             original = Path(info["path"])
             relative = f"sources/{role}{original.suffix.lower()}"
@@ -486,6 +504,7 @@ def export_bundle(args):
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "guideline_snapshot": "2026-10-10",
             "guidelines": guidelines,
+            "artwork_edit": artwork_edit,
             "inputs": inputs,
             "platforms": args.platforms,
             "composition": {"source_kind": args.source_kind, "background": args.background,
@@ -524,6 +543,7 @@ def build_parser():
     export.add_argument("--play-store", action="store_true", help="Also export the separate Play listing icon.")
     export.add_argument("--pwa", action="store_true", help="Also export separate any/maskable PWA icons.")
     export.add_argument("--guidelines", help="JSON evidence of current official guideline checks performed by the caller.")
+    export.add_argument("--artwork-report", help="Provider edit report whose output hash matches a supplied image.")
     return parser
 
 

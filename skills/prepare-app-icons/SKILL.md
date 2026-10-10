@@ -1,6 +1,6 @@
 ---
 name: prepare-app-icons
-description: Adapt an existing app icon or logo into Apple app icons, Android adaptive launcher icons, and web favicons. Use when exporting platform icon assets or correcting their padding, layers, sizes, transparency, and packaging while preserving the supplied artwork.
+description: Adapt an existing app icon or logo into Apple app icons, Android adaptive launcher icons, and web favicons. Use for platform exports, padding, layers, sizes, transparency, and packaging, with optional GPT Image, Gemini, Grok, or custom-provider artwork edits that preserve the supplied brand.
 ---
 
 # Prepare app icons
@@ -60,9 +60,17 @@ verification; do not describe it as verified against the latest guidance.
 ## Compose and export
 
 Use local asset tools for deterministic sizing, framing, alpha composition, and
-format conversion. Keep source files and editable vectors. If the user explicitly
-requests artwork repair or generation, use an available image-editing/design
-workflow, inspect its result, then perform the platform exports here.
+format conversion. Keep source files and editable vectors. When the user requests
+AI repair, enhancement, or foreground extraction, read
+[references/providers.md](references/providers.md). It defines a shared edit
+contract for GPT Image, Gemini, Grok, custom commands, and connected image tools.
+Prepare one candidate master with the selected provider, compare it with the
+original, then export the reviewed artwork through the platform helpers.
+
+Keep platform geometry in the exporter: AI-generated framing is not evidence
+that padding, alpha, or output dimensions follow a platform standard. Preserve
+transparent foregrounds through the provider handoff. Keep the provider report
+with final artifacts so the actual model and edited source are traceable.
 
 Create a separate composition for each platform. Android's adaptive foreground
 needs more room than the typical Apple composition. Browser favicons need enough
@@ -105,6 +113,6 @@ icon check. When export alone is requested, provide exact integration instructio
 without changing application configuration.
 
 Deliver the platform files, editable sources/layers, preview sheet, and reports.
-Report the source artwork, output location, guidance check date, and any pending
-native-tool or visual verification. Geometry checks establish file compliance;
-they do not establish brand quality or native system rendering.
+Report the source artwork, output location, guidance check date, any provider/model
+used, and any pending native-tool or visual verification. Geometry checks establish
+file compliance; they do not establish brand quality or native system rendering.

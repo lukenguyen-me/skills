@@ -39,6 +39,12 @@ silhouette; review internal details before accepting it. The flags are exclusive
 Add `--play-store` for the separate Play listing asset and `--pwa` for install
 icons. These options require their corresponding platform in `--platforms`.
 
+For an optional AI-edited candidate, add `--artwork-report /path/to/candidate.png.edit.json`
+from [the provider adapter](providers.md). Its output hash must match the supplied
+source, foreground, favicon, or monochrome input. The exporter copies the record
+unchanged and links its provider/model to those input roles in `asset-report.json`.
+This records provenance; visual and native rendering checks remain independent.
+
 ## Output
 
 | Location | Purpose |
@@ -52,6 +58,7 @@ icons. These options require their corresponding platform in `--platforms`.
 | `preview.png` | Approximate platform masks, Android safe region, and favicons on light/dark surfaces |
 | `asset-report.json` | Input hashes, composition settings, warnings, files, and structural checks |
 | `guideline-check.json` | Supplied source-check record, copied unchanged |
+| `artwork-edit.json` | Optional matched provider edit record, copied unchanged |
 
 `apple/icon-composer-layers/` is a handoff, not a native `.icon` file. The helper
 does not generate appearance variants, macOS/Watch catalogs, or tvOS/visionOS

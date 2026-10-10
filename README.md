@@ -26,6 +26,9 @@ the artwork, and handles each platform's spacing, masks, transparency, and expor
 formats. Includes a local Python/Pillow exporter, previews, and optional PWA and
 Google Play listing assets. Apple guidance covers Icon Composer and platform
 catalogs; the bundled exporter supplies an iOS/iPadOS catalog and Composer layers.
+Optional artwork editing supports GPT Image, Gemini, Grok, connected image tools,
+and custom provider bridges. Provider output preserves transparency and passes
+through the local exporter for exact platform geometry.
 
 ```sh
 npx skills add lukenguyen-me/skills --skill prepare-app-icons
