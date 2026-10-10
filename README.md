@@ -18,6 +18,25 @@ npx skills add lukenguyen-me/skills --skill write-to-human
 
 ## Available Skills
 
+### appstore-screenshots
+
+Create benefit-led App Store screenshots from an app repository. Discovers and
+runs existing screenshot automation, then uses consistent scaffolds and a chosen
+image provider: Gemini, GPT Image, Grok, or a custom adapter. Supports review,
+resuming saved progress, exact-size exports, and a showcase preview.
+
+Inspired by [aso-appstore-screenshots](https://github.com/adamlyttleapps/claude-skill-aso-appstore-screenshots).
+See [the skill](skills/appstore-screenshots/SKILL.md) for the workflow and helpers.
+
+```sh
+npx skills add lukenguyen-me/skills --skill appstore-screenshots
+```
+
+From the app repository, invoke `$appstore-screenshots` in Codex or
+`/appstore-screenshots` in Claude Code. Helpers require Python 3.10+ and Pillow;
+API adapters use environment credentials, while connected image tools use their
+existing authentication.
+
 ### luke-mode
 
 Coordinate engineering requests with playbooks, compatible installed skills, and
