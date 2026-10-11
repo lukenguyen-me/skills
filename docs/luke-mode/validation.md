@@ -43,103 +43,45 @@ single original worktree also matched their baselines.
 These checks establish routing and prerequisite handling. They do not establish
 runtime model inheritance, concurrent execution, or completed spec implementation.
 
-## Package checks
+## Current single-install package checks
 
-The Codex `skill-creator` validator passed for the main skill and all four companions:
+Updated on 2026-10-11. Luke now bundles only setup and Matt sync. PStack's
+verification-authoring skills are external setup dependencies; the earlier
+behavioral observations above do not validate the revised bootstrap workflow.
+
+Validate the three owned skill entry points:
 
 ```sh
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/setup-luke-mode
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/sync-matt-pocock-skills
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/create-verification-skill
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/maintain-verification-skill
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode/skills/setup-luke-mode
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode/skills/sync-matt-pocock-skills
+python3 -B -m unittest discover -s tests -p test_package_luke_mode_cursor.py -v
 ```
 
-Relative Markdown file links resolve. YAML metadata specifies
-`allow_implicit_invocation: false` for the main skill and verification companions,
-and `true` for setup and sync.
-Files contain no trailing whitespace or
-unfinished endings. The package contains Markdown, Codex metadata, and the
-upstream MIT notices.
-
-## Cursor Cloud implementation
-
-The Cloud adapter and harness selection are implemented. `scripts/package-luke-mode-cursor.py`
-prepares the main skill and all four companions as sibling folders, preserving
-the sources and Codex metadata. The main skill and verification companions get
-Cursor's native explicit-only field; setup and sync retain normal discovery.
-An optional repository models file
-supports Cloud portability with a separate `Cursor Cloud` profile.
-
-All eleven local packaging checks passed in disposable directories:
-
-```sh
-python3 -B -m unittest discover -s tests -v
-```
-
-These checks cover all five skills' completeness, cross-skill file links, native
-invocation metadata, unchanged sources/resources, a target path with spaces,
-invocation from another working directory, existing files/directories/symlinks
-in any bundle slot, preservation of the target when a sub-skill already exists,
-and rejection of a destination inside any source skill. Live Cursor behavior needs the
-[Cloud scenarios](scenarios/routing.md#cursor-cloud-compatibility).
-
-The source skill still passes the Codex validator. Relative file links and
-anchors resolve in both the source and generated package. YAML parsing confirmed
-Cursor's explicit-invocation flag and preserved Codex policy. The independent
-Codex profile evaluation above checks the revised selection rules; it does not
-exercise Cursor's runtime.
+The local bundle tests cover one complete Cursor directory, main-entry invocation
+metadata, unchanged source resources, relocated cross-skill links, paths with
+spaces, packaging from another working directory, preservation of existing
+files/directories/symlinks, and rejection of destinations inside the source.
+Registration tests copy only Luke into an isolated root, expose both commands
+from their bundled sources, repeat registration without changes, and preserve
+the whole command root when a conflicting entry exists. No Matt or PStack
+workflow is vendored or included in Cursor packaging.
 
 ## Remaining coverage
 
-The P0 instruction update adds proportional blast-radius assessment across
-change-making routes, project verification skill invocation and discovery, and
-acceptance evidence beyond build or unit-test success. Package checks were
-repeated after the update. The six new [blast-radius and evidence scenarios](scenarios/routing.md#blast-radius-and-evidence)
-remain unrun; the earlier behavioral results do not validate these changes in
-a live session.
+Live first-project setup, upstream dependency installation, native skill-loader
+refresh, and Matt's repository configuration have not been exercised by these
+local package checks. No global skill root, plugin cache, tracker, or actual
+application verifier was modified by the tests. The setup and external
+verification [scenarios](scenarios/routing.md) remain manual acceptance cases.
 
-Full setup now also checks Matt's per-repository configuration and observes
-`setup-matt-pocock-skills`'s explicit invocation policy. Model-only setup remains
-available. Package checks were repeated after this update; the new
-[setup scenarios](scenarios/routing.md#setup-and-portability) remain unrun.
-Earlier model-profile validation covers only the personal model stage.
+The earlier whole-spec checks establish routing and preconditions only. They do
+not prove concurrent ticket execution, integration recovery, completed spec
+verification, or external delivery. The blast-radius and runtime-evidence
+scenarios remain unrun.
 
-Setup now lives in `setup-luke-mode`; `sync-matt-pocock-skills` adds a separate
-workflow for refreshing the complete upstream toolkit. Luke routes the legacy
-setup commands and explicit sync requests to these sub-skills. The three source
-skills pass static validation, and the eleven bundle checks pass. The new direct
-sub-skill and [sync scenarios](scenarios/routing.md#matt-toolkit-sync) remain unrun;
-no Matt plugin, global skill root, or live Cloud environment was changed during
-these package checks.
-
-PStack-derived verification creation and maintenance now live beside Luke's
-setup and sync companions. All five source skills pass static validation, and
-the eleven bundle checks pass with the expanded inventory. The checks include
-the original feature-map examples and license files, explicit-only metadata in
-both harness formats, and collision preservation for every companion slot.
-The new [verification authoring scenarios](scenarios/routing.md#verification-creation-and-maintenance)
-remain unrun: no generated app verifier or live maintenance pass was exercised
-by the package suite. Packaging results do not establish live native discovery
-or behavioral correctness of those workflows.
-
-Whole-spec execution now belongs to Implement, with automatic parent detection
-and an optional explicit Matt owner. The shared reference is included by the
-existing bundle checks; all five skill validators, relative links and anchors,
-and eleven packaging checks pass. The preflight results above cover mode and
-owner selection. The remaining [whole-spec scenarios](scenarios/routing.md#whole-spec-execution)
-are unrun: no live ticket coding, parallel worktree dispatch, stale-candidate
-refresh, integration failure recovery, resumed execution, full-spec review,
-cleanup, PR, or tracker delivery was exercised. The Cloud whole-spec route was
-not run in a live Cloud environment.
-
-Native Codex skill discovery was not verified: the sandbox blocked the optional
-app-server check, which was skipped. No global installation or live inference
-with the saved role mappings was performed. The model checks establish
-advertised support, not account entitlement or observed execution settings.
-
-The remaining [routing scenarios](scenarios/routing.md) are manual acceptance
-cases. Cursor Cloud native discovery, skill sync, model overrides, substitution
-handling, and delegated execution have not been run in Cursor. The local package
-checks do not establish account access or native execution. Claude Code and
-Cursor editor/CLI adapters remain unimplemented.
+Cursor Cloud native discovery, personal skill sync, model overrides, substitution
+handling, and delegated execution remain unverified. Claude Code and Cursor
+editor/CLI model adapters remain unimplemented; their native capabilities cannot
+be inferred from the Codex or Cloud adapter. Model catalog checks establish
+advertised support, not entitlement or observed execution settings.

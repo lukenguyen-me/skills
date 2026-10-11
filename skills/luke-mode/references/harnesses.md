@@ -10,13 +10,16 @@ An external Cursor connector in a Codex session does not make that session Curso
 | Codex | `Codex` | [Codex](../adapters/codex.md) | `$luke-mode` |
 | Cursor Cloud Agent | `Cursor Cloud` | [Cursor Cloud](../adapters/cursor-cloud.md) | `/luke-mode` |
 
-All companions use the same native command prefix:
+All bundled sub-skills use the same native command prefix once discovered or
+registered by setup:
 `$setup-luke-mode` and `$sync-matt-pocock-skills` in Codex, or
 `/setup-luke-mode` and `/sync-matt-pocock-skills` in Cursor Cloud.
 The verification companions are `$create-verification-skill` and
 `$maintain-verification-skill` in Codex, or `/create-verification-skill` and
 `/maintain-verification-skill` in Cursor Cloud. Naming either as an argument to
 Luke is an explicit invocation of that companion as well.
+Before separate commands are indexed, use `$luke-mode setup-luke-mode` or
+`/luke-mode setup-luke-mode`; the bundled workflow is already installed.
 
 The external Matt workflow uses `$luke-mode implement-spec <spec-ref>` in Codex
 or `/luke-mode implement-spec <spec-ref>` in Cursor Cloud, routed through the

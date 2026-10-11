@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare Luke Mode and its four companion skills for Cursor in one skill root."""
+"""Prepare one self-contained Luke Mode bundle for Cursor."""
 
 import argparse
 from pathlib import Path
@@ -12,12 +12,8 @@ SKILL_NAMES = (
     "luke-mode",
     "setup-luke-mode",
     "sync-matt-pocock-skills",
-    "create-verification-skill",
-    "maintain-verification-skill",
 )
-EXPLICIT_ONLY = frozenset(
-    {"luke-mode", "create-verification-skill", "maintain-verification-skill"}
-)
+EXPLICIT_ONLY = frozenset({"luke-mode"})
 
 
 def cursor_entrypoint(source: Path) -> str:
@@ -35,49 +31,30 @@ def cursor_entrypoint(source: Path) -> str:
 
 
 def package(destination: Path) -> None:
-    skill_root = Path(__file__).resolve().parents[1] / "skills"
-    sources = {name: skill_root / name for name in SKILL_NAMES}
+    source = Path(__file__).resolve().parents[1] / "skills" / "luke-mode"
     destination = destination.expanduser()
     if destination.name != "luke-mode":
         raise ValueError("The destination folder must be named luke-mode.")
-    destinations = {name: destination.parent / name for name in SKILL_NAMES}
-
-    def check_destinations() -> None:
-        for target in destinations.values():
-            if target.exists() or target.is_symlink():
-                raise ValueError(f"{target} exists. Inspect it before updating.")
-
-    check_destinations()
-    destinations = {name: target.resolve() for name, target in destinations.items()}
-    for source in sources.values():
-        for target in destinations.values():
-            if source == target or source in target.parents or target in source.parents:
-                raise ValueError("The destination must be outside the source skills.")
-    entrypoints = {name: cursor_entrypoint(source) for name, source in sources.items()}
-
-    target_root = destinations["luke-mode"].parent
-    target_root.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix=".luke-mode-", dir=target_root) as staging:
-        for name, source in sources.items():
-            prepared = Path(staging) / name
-
-            def ignore_entrypoint(folder: str, _names: list[str]) -> list[str]:
-                return ["SKILL.md"] if Path(folder) == source else []
-
-            shutil.copytree(source, prepared, ignore=ignore_entrypoint)
-            (prepared / "SKILL.md").write_text(entrypoints[name], encoding="utf-8")
-        check_destinations()
-        published = []
-        try:
-            for name, target in destinations.items():
-                if target.exists() or target.is_symlink():
-                    raise ValueError(f"{target} appeared during packaging.")
-                (Path(staging) / name).rename(target)
-                published.append(target)
-        except (OSError, ValueError):
-            for target in reversed(published):
-                target.rename(Path(staging) / target.name)
-            raise
+    if destination.exists() or destination.is_symlink():
+        raise ValueError(f"{destination} exists. Inspect it before updating.")
+    destination = destination.resolve()
+    if source == destination or source in destination.parents or destination in source.parents:
+        raise ValueError("The destination must be outside the source bundle.")
+    sources = {"luke-mode": source}
+    sources.update({name: source / "skills" / name for name in SKILL_NAMES[1:]})
+    entrypoints = {
+        skill.relative_to(source) / "SKILL.md": cursor_entrypoint(skill)
+        for skill in sources.values()
+    }
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".luke-mode-", dir=destination.parent) as staging:
+        prepared = Path(staging) / "luke-mode"
+        shutil.copytree(source, prepared)
+        for relative, content in entrypoints.items():
+            (prepared / relative).write_text(content, encoding="utf-8")
+        if destination.exists() or destination.is_symlink():
+            raise ValueError(f"{destination} appeared during packaging.")
+        prepared.rename(destination)
 
 
 def main() -> int:
@@ -85,7 +62,7 @@ def main() -> int:
     parser.add_argument(
         "destination",
         type=Path,
-        help="New luke-mode folder; all four companions are created beside it",
+        help="New luke-mode folder containing both bundled sub-skills",
     )
     args = parser.parse_args()
     try:
@@ -93,11 +70,8 @@ def main() -> int:
     except (OSError, ValueError) as error:
         parser.exit(1, f"Cannot package Luke Mode: {error}\n")
     print(f"Prepared {args.destination.expanduser().resolve()}")
-    print(f"Prepared sibling skills: {', '.join(SKILL_NAMES[1:])}.")
-    print(
-        "Cursor explicit-only: /luke-mode, /create-verification-skill, "
-        "/maintain-verification-skill."
-    )
+    print(f"Included bundled skills: {', '.join(SKILL_NAMES[1:])}.")
+    print("Cursor explicit-only: /luke-mode.")
     print("Setup and sync support matching requests and routing from Luke Mode.")
     return 0
 

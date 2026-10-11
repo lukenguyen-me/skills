@@ -20,10 +20,11 @@ requiring a `verify-*` name. Load only relevant candidates.
 
 Luke's `agents/openai.yaml` disables implicit invocation for the main skill.
 Its setup and sync sub-skills permit discovery for their scoped requests and
-routing from Luke. The `create-verification-skill` and
-`maintain-verification-skill` companions disable implicit invocation and run
-when explicitly named, directly or through Luke. Install all five beside one
-another in one skill root; two same-name installations can create ambiguous choices.
+routing from Luke. Both ship under Luke's `skills/` directory.
+PStack verification workflows are installed externally by setup. Read their
+installed policy and preserve explicit-only invocation. Setup can register links
+in the active discovery root when separate commands are absent; those links point to the bundled files.
+Two unrelated same-name installations can create ambiguous choices.
 Project instructions remain project-owned; Luke does not install an always-on
 `AGENTS.md` rule.
 

@@ -29,11 +29,10 @@ parent-run evidence, not a subagent catalog or proof of a delegate's model.
 Invoke Luke explicitly with `/luke-mode`. The prepared Cursor package sets
 `disable-model-invocation: true` in `SKILL.md`. Codex's `agents/openai.yaml` alone
 does not configure Cursor invocation. Use the repository's `scripts/package-luke-mode-cursor.py`
-to prepare the main skill plus sibling `setup-luke-mode` and
-`sync-matt-pocock-skills`, `create-verification-skill`, and
-`maintain-verification-skill` copies before installation. The main skill and
-verification companions are explicit-only; setup and sync support matching
-requests and routing from Luke. Naming a verification companion in the user's
+to prepare one `luke-mode` directory containing setup and sync.
+The helper converts invocation metadata in every bundled entry point. The main skill is explicit-only; setup and sync support matching requests
+and routing from Luke. Setup installs the external PStack verification skills
+with their upstream invocation policy. Naming a verification companion in the user's
 Luke request explicitly selects that workflow.
 
 Start discovery with the live catalog and applicable project instructions.
@@ -47,8 +46,8 @@ to the selected files, native invocation policy, resources, and disabled state.
 Deliver skills as actual files in the cloned repository, or use Cursor's personal
 skill sync from `~/.cursor/skills/`. Cursor does not sync `~/.agents/skills/` or
 arbitrary personal config files. A symlink to a laptop checkout is insufficient
-for a remote clone. Confirm discovery in the Cloud run. Matt's setup command is
-`/setup-matt-pocock-skills`; its user-only policy still requires explicit invocation.
+for a remote clone. Confirm discovery in the Cloud run. Full/toolkit Luke setup includes Matt's repository setup stage explicitly;
+ordinary engineering requests still respect its user-only policy.
 [Skills and sync](https://cursor.com/docs/skills)
 
 ## Models

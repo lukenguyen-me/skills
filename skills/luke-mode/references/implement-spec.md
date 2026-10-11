@@ -44,7 +44,7 @@ Matt's ordinary `implement` workflow around each ticket in either whole-spec mod
   remain requirements. For the explicit Matt path, also resolve the installed
   `implement-spec`, provenance, enabled state, policy, and every required
   dependency; its missing prerequisites leave that request pending. A requested
-  [Matt sync](../../sync-matt-pocock-skills/SKILL.md) can install missing files.
+  [Matt sync](../skills/sync-matt-pocock-skills/SKILL.md) can install missing files.
 - Read the spec, all associated tickets, their blockers, and the configured
   tracker from project guidance. Validate ticket identities and detect missing
   blockers or cycles before dispatch. Establish acceptance evidence and retain

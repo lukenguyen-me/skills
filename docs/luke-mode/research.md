@@ -25,23 +25,14 @@ Luke starts from the user's agreed preferences; transcript mining, automatic
 skill repair, and automatic PR creation are outside V1.
 [Automate Me](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/automate-me/SKILL.md)
 
-Project-specific verification recipes should take priority over invented generic
-checks. Luke now includes adapted `create-verification-skill` and
-`maintain-verification-skill` companions. Both retain PStack's explicit-only
-policy and include its MIT notice; creation remains a separate requested task
-when no project recipe exists. The feature-map examples come from the same
-snapshot. Creation proves one feature and retains evidence after cleanup;
-maintenance covers the full map against source and live behavior.
-[Creation](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/create-verification-skill/SKILL.md),
-[maintenance](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/maintain-verification-skill/SKILL.md),
-[license](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/LICENSE)
-
-Luke's versions use native harness discovery and optional bounded Worker
-delegation instead of requiring PStack agents or unlimited parallel readers.
-Maintenance delivers workspace corrections by default, with a PR only when
-requested or already authorized. An inaccessible feature is reported as
-unverified and keeps a full maintenance pass blocked. Neither workflow runs
-merely because ordinary engineering verification finds a missing recipe.
+Project-specific verification recipes take priority over invented generic
+checks. Luke setup installs `create-verification-skill` and
+`maintain-verification-skill` externally from PStack, preserving upstream
+instructions and resources rather than maintaining adapted copies. Creation
+remains explicitly requested when no project recipe exists. The installed
+workflows own their prerequisites, evidence requirements, and delivery rules.
+[Creation](https://github.com/backnotprop/pstack/blob/main/skills/create-verification-skill/SKILL.md),
+[maintenance](https://github.com/backnotprop/pstack/blob/main/skills/maintain-verification-skill/SKILL.md)
 
 ## Matt Pocock
 
@@ -158,8 +149,8 @@ an explicit `implement-spec` command selects Matt's original workflow. Whole-spe
 execution permits concurrency only across independently owned worktrees and
 resources, under one integration writer and native capacity.
 Setup configures four portable model roles: Reasoning, Coding, Worker, and
-Reviewer, using exact models per harness, and checks Matt's per-repository setup.
-Four companion workflows cover setup, Matt toolkit sync, and explicitly named
-verification creation and maintenance.
+Reviewer, using exact models per harness. Full setup installs missing Matt and
+PStack dependencies and runs Matt's per-repository setup. Setup and Matt sync
+ship inside Luke; verification creation and maintenance remain external.
 The human keeps product and consequential architecture decisions. Verification
 and the authorized workspace delivery are the default completion boundary.

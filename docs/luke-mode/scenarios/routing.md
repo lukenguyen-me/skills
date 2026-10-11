@@ -56,10 +56,13 @@ For full setup, use a disposable repository and temporary model preferences.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| `$setup-luke-mode` | Runs the setup stages directly, using Luke's shared harness/model references; does not enter an application playbook or update installed skills. |
+| Install only Luke; `$luke-mode setup-luke-mode` in a new project | Reads bundled setup directly, registers setup/sync commands, installs Matt's full toolkit and only PStack's two verification-authoring skills in the inferred active agent/scope, then configures models and the project. No vendored verification copies are needed. |
+| Complete accepted setup run a second time | Reuses matching registrations, upstream dependencies, models, and repository guidance; no needless refresh or repeated choices. |
+| Missing PStack skill, unknown provenance, or network failure | Installs missing official files when permitted; protects conflicting customizations and reports concrete pending dependencies without claiming readiness. |
+| `$setup-luke-mode` | Runs the setup stages directly, using Luke's shared harness/model references; registers bundled commands, installs missing Matt and PStack dependencies, configures models, and sets up the repository without entering an application playbook. |
 | `$luke-mode setup`; Matt's repository guidance and referenced configuration already satisfy the installed skills | Reuses existing toolkit settings, configures or reuses personal models, and reports both stages ready without rerunning Matt setup. |
-| `$luke-mode setup`; repository configuration is missing and the installed setup skill is user-only | Configures personal models and shows `$setup-matt-pocock-skills` as the pending repository action; makes no repository or tracker writes and does not claim full setup complete. |
-| `$luke-mode setup`; `setup-matt-pocock-skills` is missing, disabled, or incompatible | Reports the prerequisite and toolkit setup as pending; does not install, enable, or invent a replacement setup. Independent model configuration can finish. |
+| `$luke-mode setup`; repository configuration is missing and the installed setup skill is user-only | Reuses or configures personal models and runs Matt's repository setup as an explicitly selected stage, honoring project choices and reviewable drafts without requiring a second skill command. |
+| `$luke-mode setup`; `setup-matt-pocock-skills` is missing | Installs the official toolkit through the bundled sync workflow, verifies resources, then runs repository setup. Disabled or incompatible installations remain pending. Independent model configuration can finish. |
 | `$luke-mode setup` together with an explicit `$setup-matt-pocock-skills` invocation | Follows the installed Matt workflow for the repository stage, including its drafts and confirmations; verifies generated guidance and reports both stages accurately. |
 | Existing setup has a missing referenced configuration file or required label mapping | Identifies the incomplete prerequisite; file presence alone does not establish readiness. |
 | Run `$luke-mode setup` in a second unconfigured repository with an accepted personal model profile | Reuses personal choices and checks the second repository independently; the first repository's setup does not mark the second ready. |
@@ -123,26 +126,18 @@ checks from actual delegated execution and integration.
 
 ## Verification creation and maintenance
 
-Use disposable apps with real documented launch commands and control surfaces.
-Retain source fixtures, generated recipes, drive outputs, and post-cleanup
-artifacts. These scenarios exercise the workflow, not just Markdown packaging.
+Install the external PStack skills into an isolated root and use a disposable
+app repository. These checks cover Luke's dependency routing and the installed
+upstream contract, not a Luke-maintained copy.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| `$create-verification-skill` in an app with no verifier | Discovers the app from source, writes a project-local skill and linked feature map, drives one mapped user path, and retains evidence after cleanup. Does not claim the whole map was exercised. |
-| `$luke-mode create-verification-skill for this app` | Treats the named companion as explicitly invoked and routes creation before an application playbook. Uses the current app's compatible project skill root. |
-| Ordinary Luke implementation; no project verifier exists | Uses documented checks and real controls under the fallback rules. Does not invoke a creation or maintenance companion implicitly. |
-| App cannot launch or its required driver is unavailable | Names the actual prerequisite and any generated draft; does not claim creation complete or make unrelated app repairs. |
-| A verifier already exists at the intended target; unrelated skill files are present | Preserves the existing target and unrelated files; offers the maintenance workflow rather than overwriting the verifier. |
-| `$maintain-verification-skill` or `$luke-mode maintain-verification-skill`; stale command and unindexed feature | Accounts for every feature file, reconciles the index, checks source, proves every feature and mapped entry point, and re-drives corrected commands. Changes remain in the verifier directory. |
-| Source looks clean but the live user path regressed | Runs the live pass anyway, reports the product failure with evidence, and preserves the expected behavior instead of rewriting the map to match a defect. |
-| Native delegation unavailable | Performs the complete source pass directly and discloses the limit; the coordinator still owns sequential driving and teardown. |
-| Doctor fails because its recipe drifted | Corrects the in-scope recipe, restarts only what changed, and retries once. A remaining failure is blocked, with retained artifacts and no stranded owned processes. |
-| One feature needs unavailable auth or an unsupported OS | Records the attempted route and concrete missing prerequisite; calls the feature unverified and the full maintenance outcome blocked. |
-| A harness repair works once but cleanup deletes the evidence | Repairs artifact placement or cleanup and repeats the affected proof before claiming success. Evidence survives final teardown. |
-| Clean pass; changed pass without requested delivery; changed pass with an authorized PR | Clean makes no branch or PR; changed leaves proven workspace corrections by default; authorized PR delivery includes at most one PR. |
-| Target verifier is user-only and has not been explicitly invoked | Reports the required native invocation; maintenance does not bypass the verifier's policy by reading its instructions. |
-| Several applicable verifiers or duplicate PStack/Luke companion names | Resolves the intended target and installation before writes. A similarly named global skill is not silently overwritten. |
+| `$luke-mode create-verification-skill for this app`; official PStack skill installed | Resolves provenance and resources, treats the named workflow as explicitly invoked, and follows the installed creation instructions. The generated verifier is proven through a mapped feature and retained evidence. |
+| `$luke-mode maintain-verification-skill`; official PStack skill installed | Resolves the installed workflow and follows its source-reader, live-coverage, cleanup, and delivery requirements within the user's authorization. Missing required capabilities remain explicit gaps. |
+| Either workflow is absent | Reports the missing external dependency and points to Luke setup; does not use a vendored copy or install skills during an unrelated engineering task. |
+| Ordinary Luke implementation; no project verifier exists | Uses permitted documented checks and real controls under the fallback rules; does not invoke either authoring workflow implicitly. |
+| Several applicable verifiers or duplicate PStack installations | Resolves the intended target and source before writes; protects unrelated skills and local customizations. |
+| Existing verifier has incompatible policy or unavailable runtime controls | Reports the exact unmet prerequisite; does not claim the upstream workflow completed through a different procedure. |
 
 ## Cursor Cloud compatibility
 
@@ -152,11 +147,11 @@ profile, task cards or returned model metadata, final diff, and check artifacts.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| Package the main skill and all four companions | Creates five sibling skill directories, preserves all resources, licenses, and cross-skill links, and applies explicit-only metadata to the main skill and verification companions. Setup and sync retain normal discovery. |
+| Package Luke Mode | Creates one Luke directory with bundled setup and sync, preserves resources and links, and applies explicit-only metadata to the main entry. External Matt and PStack skills are absent until setup installs them. |
 | `/setup-luke-mode` or `/sync-matt-pocock-skills` in a Cloud run | Discovers the selected sub-skill and shared Luke references; uses the Cloud environment's actual roots and capabilities. |
 | `/create-verification-skill` or `/luke-mode maintain-verification-skill` in a Cloud run | Selects the explicitly named workflow, uses the Cloud checkout's actual verification controls, and preserves evidence there. The laptop's runtime is not proof. |
 | `/luke-mode Implement ticket #123`; the target is a parent spec with implementation children | Selects Luke-owned whole-spec mode without an extra command or original Matt workflow installation; applies the Cloud profile, native capacity, isolation, and fallback rules. |
-| `/luke-mode implement-spec docs/spec.md` in a Cloud run | Resolves Matt's workflow inside the run, applies the Cloud role profile and shared whole-spec contract, and verifies actual worktree/resource isolation. Luke's five-skill package does not supply Matt's dependency. |
+| `/luke-mode implement-spec docs/spec.md` in a Cloud run | Resolves Matt's workflow inside the run, applies the Cloud role profile and shared whole-spec contract, and verifies actual worktree/resource isolation. Luke's single package does not supply Matt's dependency. |
 | Fresh Cloud session; ordinary prompt without `/luke-mode` | Native discovery honors the prepared `disable-model-invocation: true`; Luke remains inactive. |
 | `/luke-mode Explain refresh token rotation. Leave files unchanged.` | Reads the Cloud adapter, selects Explore, inspects actual project sources, and leaves files and Git state unchanged. |
 | Cloud metadata identifies a GPT parent; models file contains different `Codex` and `Cursor Cloud` profiles | Selects `Cursor Cloud` by runtime identity, without inferring Codex from GPT or a `.codex/skills/` installation path. |
@@ -169,7 +164,7 @@ profile, task cards or returned model metadata, final diff, and check artifacts.
 | Cursor substitutes a configured Reviewer model or exposes no model evidence; the user requires that exact Reviewer | Keeps the exact-model requirement unresolved and stops dependent work. The parent metadata value does not prove which model reviewed. |
 | Native delegation is absent | Ordinary work uses direct sequential execution; an independent-review requirement remains pending. No nested CLI or new remote agent is started. |
 | Applicable verification skill exists only in scoped project `.cursor/skills/` | Discovers it for the affected package, checks native policy and Cloud dependencies, invokes it when permitted, and retains outputs. |
-| `/luke-mode setup`; Matt setup is installed but user-only and repository configuration is missing | Provides `/setup-matt-pocock-skills` as the pending action; model confirmation does not authorize its repository writes. |
+| `/luke-mode setup`; Matt setup is installed but user-only and repository configuration is missing | Runs Matt setup as a selected stage of full Luke setup, following its choices and draft confirmations; model confirmation alone does not approve repository drafts. |
 | Cloud runtime identity is unavailable and only generic tools or a GPT model name are known | Leaves harness-specific profiles unresolved; asks before setup or model-dependent delegation, while ordinary direct work can proceed. |
 
 ## Retain evidence

@@ -71,24 +71,18 @@ Coordinate engineering requests with playbooks, compatible installed skills, and
 verified outcomes. Invoke explicitly with `$luke-mode` in Codex or `/luke-mode`
 in Cursor Cloud. Luke Mode is maintained in this repository.
 
-Luke Mode has four companion skills, installed beside the main skill:
+Install only `luke-mode`. It contains two setup workflows:
 
-- [setup-luke-mode](skills/setup-luke-mode/SKILL.md): configure Luke's model roles
-  and check Matt's per-repository setup. Invoke `$setup-luke-mode` or `$luke-mode setup`.
-- [sync-matt-pocock-skills](skills/sync-matt-pocock-skills/SKILL.md): refresh Matt's
-  full upstream skill set, including new skills. Invoke `$sync-matt-pocock-skills`
-  or `$luke-mode sync Matt's skills`.
-- [create-verification-skill](skills/create-verification-skill/SKILL.md): create
-  and prove a project-local app verification skill and feature map, adapted from
-  PStack. Invoke `$create-verification-skill` or `$luke-mode create-verification-skill`.
-- [maintain-verification-skill](skills/maintain-verification-skill/SKILL.md): check
-  and repair an existing verification skill against source and live behavior,
-  adapted from PStack. Invoke `$maintain-verification-skill` or
-  `$luke-mode maintain-verification-skill`.
+- [setup-luke-mode](skills/luke-mode/skills/setup-luke-mode/SKILL.md): install missing
+  dependencies, configure model roles, and set up the current repository.
+- [sync-matt-pocock-skills](skills/luke-mode/skills/sync-matt-pocock-skills/SKILL.md):
+  refresh Matt's full upstream toolkit, including newly added skills.
 
-The verification companions retain explicit-only invocation. Installing them
-makes the workflows available; creating a project's `verify-<app>` skill is a
-separate requested action.
+Full setup installs Matt's toolkit and PStack's `create-verification-skill` and
+`maintain-verification-skill` as external dependencies. Their upstream files
+remain the source of truth. Installing verification workflows makes them
+available; creating a project's `verify-<app>` skill remains an explicitly
+requested action.
 
 Ask Luke to implement a ticket or spec. The Implement playbook resolves the
 target: a parent spec with implementation children automatically selects
@@ -100,13 +94,22 @@ To select Matt's original workflow explicitly, use
 That choice requires his installed workflow and dependencies; use the sync
 companion when their installation or refresh is requested.
 
-Install all five globally for Codex:
+Install globally for Codex:
 
 ```sh
-npx skills add lukenguyen-me/skills \
-  --skill luke-mode setup-luke-mode sync-matt-pocock-skills \
-  create-verification-skill maintain-verification-skill --agent codex --global
+npx skills add lukenguyen-me/skills --skill luke-mode --agent codex --global
 ```
+
+Open the new project in your CLI harness and run `setup-luke-mode` from Luke Mode.
+Use `$setup-luke-mode` when listed. On a first run where the separate command is
+not indexed, invoke the installed parent:
+
+```text
+$luke-mode setup-luke-mode
+```
+
+Setup registers both bundled commands, installs missing upstream skills, and
+configures the project. In Cursor, use `/` instead of `$`.
 
 See the [Luke Mode guide](docs/luke-mode/README.md) for Cursor Cloud packaging,
 setup, model roles, and verification coverage.

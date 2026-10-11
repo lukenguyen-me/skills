@@ -5,7 +5,8 @@ description: Sync Matt Pocock's skill set from mattpocock/skills, updating insta
 
 # Sync Matt Pocock Skills
 
-This is Luke Mode's toolkit sync sub-skill. Install it alongside `luke-mode`.
+This is Luke Mode's toolkit sync sub-skill. It ships inside `luke-mode`;
+install only the parent bundle.
 Invoke with `$sync-matt-pocock-skills` in Codex or `/sync-matt-pocock-skills` in
 Cursor Cloud. `$luke-mode sync Matt's skills` and its Cursor equivalent route
 here. Sync installs current upstream skill files; per-repository configuration
@@ -19,11 +20,10 @@ new upstream skills. Preserve Matt's invocation policies and supporting files.
 
 ## Resolve the target
 
-Read [harness selection](../luke-mode/references/harnesses.md), the matching
-adapter, and [composition](../luke-mode/references/composition.md). Resolve these
-references from the active catalog's `luke-mode` installation if the sibling
-links are unavailable. Read applicable project instructions. Inspect the skill
-roots and installation metadata to establish the existing method, agent, scope,
+Read [harness selection](../../references/harnesses.md), the matching
+adapter, and [composition](../../references/composition.md). Resolve links from
+this file's actual installation directory. Read applicable project instructions.
+Inspect the skill roots and installation metadata to establish the existing method, agent, scope,
 source, and symlink targets. A similarly named local skill is not proof of Matt's provenance.
 
 Reuse an established installation method and scope. When none exists, use the

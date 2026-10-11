@@ -8,117 +8,73 @@ Matt Pocock's skills remain the engineering toolkit. Luke adds routing, sequenci
 and optional model-aware delegation. It contains none of Matt's skill files and
 requires no custom MCP server or orchestration service.
 
-Luke Mode has four companion skills:
+Luke Mode bundles two sub-skills:
 
 | Sub-skill | Purpose | Codex command |
 | --- | --- | --- |
-| [setup-luke-mode](../../skills/setup-luke-mode/SKILL.md) | Configure Luke's model roles and check this repository's Matt toolkit setup | `$setup-luke-mode` |
-| [sync-matt-pocock-skills](../../skills/sync-matt-pocock-skills/SKILL.md) | Refresh Matt's full upstream skill set, including new skills | `$sync-matt-pocock-skills` |
-| [create-verification-skill](../../skills/create-verification-skill/SKILL.md) | Create and prove a project-local app verification skill and feature map | `$create-verification-skill` |
-| [maintain-verification-skill](../../skills/maintain-verification-skill/SKILL.md) | Audit and repair a verification skill against source and live behavior | `$maintain-verification-skill` |
+| [setup-luke-mode](../../skills/luke-mode/skills/setup-luke-mode/SKILL.md) | Install dependencies, configure model roles, and set up this repository | `$setup-luke-mode` |
+| [sync-matt-pocock-skills](../../skills/luke-mode/skills/sync-matt-pocock-skills/SKILL.md) | Refresh Matt's full upstream skill set, including new skills | `$sync-matt-pocock-skills` |
 
-They live beside `luke-mode` so installers can discover them. Install all five
-in the same skill root. Luke routes setup and sync requests to their companions.
-The verification companions retain PStack's explicit-only policy: name them
-directly or in a Luke request, such as `$luke-mode create-verification-skill`.
-In Cursor, use `/` instead of `$`.
+Matt's toolkit and PStack's `create-verification-skill` and
+`maintain-verification-skill` are external dependencies installed by setup.
+Luke contains none of their upstream files. The verification workflows retain
+explicit-only invocation. In Cursor, use `/` instead of `$`.
 
 ## Install globally in Codex
 
-Choose one of the following methods to make Luke Mode available in every project.
-
-### Skills CLI
-
-With Node.js, npm, and Git installed, run from any directory:
+With Node.js, npm, and Git installed, run:
 
 ```sh
-npx skills add lukenguyen-me/skills \
-  --skill luke-mode setup-luke-mode sync-matt-pocock-skills \
-  create-verification-skill maintain-verification-skill --agent codex --global
+npx skills add lukenguyen-me/skills --skill luke-mode --agent codex --global
 ```
 
-The [Skills CLI](https://github.com/vercel-labs/skills#install-a-skill) downloads
-the five skills and installs them for Codex. `--global` makes them available
-across projects.
+The [Skills CLI](https://github.com/vercel-labs/skills) installs the complete
+Luke directory, including setup and sync resources. Omit `--global` for a project
+installation. You do not need to select other skills from this repository.
 
-### Git clone
+For a manual install, clone this repository and link only `skills/luke-mode`
+into your active skill root. Keep the checkout at the link's target. Inspect
+existing installations before replacing them.
 
-With Git installed, run these commands in a macOS or Linux terminal. Clone into
-a directory where you keep personal tools:
+Open your new project in Codex and run:
 
-```sh
-git clone https://github.com/lukenguyen-me/skills.git
-cd skills
-luke_mode_repo="$(pwd -P)"
-mkdir -p "$HOME/.agents/skills"
-for luke_mode_skill in \
-  luke-mode setup-luke-mode sync-matt-pocock-skills \
-  create-verification-skill maintain-verification-skill; do
-  if [ -e "$HOME/.agents/skills/$luke_mode_skill" ] || [ -L "$HOME/.agents/skills/$luke_mode_skill" ]; then
-    printf '%s\n' "Inspect the existing $luke_mode_skill installation before updating it."
-  else
-    ln -s "$luke_mode_repo/skills/$luke_mode_skill" "$HOME/.agents/skills/$luke_mode_skill"
-  fi
-done
+```text
+$luke-mode setup-luke-mode
 ```
 
-Keep the checkout at the symlink's target; edits there update the installed
-skill. To remove this manual installation, use
-`unlink` on each of the five installed symlinks; the checkout remains.
+If `$setup-luke-mode` already appears in the harness catalog, it runs the same
+workflow. You can also ask the harness to run `setup-luke-mode` from Luke Mode.
+Setup registers links for the two bundled commands when native discovery needs
+them. A harness may need a restart to index those links; the parent route works
+immediately. Registration reuses matching links and preserves conflicting old
+standalone installations for inspection.
 
-### Activate
-
-Open Codex in any existing project and select `$luke-mode`, `$setup-luke-mode`,
-`$sync-matt-pocock-skills`, `$create-verification-skill`, or
-`$maintain-verification-skill`, or find them in `/skills`.
-If discovery has not refreshed, restart Codex.
-
-Codex supports global `.agents/skills` discovery and symlinked skill folders.
-Luke's `agents/openai.yaml` sets `allow_implicit_invocation: false`, so ordinary
-engineering prompts do not activate it. Setup and sync allow discovery for
-requests that specifically match Luke setup or Matt toolkit sync. Both
-verification companions set `allow_implicit_invocation: false`; explicit
-invocation selects their authoring or maintenance stage.
-[Codex skill documentation](https://developers.openai.com/codex/skills)
+Luke's `agents/openai.yaml` makes the main entry point explicit-only. Setup and
+sync support matching scoped requests. No always-on project rule is installed
+for Luke. [Codex skill documentation](https://developers.openai.com/codex/skills)
 
 ## Install for Cursor Cloud
 
-From the root of the skills checkout, use Python 3.9 or later to prepare a complete Cursor
-bundle in the project you will give to the Cloud Agent:
+From the skills checkout, use Python 3.9 or later:
 
 ```sh
 python3 scripts/package-luke-mode-cursor.py "/absolute/path/to/your-project/.cursor/skills/luke-mode"
 ```
 
-Replace the project path with your checkout. The helper creates `luke-mode`,
-`setup-luke-mode`, `sync-matt-pocock-skills`, `create-verification-skill`, and
-`maintain-verification-skill` beside one another in that skill root.
-Include all five generated directories in the repository version supplied
-to Cursor Cloud. It copies all resources and adds Cursor's
-`disable-model-invocation: true` to the main skill and verification companions;
-setup and sync retain normal discovery. It leaves the sources unchanged and refuses
-to write if any of the five destinations exists. Inspect previous installations
-before updating; use one copy of each skill in the Cloud discovery locations.
+The helper creates one complete `luke-mode` folder, with setup and sync inside.
+It adds Cursor's explicit-only flag to the main entry point, leaves sources
+unchanged, and refuses an existing destination. Include that one folder in the
+repository version supplied to the Cloud Agent. Setup installs external
+dependencies in the actual Cloud environment.
 
-For a personal installation, prepare the package in Cursor's own user skill root:
+For a personal installation, package to `~/.cursor/skills/luke-mode`, then enable
+**Sync Skills for Cloud Agents** in Cursor Settings → Agents → Context and Tools.
+Personal Codex installs and model preferences do not travel with Cursor skill
+sync. [Cursor skill discovery and sync](https://cursor.com/docs/skills)
 
-```sh
-python3 scripts/package-luke-mode-cursor.py "$HOME/.cursor/skills/luke-mode"
-```
-
-Then turn on **Sync Skills for Cloud Agents** in Cursor Settings → Agents →
-Context and Tools. Only `~/.cursor/skills/` participates in that sync; a Codex
-installation in `~/.agents/skills/` and your personal Luke models file stay local.
-Project skill files are available through the cloned repository. Prepare any
-required Matt skills for the same Cloud environment as well.
-[Cursor skill discovery and sync](https://cursor.com/docs/skills)
-
-In the Cloud Agent chat, select `/luke-mode` and submit your request. Use
-`/setup-luke-mode` for full setup, `/setup-luke-mode configure models` for just
-the roles, or `/sync-matt-pocock-skills` to refresh Matt's toolkit. Use
-`/create-verification-skill` and `/maintain-verification-skill` for verification
-authoring. The main skill's named companion routes work as well. Confirm native discovery in a Cloud
-run; package checks do not exercise Cursor's live skill loader.
+In the Cloud chat, run `/luke-mode setup-luke-mode`, or `/setup-luke-mode` when
+indexed. Confirm native discovery in the actual run; local package checks do
+not exercise Cursor's live loader.
 
 ## Use
 
@@ -157,22 +113,27 @@ $setup-luke-mode
 
 `$luke-mode setup` routes to the same sub-skill.
 
-Setup configures model roles and checks Matt's toolkit configuration
-for the current repository. The model stage discovers the active harness's
-advertised models and recommends an exact model and supported effort for each
-role. Confirm the four choices once. Luke normally saves model preferences at
-`~/.config/luke-mode/models.md`.
+Full setup runs four stages:
 
-Matt's `$setup-matt-pocock-skills` configures each repository's issue tracker,
-domain docs, and triage labels when needed. Luke reuses complete existing setup.
-When setup is missing, it checks that the installed skill is usable and provides
-the next action. Matt's setup is user-only, so explicitly invoke
-`$setup-matt-pocock-skills` to run it; naming both skills in the same request also
-works. That skill owns the proposed repository changes and confirmation steps.
-In Cursor Cloud, the Matt command is `/setup-matt-pocock-skills`. Luke reports
-model configuration and repository readiness separately.
-[Matt's setup skill](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md),
-[Codex invocation policy](https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/agents/openai.yaml)
+1. Register the bundled setup and sync commands if native discovery needs them.
+2. Install missing external dependencies: Matt's complete toolkit from
+   [mattpocock/skills](https://github.com/mattpocock/skills), and only the two
+   verification-authoring skills from [backnotprop/pstack](https://github.com/backnotprop/pstack).
+3. Configure or reuse accepted model roles, normally saved at
+   `~/.config/luke-mode/models.md`.
+4. Run Matt's repository setup when guidance is missing, covering the tracker,
+   domain docs, and triage labels.
+
+The full setup request includes dependency installation and Matt's repository
+setup; no second sync or setup command is required. Matt's installed workflow
+owns its project choices and reviewable drafts. Re-running Luke setup reuses
+complete installations, accepted models, and repository guidance. A complete
+dependency installation is refreshed only on a requested update. Disabled skills,
+conflicting installations, and local customizations remain protected.
+
+Setup reports registration, dependencies, models, and repository readiness
+separately. Installation does not execute the verification-authoring workflows;
+explicitly name one when you want to create or maintain an app verifier.
 
 Use `$setup-luke-mode configure models` to configure only the portable model
 roles. `$luke-mode configure models` remains supported.
@@ -240,14 +201,15 @@ workflow. Installed primitives supply their detailed methods. [Matt's invocation
 
 Useful optional additions are `grilling`, `codebase-design`, `domain-modeling`,
 `diagnosing-bugs`, and `code-review`, alongside `tdd`. Include
-`setup-matt-pocock-skills` when installing Matt's toolkit, separately from Luke.
+`setup-matt-pocock-skills` through Luke setup when installing Matt's toolkit.
 Choose one installation method to avoid duplicates. Some Matt workflows require
 per-project setup, a tracker, confirmed test seams, or a committed review
 baseline; Luke checks the installed version's requirements before invoking it.
 [Matt's installation guide](https://github.com/mattpocock/skills#installation-30-second-setup)
 
 Missing or incompatible optional skills produce a disclosed direct fallback.
-Ordinary engineering and setup routes leave installed skill files alone.
+Ordinary engineering leaves installed skill files alone; full setup installs
+missing dependencies and a requested sync refreshes Matt's toolkit.
 Explicitly required skills
 and independent-review requirements cannot be satisfied by pretending a fallback
 ran the same process.
@@ -360,47 +322,32 @@ environment. [Matt's installation guide](https://github.com/mattpocock/skills#in
 
 ## Create and maintain project verification
 
-The PStack-derived companions are included in Luke's package, independently of
-Matt's toolkit sync. Installing them makes their workflows available across
-projects. Running creation writes a verification skill for the current app;
-setup and ordinary engineering work leave this authoring step to an explicit
-request.
+Full Luke setup installs these two skills from
+[backnotprop/pstack](https://github.com/backnotprop/pstack#install) into the active
+harness's skill root. Their upstream instructions, resources, and invocation
+policies are preserved. Neither workflow is bundled in Luke.
 
 ```text
 $create-verification-skill
 $luke-mode create-verification-skill for this app
-```
-
-Either command starts creation. It discovers the app's real launch and control
-paths, writes a project-local `verify-<app>` skill with a linked feature map,
-and drives one mapped feature end to end. The generated skill specifies launch,
-doctor, drive, evidence, and cleanup. Evidence must survive teardown. Default
-output roots are `.agents/skills/` in Codex and `.cursor/skills/` in Cursor Cloud;
-existing compatible project conventions take precedence. Missing runtime
-prerequisites leave an explicitly reported draft. The generated verifier can
-permit normal discovery even though its creation workflow is explicit-only.
-
-```text
 $maintain-verification-skill
 $luke-mode maintain-verification-skill for this app
 ```
 
-Either command starts maintenance. It checks every mapped feature against
-source, then one coordinator drives all features and mapped entry points
-sequentially. Source reading can use native Worker delegation when useful and
-supported, or a disclosed direct pass. Corrections stay inside the verification
-skill's directory and are re-proven live; product regressions are reported with
-evidence. Outcomes are `clean`, `changed`, or `blocked`, with partial coverage
-and inaccessible prerequisites disclosed. Workspace changes are the default;
-commits, PRs, and recurring maintenance follow the user's requested delivery.
-Target verifier invocation policies still apply.
+In Cursor use `/` instead of `$`. Name either workflow explicitly to execute it;
+setup only installs the authoring tools. Creation writes a project-local
+`verify-<app>` skill and feature map, then proves a mapped feature while retaining
+evidence after cleanup. Maintenance checks the existing feature map against
+source and live behavior. Resolve the installed skill before execution: its
+required controls, source-reader agents, and delivery steps remain requirements.
+Report incompatible or missing capabilities instead of claiming the upstream
+workflow ran with altered semantics.
 
-Both companions adapt
-[PStack creation](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/create-verification-skill/SKILL.md)
-and [maintenance](https://github.com/backnotprop/pstack/blob/3a604672c46cd8187d2b19980eae0a34f9f91138/skills/maintain-verification-skill/SKILL.md),
-with the upstream MIT notice included in each skill. Choose one installation
-of each name if PStack's originals are also available; resolve duplicate
-ownership before updating either version.
+See the current upstream
+[creation instructions](https://github.com/backnotprop/pstack/blob/main/skills/create-verification-skill/SKILL.md)
+and [maintenance instructions](https://github.com/backnotprop/pstack/blob/main/skills/maintain-verification-skill/SKILL.md).
+Reuse one installation of each skill; resolve unknown provenance or duplicates
+before updating files.
 
 ## Verification and portability
 

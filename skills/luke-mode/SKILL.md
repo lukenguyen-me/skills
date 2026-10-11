@@ -1,6 +1,6 @@
 ---
 name: luke-mode
-description: Coordinate an engineering request with playbooks, compatible installed skills, and verified outcomes. Use only when the user explicitly invokes Luke Mode.
+description: Coordinate engineering work, bootstrap dependencies with setup-luke-mode, and sync Matt's toolkit. Use when the user explicitly invokes Luke Mode or requests its bundled setup-luke-mode or sync-matt-pocock-skills workflow.
 ---
 
 # Luke Mode
@@ -15,16 +15,18 @@ skills, configuring models, or delegating work.
 
 ## Start and route
 
-Luke Mode has four companion skills. Route requested setup, toolkit sync, and
-explicitly named verification-authoring workflows before selecting an
+Luke Mode bundles setup and sync under `skills/`. Matt's toolkit and PStack's
+verification-authoring skills are external dependencies installed by setup.
+Route requested setup, toolkit sync, and explicitly named verification-authoring
+workflows before selecting an
 engineering playbook:
 
 | Requested stage | Companion skill |
 | --- | --- |
-| `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [setup-luke-mode](../setup-luke-mode/SKILL.md) |
-| Sync or update Matt Pocock's skill set, including newly added skills | [sync-matt-pocock-skills](../sync-matt-pocock-skills/SKILL.md) |
-| `create-verification-skill`: generate and prove a project-local app verification skill | [create-verification-skill](../create-verification-skill/SKILL.md) |
-| `maintain-verification-skill`: audit and repair an existing verification skill and feature map | [maintain-verification-skill](../maintain-verification-skill/SKILL.md) |
+| `setup`, `setup-luke-mode`, configure Luke's models, or check Luke's Matt toolkit setup | [setup-luke-mode](skills/setup-luke-mode/SKILL.md) |
+| `sync-matt-pocock-skills`, sync or update Matt Pocock's skill set, including newly added skills | [sync-matt-pocock-skills](skills/sync-matt-pocock-skills/SKILL.md) |
+| `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
+| `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
 
 The verification companions retain PStack's explicit-only invocation policy.
 Dispatch them when the user names the skill explicitly, either as its native
@@ -33,12 +35,19 @@ Otherwise offer the native command as the next action. A missing verification
 recipe during engineering work uses the composition fallback; it does not
 authorize authoring or maintenance.
 
-Read and follow the selected companion for each requested stage. Install all four
-alongside `luke-mode`; if a sibling link is unavailable, resolve the named skill
-through the active harness's catalog and discovery rules. Report a missing
-companion rather than claiming that its work ran. `Setup OAuth for this app`
-and `implement offline sync` remain engineering requests. Setup and sync are separate operations;
-run both only when the user requests both, with sync before setup.
+Read the bundled file for setup or sync. Resolve explicitly named verification
+workflows from the active harness catalog and skill roots, checking their
+PStack provenance, supporting resources, and invocation policy. If missing,
+report the dependency and route an authorized setup request to install it.
+Read and follow the installed upstream workflow; keep one procedure owner.
+The bundled setup and sync files are available before the harness indexes
+their separate commands. A plain request to run `setup-luke-mode` explicitly selects this bundle's setup workflow;
+`$luke-mode setup-luke-mode` (Cursor: `/luke-mode setup-luke-mode`) is the native
+bootstrap route when the separate command is not listed. Setup registers the
+bundled commands, installs missing Matt and PStack dependencies, configures
+model roles, and sets up the current repository. A requested refresh runs sync before setup;
+otherwise setup reuses a complete installation. `Setup OAuth for this app`
+and `implement offline sync` remain engineering requests.
 
 Route an explicitly named `implement-spec <spec-ref>` execution request to the
 [whole-spec contract](references/implement-spec.md) and installed Matt workflow.

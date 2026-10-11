@@ -13,6 +13,8 @@ Before invoking a candidate, check:
 - Its name, description, and invocation policy. Read `agents/openai.yaml` for
   Codex policy and `disable-model-invocation` frontmatter for Cursor. User-only
   skills require explicit invocation by the user; opening their files is not a bypass.
+  Full/toolkit Luke setup explicitly selects Matt's setup as its repository stage;
+  this scoped setup contract does not permit other user-only workflows implicitly.
 - Required supporting resources and skills. Resolve the relevant dependency
   chain before starting; a wrapper with a missing primitive is not usable.
 - Preconditions, scope, side effects, tool capabilities, model requirements,
@@ -56,14 +58,15 @@ is possible. Do not claim the incompatible skill ran.
 Missing optional skills do not block ordinary engineering work. Give a concise
 fallback, use project conventions, and preserve the same acceptance criteria.
 If the user explicitly requires that skill or the missing capability is essential,
-report the blocked step and continue only independent work. Installation,
-updating, and editing another skill are separate work, never an automatic repair.
+report the blocked step and continue only independent work. Installation and
+updating require a requested sync or full/toolkit Luke setup; ordinary engineering work does not repair skill installations automatically.
 For a requested Matt toolkit refresh, use Luke's
-[sync sub-skill](../../sync-matt-pocock-skills/SKILL.md); for Luke configuration,
-use its [setup sub-skill](../../setup-luke-mode/SKILL.md).
+[sync sub-skill](../skills/sync-matt-pocock-skills/SKILL.md); for Luke configuration,
+use its [setup sub-skill](../skills/setup-luke-mode/SKILL.md).
 For explicitly named verification authoring, use
-[create-verification-skill](../../create-verification-skill/SKILL.md) or
-[maintain-verification-skill](../../maintain-verification-skill/SKILL.md).
+the installed PStack `create-verification-skill` or `maintain-verification-skill`,
+resolved through the active harness's catalog and skill roots. Their external
+installation is owned by full/toolkit setup; Luke bundles neither workflow.
 They preserve PStack's explicit-only policy; ordinary verification runs the
 project's recipe rather than either authoring workflow.
 
