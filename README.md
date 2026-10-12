@@ -114,6 +114,26 @@ configures the project. In Cursor, use `/` instead of `$`.
 See the [Luke Mode guide](docs/luke-mode/README.md) for Cursor Cloud packaging,
 setup, model roles, and verification coverage.
 
+### mac-dev-storage-cleanup
+
+Free disk space on a developer Mac without touching in-progress work. Scans
+read-only, reports sizes by tier (Safe, Old-only, Ask first, Report only), and
+deletes only what the user confirms. Covers Xcode (DerivedData, Archives,
+DeviceSupport, simulators), Gradle, Android SDK and emulators, npm, pnpm,
+Homebrew, and CocoaPods caches, Docker, agent git worktrees, and project build
+artifacts. Uses official commands where they exist and otherwise the Trash, and
+empties the Trash only on request; never `rm -rf` or `sudo`. Projects with recent, dirty, stashed, or unpushed work
+stay untouched, and AI chat history is report-only. The projects root comes from
+`PROJECTS_ROOT` (colon-separated), the user, or common folders. Scripts run on
+macOS `/bin/bash` 3.2 and log to `~/Library/Logs/dev-cleanup.log`.
+
+```sh
+npx skills add lukenguyen-me/skills --skill mac-dev-storage-cleanup
+```
+
+Invoke `$mac-dev-storage-cleanup` in Codex or `/mac-dev-storage-cleanup` in Claude
+Code. See [the skill](skills/mac-dev-storage-cleanup/SKILL.md).
+
 ### store-release
 
 Prepare App Store and Play Store release content for a public version. Inspects the source-verified change since the last release, writes version notes, refreshes listing copy when the release makes it inaccurate, and syncs version configuration when those files exist.
