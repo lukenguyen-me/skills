@@ -115,9 +115,11 @@ or project Cloud instructions when needed for tests. Luke setup does not provisi
 an application environment or change its startup configuration.
 [Cloud environment](https://cursor.com/docs/cloud-agent/setup)
 
-Respect the run's authorized branch and delivery configuration. When Cursor
-manages pushes and the PR at the harness level, Luke opens no second PR; it
-publishes [PR evidence](../references/evidence.md) from the run's environment and
-writes the body to the run's PR with `gh pr edit` when `gh` is authenticated,
-otherwise returns the body in the handoff. Report the actual changed workspace,
+Respect the run's authorized branch and delivery configuration. Cursor may manage
+pushes and PR handoff at the harness level; Luke does not add extra commits,
+pushes, or PR actions just by being invoked. Under
+[autopilot](../playbooks/autopilot.md), Luke opens no second PR beside the
+run's own: it publishes [PR evidence](../references/evidence.md) from the run's
+environment and writes the body to the run's PR with `gh pr edit` when `gh` is
+authenticated, otherwise returns the body in the handoff. Report the actual changed workspace,
 checks, artifacts, and any unresolved model or capability requirement.

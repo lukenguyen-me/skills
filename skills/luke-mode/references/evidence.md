@@ -1,6 +1,6 @@
 # PR evidence
 
-The reviewer of an autopilot PR sees only the diff and the PR body. Evidence
+The reviewer of a PR Luke opens sees only the diff and the PR body. Evidence
 lets them judge the outcome without checking out and running the branch: show
 the change working, before and after.
 

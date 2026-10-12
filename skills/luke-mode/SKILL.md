@@ -20,13 +20,14 @@ Setup and sync run inside this bundle as `$luke-mode setup` and
 `$luke-mode sync` (`/luke-mode setup` and `/luke-mode sync` in Cursor Cloud and
 Claude Code). Matt's toolkit and PStack's verification-authoring skills are
 external [dependencies](references/dependencies.md) installed by setup.
-Route requested setup, sync, and explicitly named verification-authoring
-workflows before selecting an engineering playbook:
+Route requested setup, sync, autopilot, and explicitly named
+verification-authoring workflows before selecting an engineering playbook:
 
 | Requested stage | Route |
 | --- | --- |
 | `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [Setup](playbooks/setup.md) |
 | `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
+| `autopilot <request>`: carry a change to a draft PR with evidence, without check-ins | [Autopilot](playbooks/autopilot.md), wrapping the engineering playbook |
 | `triage`: move issues or external PRs through Matt's triage states | [Triage](playbooks/triage.md), with the installed `triage` as procedure owner |
 | `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
 | `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
@@ -68,9 +69,7 @@ implementation children. Read-only and plan-only scope still takes precedence.
    requirements: an obvious isolated edit needs only a brief check; a change
    across modules needs dependency tracing. Revisit the assessment if scope grows.
    Work in small verified steps. Use additional expertise or independent review
-   when it improves confidence in the outcome. For a change to anything a user
-   can see, read [PR evidence](references/evidence.md) and capture the before
-   state before the first edit.
+   when it improves confidence in the outcome.
 3. Select one primary playbook by the requested deliverable. Read
    its file before doing the work. Announce the route in one sentence, with
    any material fallback or planned delegation. Gather facts yourself; ask only
@@ -136,29 +135,17 @@ The human settles unresolved product requirements and consequential architecture
 choices. Present the smallest useful decision with a recommendation; continue
 independent fact gathering while waiting. Respect decisions already made.
 
-Luke runs on autopilot from request to draft PR. A request routed to Implement,
-Fix, or Refactor authorizes Luke to branch, commit, push, publish evidence, and
-open a draft pull request:
+Default delivery is workspace changes and verification. Commits, PRs, tracker
+updates, and other external actions follow the user's request or existing
+authorization; invoking Luke does not grant blanket permission for them.
+Authorized whole-spec execution includes the local Git history needed for its
+integration branch; external delivery still follows established authorization.
+Every PR Luke opens carries [PR evidence](references/evidence.md) and a body
+from the installed `pr` skill. [Autopilot](playbooks/autopilot.md) changes both
+rules for its run: Luke decides instead of asking, and delivers a draft PR.
 
-1. On the default branch, create a branch named by the project's convention;
-   otherwise continue the current branch. Commit only this task's changes in
-   the project's commit style. Changes that predate the run stay uncommitted;
-   if they share a file with the task, ask before committing that file.
-2. Push the branch and publish the planned captures through
-   [PR evidence](references/evidence.md).
-3. Write the body with the installed `pr` skill, filling its Evidence section
-   from the published captures. Without `pr`, use its sections directly:
-   Summary, Evidence, Merge Danger.
-4. Open the PR as a draft, or update the existing PR for this branch.
-
-Read-only and plan-only requests, and a user or project instruction to keep work
-local, end at workspace changes and verification. Marking the PR ready, merging,
-force-pushing, and tracker updates follow the user's request or existing
-authorization. When push or PR creation fails, keep the local branch and report
-the failing command and its error.
-
-End with the PR link, the outcome, what was verified and how, what was not
-verified, and remaining risks or decisions. Name material fallbacks. Distinguish direct review
+End with the outcome, what was verified and how, what was not verified, and
+remaining risks or decisions. Name material fallbacks. Distinguish direct review
 from independent review and model diversity. Failed, missing, or inconclusive
 checks remain gaps; a delegate's success report is not proof. Never claim
 completion beyond the observed evidence.

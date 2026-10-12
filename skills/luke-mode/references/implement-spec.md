@@ -75,14 +75,15 @@ Matt's ordinary `implement` workflow around each ticket in either whole-spec mod
   build entails the local branches, commits, and merges needed for integration.
   Preserve unrelated working-tree changes and existing history; correct a wrong base by
   normal merging or a fresh owned worktree, never by resetting user work.
-- Apply Luke's [delivery](../SKILL.md#decisions-and-delivery): the integration
-  branch becomes the draft PR, opened after the first integration. A request
-  to keep work local retains local delivery and reports the pending handoff.
-  Tracker closure conventions alone do not authorize external writes; respect
-  existing tracker authorization without asking again. Avoid premature ticket
-  closure or a false claim of tracker resolution.
-- Capture the before state for user-visible changes from the pinned starting
-  SHA, following [PR evidence](evidence.md).
+- Establish delivery authority from the request and accepted project/harness
+  settings. Tracker closure conventions alone do not authorize external writes.
+  Respect existing PR or tracker authorization without asking again. If a PR
+  is authorized and required or requested, follow Matt's timing after the first
+  integration. Otherwise retain local delivery and report the pending external
+  handoff. Avoid premature ticket closure or a false claim of tracker resolution.
+  Under [autopilot](../playbooks/autopilot.md), the integration branch becomes
+  its draft PR after the first integration, and the before state is captured
+  from the pinned starting SHA.
 
 ## Roles and ownership
 
@@ -176,8 +177,9 @@ with the user. A second broad review requires new risk or an explicit request;
 do not loop back into repeated whole-spec review after every correction.
 
 Finish only when integration evidence and review cover the requested scope.
-Publish the after captures and update the draft PR body under Luke's delivery.
-Resolve tickets when permitted; otherwise report pending tracker actions.
+Follow the authorized delivery: ready an authorized PR or resolve tickets when
+permitted; otherwise report the local branch and pending tracker/PR actions.
+Under autopilot, publish the after captures and update its draft PR instead.
 Keep implementation, verification, review, and external delivery statuses
 distinct. A blocked ticket or required proof leaves the spec incomplete.
 

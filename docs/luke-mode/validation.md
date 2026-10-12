@@ -73,7 +73,9 @@ converted the recording to a GIF. GitHub accepted pushes to
 `refs/evidence/<branch>`, served the files by commit SHA through the contents
 API, and kept the PR body's image URLs unchanged in the rendered HTML. A fresh
 `git clone` did not contain the evidence commit. A second publish chained on the
-first, so earlier links stayed valid.
+first, so earlier links stayed valid. In a logged-in browser, the PNG, WebP,
+and animated GIF rendered inline in the private PR, and the video opened as a
+link.
 
 ```sh
 python3 -B -m unittest discover -s tests -p 'test_luke_mode_*.py' -v
@@ -94,7 +96,7 @@ The earlier whole-spec checks establish routing and preconditions only. They do
 not prove concurrent ticket execution, integration recovery, completed spec
 verification, or external delivery. The blast-radius and runtime-evidence
 scenarios remain unrun. No full autopilot run, from request to a draft PR with
-captures from a real application, has been observed yet.
+captures and recorded decisions from a real application, has been observed yet.
 
 Cursor Cloud native discovery, personal skill sync, model overrides, substitution
 handling, and delegated execution remain unverified. Claude Code and Cursor

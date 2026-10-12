@@ -84,9 +84,10 @@ Their upstream files remain the source of truth. Installing verification
 workflows makes them available; creating a project's `verify-<app>` skill remains an explicitly
 requested action.
 
-Luke works on autopilot: an Implement, Fix, or Refactor request ends with a
-draft PR. For changes you can see, the PR shows before and after screenshots or
-GIFs, stored on a hidden Git ref that clones never download.
+Run `$luke-mode autopilot <request>` to carry a change to a draft PR without
+check-ins. Luke records the decisions it made in the PR. For changes you can
+see, the PR shows before and after screenshots or GIFs, stored on a hidden Git
+ref that clones never download.
 
 Ask Luke to implement a ticket or spec. The Implement playbook resolves the
 target: a parent spec with implementation children automatically selects
