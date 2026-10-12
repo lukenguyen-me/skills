@@ -18,6 +18,9 @@ The verification companions are `$create-verification-skill` and
 `$maintain-verification-skill` in Codex, or `/create-verification-skill` and
 `/maintain-verification-skill` in Cursor Cloud and Claude Code. Naming either as an argument to
 Luke is an explicit invocation of that companion as well.
+Matt's triage runs as `$luke-mode triage <request>` in Codex or
+`/luke-mode triage <request>` in Cursor Cloud and Claude Code, through the
+[Triage playbook](../playbooks/triage.md).
 
 The external Matt workflow uses `$luke-mode implement-spec <spec-ref>` in Codex
 or `/luke-mode implement-spec <spec-ref>` in Cursor Cloud and Claude Code, routed through the

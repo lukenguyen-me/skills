@@ -27,9 +27,12 @@ workflows before selecting an engineering playbook:
 | --- | --- |
 | `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [Setup](playbooks/setup.md) |
 | `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
+| `triage`: move issues or external PRs through Matt's triage states | [Triage](playbooks/triage.md), with the installed `triage` as procedure owner |
 | `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
 | `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
 
+Naming `triage` as Luke's argument, or selecting its native skill alongside
+Luke, explicitly invokes Matt's user-only `triage`.
 The verification companions retain PStack's explicit-only invocation policy.
 Dispatch them when the user names the skill explicitly, either as its native
 command or an argument to Luke, such as `$luke-mode create-verification-skill`.

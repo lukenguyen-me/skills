@@ -93,6 +93,22 @@ markers, local customizations, and the initial `skills-lock.json` for comparison
 | `$luke-mode sync, then setup` | Syncs first, then checks setup against the refreshed requirements; honors Matt's installed invocation policy. |
 | Installer reports success but a dependency fails the checks | Reports an incomplete sync and the failing entries; installer exit status alone does not establish completeness. |
 
+## Triage
+
+Use a disposable repository with a local tracker, the triage-label mapping, and
+issues covering a reproducible bug, a vague enhancement, and an already-built
+request.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| `$luke-mode triage Show me anything that needs my attention.` | Follows the installed `triage` to list its three buckets; makes no tracker writes or file changes. |
+| `$luke-mode triage #42`; a reproducible bug | Gathers context with a blast-radius look, reproduces the symptom with recorded commands and output, recommends roles, and waits for direction. Fixes nothing; offers `$luke-mode fix #42` once it reaches `ready-for-agent`. |
+| `$luke-mode triage #43`; the repro cannot run | Reports the gap and keeps the claim unconfirmed; a `needs-info` recommendation is acceptable. |
+| `$luke-mode triage #44`; a vague enhancement | Grills in the parent session, using `grilling` and `domain-modeling` as the installed skill directs; posts a brief only after direction. |
+| Five issues to triage at once | May use read-only Workers for codebase context; all tracker reads and writes stay with the parent. |
+| `triage` or the triage-label mapping is missing | Leaves triage pending and points to `$luke-mode setup`; does not improvise states or labels. |
+| `$luke-mode is #42 ready for an agent?` without naming triage | Routes to Explore and offers `$luke-mode triage #42`; makes no tracker writes. |
+
 ## Whole-spec execution
 
 Use a disposable Git repository, compatible testing and review primitives, a

@@ -15,14 +15,15 @@ Source `mattpocock/skills`, tested at tag `v1.3.1`.
 | `code-review` | Implement, Fix, Refactor, Review, whole-spec |
 | `diagnosing-bugs` | Fix |
 | `codebase-design` | Design, Refactor |
-| `domain-modeling` | Design, and `grill-with-docs` |
-| `grilling` | Design, and `grill-with-docs` |
+| `domain-modeling` | Design, `grill-with-docs`, and `triage` |
+| `grilling` | Design, `grill-with-docs`, and `triage` |
 | `grill-with-docs` | Design (user-only) |
 | `research` | Explore |
 | `to-spec` | Design (user-only) |
 | `to-tickets` | Design, Implement, whole-spec (user-only) |
 | `implement` | Implement's sequencing (user-only) |
 | `implement-spec` | The explicit `implement-spec` route (user-only) |
+| `triage` | The Triage route (user-only); its presence makes Matt's setup write the triage-label mapping |
 
 ## PStack
 

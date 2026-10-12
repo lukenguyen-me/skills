@@ -15,6 +15,7 @@ Luke Mode carries two bundle routes:
 | --- | --- | --- |
 | [Setup](../../skills/luke-mode/playbooks/setup.md) | Install dependencies, configure model roles, and set up this repository | `$luke-mode setup` |
 | [Sync](../../skills/luke-mode/playbooks/sync.md) | Update Luke's dependencies to a newer upstream tag | `$luke-mode sync` |
+| [Triage](../../skills/luke-mode/playbooks/triage.md) | Move issues through Matt's triage states, with codebase evidence | `$luke-mode triage` |
 
 Matt's skills and PStack's `create-verification-skill` and
 `maintain-verification-skill` are external
@@ -178,7 +179,7 @@ requirements, then code review and delivery.
 Luke automatically composes **permitted primitives** such as `tdd`,
 `diagnosing-bugs`, `codebase-design`, and `code-review` when installed and compatible.
 It recommends **user-only workflows** such as `implement`, `implement-spec`, `grill-with-docs`,
-`to-spec`, and `to-tickets` for explicit invocation. It does not circumvent their
+`to-spec`, `to-tickets`, and `triage` for explicit invocation. It does not circumvent their
 policy by reading their files as executable instructions.
 
 Luke's own Implement playbook therefore works from a natural-language request.
@@ -301,6 +302,27 @@ guidance, or tracker labels, and it does not invoke Matt's user-only setup skill
 When both operations are requested, sync runs first so setup checks the refreshed
 requirements. In Cursor Cloud, verify the files and discovery inside the Cloud
 environment.
+
+## Triage issues
+
+```text
+$luke-mode triage Show me anything that needs my attention.
+$luke-mode triage #42
+$luke-mode triage Move #42 to ready-for-agent.
+```
+
+Naming `triage` invokes Matt's installed `triage`, which owns the roles, state
+transitions, label mapping, agent briefs, and `.out-of-scope/` notes. Luke adds
+a blast-radius look at the code the issue names, a repro held to the Fix
+playbook's evidence standard, and read-only Workers when several issues need
+codebase context. Triage changes no application code. Tracker writes happen at
+Matt's confirmation points, after your direction. An item that reaches
+`ready-for-agent` ends with `$luke-mode fix #42` or `$luke-mode implement #42`
+as the offered next step.
+
+Setup installs `triage` with the other dependencies, so Matt's repository setup
+also writes the triage-label mapping. A question about an issue that does not
+name triage goes to Explore.
 
 ## Create and maintain project verification
 

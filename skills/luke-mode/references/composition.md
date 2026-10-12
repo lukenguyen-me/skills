@@ -37,7 +37,8 @@ Luke borrows sequencing from user-only workflows such as `implement`, `implement
 `grill-with-docs`, `to-spec`, and `to-tickets`. It does not invoke them implicitly,
 copy their content, or load them as a workaround for their policy. If the user
 explicitly invokes one, let that workflow own its stage rather than running a
-second Luke workflow over it. Apply the user's scope and existing authorization.
+second Luke workflow over it. Matt's `triage` runs only this way, through the
+[Triage playbook](../playbooks/triage.md). Apply the user's scope and existing authorization.
 
 Implement automatically selects Luke-owned [whole-spec mode](implement-spec.md)
 for a resolved parent spec with implementation children. Luke owns its graph
