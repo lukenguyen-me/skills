@@ -20,13 +20,14 @@ Setup and sync run inside this bundle as `$luke-mode setup` and
 `$luke-mode sync` (`/luke-mode setup` and `/luke-mode sync` in Cursor Cloud and
 Claude Code). Matt's toolkit and PStack's verification-authoring skills are
 external [dependencies](references/dependencies.md) installed by setup.
-Route requested setup, sync, and explicitly named verification-authoring
-workflows before selecting an engineering playbook:
+Route requested setup, sync, autopilot, and explicitly named
+verification-authoring workflows before selecting an engineering playbook:
 
 | Requested stage | Route |
 | --- | --- |
 | `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [Setup](playbooks/setup.md) |
 | `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
+| `autopilot <request>`: carry a change to a draft PR with evidence, without check-ins | [Autopilot](playbooks/autopilot.md), wrapping the engineering playbook |
 | `triage`: move issues or external PRs through Matt's triage states | [Triage](playbooks/triage.md), with the installed `triage` as procedure owner |
 | `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
 | `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
@@ -139,6 +140,9 @@ updates, and other external actions follow the user's request or existing
 authorization; invoking Luke does not grant blanket permission for them.
 Authorized whole-spec execution includes the local Git history needed for its
 integration branch; external delivery still follows established authorization.
+Every PR Luke opens carries [PR evidence](references/evidence.md) and a body
+from the installed `pr` skill. [Autopilot](playbooks/autopilot.md) changes both
+rules for its run: Luke decides instead of asking, and delivers a draft PR.
 
 End with the outcome, what was verified and how, what was not verified, and
 remaining risks or decisions. Name material fallbacks. Distinguish direct review

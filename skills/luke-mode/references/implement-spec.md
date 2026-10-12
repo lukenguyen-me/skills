@@ -81,6 +81,9 @@ Matt's ordinary `implement` workflow around each ticket in either whole-spec mod
   is authorized and required or requested, follow Matt's timing after the first
   integration. Otherwise retain local delivery and report the pending external
   handoff. Avoid premature ticket closure or a false claim of tracker resolution.
+  Under [autopilot](../playbooks/autopilot.md), the integration branch becomes
+  its draft PR after the first integration, and the before state is captured
+  from the pinned starting SHA.
 
 ## Roles and ownership
 
@@ -176,6 +179,7 @@ do not loop back into repeated whole-spec review after every correction.
 Finish only when integration evidence and review cover the requested scope.
 Follow the authorized delivery: ready an authorized PR or resolve tickets when
 permitted; otherwise report the local branch and pending tracker/PR actions.
+Under autopilot, publish the after captures and update its draft PR instead.
 Keep implementation, verification, review, and external delivery statuses
 distinct. A blocked ticket or required proof leaves the spec incomplete.
 

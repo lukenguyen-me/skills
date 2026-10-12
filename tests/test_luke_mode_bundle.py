@@ -15,7 +15,9 @@ class BundleTests(unittest.TestCase):
 
     def test_relative_links_stay_inside_the_bundle(self):
         for markdown in SOURCE.rglob('*.md'):
-            for link in re.findall(r'\]\(([^)]+)\)', markdown.read_text()):
+            # Fenced code blocks hold templates, not navigable links.
+            prose = re.sub(r'```.*?```', '', markdown.read_text(), flags=re.S)
+            for link in re.findall(r'\]\(([^)]+)\)', prose):
                 path = link.split('#', 1)[0]
                 if not path or path.startswith(('https://', 'http://')):
                     continue
