@@ -10,8 +10,8 @@ Resolve shared references from this file's actual installation directory.
 Keep the working directory in the user's project. Read applicable project
 instructions before configuration.
 
-Invoke with `$setup-luke-mode` in Codex or `/setup-luke-mode` in Cursor Cloud.
-`$luke-mode setup`, `$luke-mode setup-luke-mode`, and their Cursor equivalents
+Invoke with `$setup-luke-mode` in Codex or `/setup-luke-mode` in Cursor Cloud and
+Claude Code. `$luke-mode setup`, `$luke-mode setup-luke-mode`, and their `/` equivalents
 route here as well. When the separate command is not indexed yet, use the
 parent route or a plain request to run `setup-luke-mode` from Luke Mode.
 Full setup runs command registration, dependency installation, model
@@ -68,7 +68,8 @@ npx skills@latest add backnotprop/pstack --skill create-verification-skill maint
 ```
 
 Use the same resolved agent and scope as the Matt installation; omit `--global`
-for project scope and use `--agent cursor` for Cursor. Reuse a complete existing
+for project scope and use `--agent cursor` for Cursor or `--agent claude-code` for
+Claude Code. Reuse a complete existing
 PStack installation, including a plugin route; preserve customizations and
 resolve conflicting copies or unknown provenance before writes, following the
 sync workflow's installation safeguards. Keep disabled skills disabled. Never
@@ -104,7 +105,7 @@ otherwise complete dependency installation only when the user requests an update
 | Reviewer | Capable model for independent code review and verification |
 
 Use current capability descriptions to make recommendations, not invented name
-rankings. Same-model mappings are valid. Reviewer independence comes from its
+rankings. When the selected adapter lists a recommended profile, propose it. Same-model mappings are valid. Reviewer independence comes from its
 separate context. `inherit` is also a valid explicit preference.
 
 If the environment cannot expose available models, ask for the user's native
@@ -143,9 +144,9 @@ here with valid intentional inheritance choices:
 For an exact mapping, replace `inherit` with the selected real identifier and
 supported effort. For a harness without a per-agent effort control, record
 `inherit` for effort and explain that limitation. Keep a separate heading for
-each configured harness; use `Codex` or `Cursor Cloud` as selected by the adapter.
-Change the example heading to `Cursor Cloud` for a Cloud profile; retain an
-existing `Codex` section unchanged.
+each configured harness; use `Codex`, `Cursor Cloud`, or `Claude Code` as selected
+by the adapter. Change the example heading for a Cloud or Claude Code profile;
+retain existing sections for other harnesses unchanged.
 
 Read back the saved profile and report its path. Say which values were validated
 against a catalog and which were actually observed in a run. Choosing a Reasoning

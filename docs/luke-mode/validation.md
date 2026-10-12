@@ -58,6 +58,10 @@ python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/l
 python3 -B -m unittest discover -s tests -p test_package_luke_mode_cursor.py -v
 ```
 
+The first check reports one expected error: `disable-model-invocation` is not in
+the Codex validator's allowed keys. Luke keeps it so Claude Code and Cursor
+treat the main entry point as explicit-only; any other error is a real failure.
+
 The local bundle tests cover one complete Cursor directory, main-entry invocation
 metadata, unchanged source resources, relocated cross-skill links, paths with
 spaces, packaging from another working directory, preservation of existing

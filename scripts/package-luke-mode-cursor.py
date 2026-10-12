@@ -25,8 +25,11 @@ def cursor_entrypoint(source: Path) -> str:
         raise ValueError(f"{source.name} has unclosed YAML frontmatter.")
     if source.name not in EXPLICIT_ONLY:
         return skill
-    if re.search(r"^disable-model-invocation:", frontmatter, re.MULTILINE):
-        raise ValueError("The source already defines Cursor invocation policy.")
+    existing = re.search(r"^disable-model-invocation:\s*(.*)$", frontmatter, re.MULTILINE)
+    if existing:
+        if existing.group(1).strip() != "true":
+            raise ValueError(f"{source.name} must be explicit-only.")
+        return skill
     return f"---\n{frontmatter}\ndisable-model-invocation: true\n---\n{body}"
 
 

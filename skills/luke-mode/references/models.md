@@ -9,7 +9,8 @@ Resolve explicit relative paths from the user's working directory. Report the
 selected path when model routing matters. Keep one source for the whole profile;
 do not fill missing roles from a second file.
 
-Read only the heading matching the active harness: `Codex` or `Cursor Cloud`.
+Read only the heading matching the active harness: `Codex`, `Cursor Cloud`, or
+`Claude Code`.
 A file containing only another harness's settings has no active profile, even
 when the model provider or identifier is available in both harnesses. Preserve
 other headings during setup. User instructions and harness/repository constraints
