@@ -40,5 +40,5 @@ these single-ticket steps around every ticket in a whole-spec run.
    Resolve material in-scope findings, then recheck affected behavior.
 
 Done when the requested behavior is observed, required checks have results,
-and review is complete with explicit gaps. Deliver local changes by default;
-commit or publish only within existing authorization.
+and review is complete with explicit gaps. Then deliver the draft PR with
+evidence under Luke's delivery rules.

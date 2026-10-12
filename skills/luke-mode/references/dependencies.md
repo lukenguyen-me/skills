@@ -13,6 +13,7 @@ Source `mattpocock/skills`, tested at tag `v1.3.1`.
 | `setup-matt-pocock-skills` | Setup's repository stage |
 | `tdd` | Implement, Fix, Refactor, whole-spec |
 | `code-review` | Implement, Fix, Refactor, Review, whole-spec |
+| `pr` | Delivery's PR body |
 | `diagnosing-bugs` | Fix |
 | `codebase-design` | Design, Refactor |
 | `domain-modeling` | Design, `grill-with-docs`, and `triage` |

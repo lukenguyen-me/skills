@@ -52,7 +52,7 @@ observations above do not validate the revised workflow.
 
 ```sh
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode
-python3 -B -m unittest discover -s tests -p test_luke_mode_bundle.py -v
+python3 -B -m unittest discover -s tests -p 'test_luke_mode_*.py' -v
 npx skills@latest add ./ --list --full-depth
 ```
 
@@ -65,6 +65,23 @@ entry point and that every relative link resolves inside the bundle, so a CLI
 install works from any skill root. The CLI listing must show `luke-mode` and
 no setup or sync skill. No Matt or PStack workflow is vendored.
 
+## PR evidence publishing
+
+Checked on 2026-10-13 against a throwaway private GitHub repository.
+`agent-browser` 0.38.1 took the screenshots and a recording, and `ffmpeg`
+converted the recording to a GIF. GitHub accepted pushes to
+`refs/evidence/<branch>`, served the files by commit SHA through the contents
+API, and kept the PR body's image URLs unchanged in the rendered HTML. A fresh
+`git clone` did not contain the evidence commit. A second publish chained on the
+first, so earlier links stayed valid.
+
+```sh
+python3 -B -m unittest discover -s tests -p 'test_luke_mode_*.py' -v
+```
+
+The publish tests use a local bare remote: hidden ref and URLs, absence from a
+network-style clone, chaining, and size and type limits.
+
 ## Remaining coverage
 
 Live first-project setup, upstream dependency installation, native skill-loader
@@ -76,7 +93,8 @@ verification [scenarios](scenarios/routing.md) remain manual acceptance cases.
 The earlier whole-spec checks establish routing and preconditions only. They do
 not prove concurrent ticket execution, integration recovery, completed spec
 verification, or external delivery. The blast-radius and runtime-evidence
-scenarios remain unrun.
+scenarios remain unrun. No full autopilot run, from request to a draft PR with
+captures from a real application, has been observed yet.
 
 Cursor Cloud native discovery, personal skill sync, model overrides, substitution
 handling, and delegated execution remain unverified. Claude Code and Cursor

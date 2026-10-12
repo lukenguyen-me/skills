@@ -84,7 +84,8 @@ under the fallback rules above. Creating a verification skill is separate
 requested work.
 
 Choose evidence before edits and retain commands, relevant outputs, and artifact
-locations after execution. Evidence must match the task: failing then passing
+locations after execution. [PR evidence](evidence.md) owns captures of what a
+user can see. Evidence must match the task: failing then passing
 symptom for Fix, changed behavior for Implement, equivalent behavior for Refactor,
 and inspected sources for Explore or Review. Review assesses evidence; agreement
 between reviewers is not a replacement for it. Redact secrets in reported output.

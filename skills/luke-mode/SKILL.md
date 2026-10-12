@@ -68,7 +68,9 @@ implementation children. Read-only and plan-only scope still takes precedence.
    requirements: an obvious isolated edit needs only a brief check; a change
    across modules needs dependency tracing. Revisit the assessment if scope grows.
    Work in small verified steps. Use additional expertise or independent review
-   when it improves confidence in the outcome.
+   when it improves confidence in the outcome. For a change to anything a user
+   can see, read [PR evidence](references/evidence.md) and capture the before
+   state before the first edit.
 3. Select one primary playbook by the requested deliverable. Read
    its file before doing the work. Announce the route in one sentence, with
    any material fallback or planned delegation. Gather facts yourself; ask only
@@ -134,14 +136,29 @@ The human settles unresolved product requirements and consequential architecture
 choices. Present the smallest useful decision with a recommendation; continue
 independent fact gathering while waiting. Respect decisions already made.
 
-Default delivery is workspace changes and verification. Commits, PRs, tracker
-updates, and other external actions follow the user's request or existing
-authorization; invoking Luke does not grant blanket permission for them.
-Authorized whole-spec execution includes the local Git history needed for its
-integration branch; external delivery still follows established authorization.
+Luke runs on autopilot from request to draft PR. A request routed to Implement,
+Fix, or Refactor authorizes Luke to branch, commit, push, publish evidence, and
+open a draft pull request:
 
-End with the outcome, what was verified and how, what was not verified, and
-remaining risks or decisions. Name material fallbacks. Distinguish direct review
+1. On the default branch, create a branch named by the project's convention;
+   otherwise continue the current branch. Commit only this task's changes in
+   the project's commit style. Changes that predate the run stay uncommitted;
+   if they share a file with the task, ask before committing that file.
+2. Push the branch and publish the planned captures through
+   [PR evidence](references/evidence.md).
+3. Write the body with the installed `pr` skill, filling its Evidence section
+   from the published captures. Without `pr`, use its sections directly:
+   Summary, Evidence, Merge Danger.
+4. Open the PR as a draft, or update the existing PR for this branch.
+
+Read-only and plan-only requests, and a user or project instruction to keep work
+local, end at workspace changes and verification. Marking the PR ready, merging,
+force-pushing, and tracker updates follow the user's request or existing
+authorization. When push or PR creation fails, keep the local branch and report
+the failing command and its error.
+
+End with the PR link, the outcome, what was verified and how, what was not
+verified, and remaining risks or decisions. Name material fallbacks. Distinguish direct review
 from independent review and model diversity. Failed, missing, or inconclusive
 checks remain gaps; a delegate's success report is not proof. Never claim
 completion beyond the observed evidence.

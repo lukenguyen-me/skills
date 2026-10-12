@@ -89,9 +89,27 @@ resources, with one writer per worktree and one integration writer.
 
 Unresolved product requirements and consequential architecture choices belong
 to the human. Routine implementation choices proceed within the agreed scope.
-Workspace changes and verification are the default deliverable. Commits, PRs,
-and tracker updates follow the user's request or existing authorization,
-including the delivery settings of an authorized Cloud run.
+Luke runs on autopilot from request to draft PR. Implement, Fix, and Refactor
+end with a pushed branch and a draft PR whose body comes from Matt's `pr` skill.
+Read-only and plan-only requests, or an instruction to keep work local, end at
+workspace changes. Marking the PR ready, merging, and tracker updates stay with
+you. In a Cloud run that manages its own PR, Luke writes the body of that PR.
+
+### PR evidence
+
+For a change you can see, Luke captures the before state before its first edit
+and the after state once the work is verified: screenshots for visual changes,
+a GIF for flows, and command output for CLI changes. It uses `agent-browser`
+for web, `simctl` for the iOS Simulator, and `adb` for Android. Luke inspects
+each capture, publishes it, and shows it as a Before | After table in the PR.
+Captures it could not take are listed as gaps.
+
+GitHub has no API for PR image uploads, so the bundled
+[`publish_evidence.py`](../../skills/luke-mode/scripts/publish_evidence.py)
+commits the files to a hidden ref, `refs/evidence/<branch>`. Clones skip hidden
+refs, so evidence adds nothing to a checkout. The images are visible only to
+people who can read the repository, and they are kept forever. See
+[PR evidence](../../skills/luke-mode/references/evidence.md).
 
 ## Set up Luke Mode
 
@@ -261,10 +279,10 @@ integration verification. Additional broad review requires a new risk or explici
 request. Clean up owned worktrees after preserving commits and proof; keep dirty
 or unrelated worktrees and report their paths.
 
-Local branches, commits, and merges are part of authorized whole-spec execution.
-PRs and tracker writes follow existing authorization. An authorized draft PR follows
-Matt's timing after the first integration; without external authorization, report
-the local integration branch and pending handoff. Keep implementation, review,
+Local branches, commits, and merges are part of whole-spec execution. The
+integration branch becomes the draft PR after the first integration, with
+before captures taken from the pinned starting SHA. Tracker writes follow
+existing authorization. Keep implementation, review,
 verification, and external delivery statuses distinct. The run reports branch
 and SHA, ticket coverage, actual concurrency, check outcomes, artifacts, and gaps.
 
