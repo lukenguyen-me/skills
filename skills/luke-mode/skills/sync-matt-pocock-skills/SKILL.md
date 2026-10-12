@@ -8,7 +8,7 @@ description: Sync Matt Pocock's skill set from mattpocock/skills, updating insta
 This is Luke Mode's toolkit sync sub-skill. It ships inside `luke-mode`;
 install only the parent bundle.
 Invoke with `$sync-matt-pocock-skills` in Codex or `/sync-matt-pocock-skills` in
-Cursor Cloud. `$luke-mode sync Matt's skills` and its Cursor equivalent route
+Cursor Cloud and Claude Code. `$luke-mode sync Matt's skills` and its `/` equivalent route
 here. Sync installs current upstream skill files; per-repository configuration
 belongs to [setup-luke-mode](../setup-luke-mode/SKILL.md).
 
@@ -54,7 +54,7 @@ Choose the existing installation route:
   ```
 
   For a project installation, omit `--global` and run in the owning repository.
-  For Cursor, use `--agent cursor`. Use `--yes` only after resolving the target
+  For Cursor, use `--agent cursor`; for Claude Code, use `--agent claude-code`. Use `--yes` only after resolving the target
   and local changes. Keep staged customization merges outside the target while
   `add` runs, then reapply them before verification. Avoid `--all`, which targets
   every agent, and an unfiltered `skills update`, which can update unrelated sources.

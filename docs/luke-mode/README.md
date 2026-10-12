@@ -1,6 +1,7 @@
 # Luke Mode
 
-Luke Mode is an explicitly invoked engineering skill for Codex and Cursor Cloud.
+Luke Mode is an explicitly invoked engineering skill for Codex, Cursor Cloud, and
+Claude Code.
 Describe an outcome, and it selects a playbook, composes compatible installed
 skills, and works toward evidence you can inspect.
 
@@ -53,6 +54,17 @@ Luke's `agents/openai.yaml` makes the main entry point explicit-only. Setup and
 sync support matching scoped requests. No always-on project rule is installed
 for Luke. [Codex skill documentation](https://developers.openai.com/codex/skills)
 
+## Install in Claude Code
+
+```sh
+npx skills add lukenguyen-me/skills --skill luke-mode --agent claude-code --global
+```
+
+Then run `/luke-mode setup-luke-mode` in your project. Setup proposes the
+`Claude Code` model profile from the [Claude Code adapter](../../skills/luke-mode/adapters/claude-code.md):
+Opus for Reasoning and Reviewer, Sonnet as the main Coding worker, and Haiku
+only for read-only exploration that needs little judgment.
+
 ## Install for Cursor Cloud
 
 From the skills checkout, use Python 3.9 or later:
@@ -62,8 +74,8 @@ python3 scripts/package-luke-mode-cursor.py "/absolute/path/to/your-project/.cur
 ```
 
 The helper creates one complete `luke-mode` folder, with setup and sync inside.
-It adds Cursor's explicit-only flag to the main entry point, leaves sources
-unchanged, and refuses an existing destination. Include that one folder in the
+The main entry point already carries the explicit-only flag that Cursor and
+Claude Code read. The helper leaves sources unchanged, and refuses an existing destination. Include that one folder in the
 repository version supplied to the Cloud Agent. Setup installs external
 dependencies in the actual Cloud environment.
 

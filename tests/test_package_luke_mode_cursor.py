@@ -50,7 +50,10 @@ class BundleTests(unittest.TestCase):
                 _, source_header, source_body = original.decode().split('---\n', 2)
                 self.assertEqual(body, source_body)
                 self.assertEqual(header.count('disable-model-invocation: true'), 1)
-                self.assertEqual(header.replace('disable-model-invocation: true\n', ''), source_header)
+                self.assertEqual(
+                    header.replace('disable-model-invocation: true\n', ''),
+                    source_header.replace('disable-model-invocation: true\n', ''),
+                )
             else:
                 self.assertEqual(prepared, original)
             self.assertEqual((SOURCE / relative).read_bytes(), original)

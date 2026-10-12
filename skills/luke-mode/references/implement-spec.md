@@ -23,7 +23,7 @@ incidental parent references. Resolve an uncertain target before implementation.
   a recommendation for the user-only `to-tickets` workflow; it does not gain an
   invented task graph.
 - **Explicit Matt workflow:** `$luke-mode implement-spec <spec-ref>` in Codex,
-  `/luke-mode implement-spec <spec-ref>` in Cursor Cloud, or Matt's native skill
+  `/luke-mode implement-spec <spec-ref>` in Cursor Cloud or Claude Code, or Matt's native skill
   selected alongside Luke, explicitly invokes his installed workflow. Resolve
   it and its requirements through composition. Matt owns execution under these
   constraints. Missing required dependencies leave that explicit request pending

@@ -1,6 +1,7 @@
 ---
 name: luke-mode
 description: Coordinate engineering work, bootstrap dependencies with setup-luke-mode, and sync Matt's toolkit. Use when the user explicitly invokes Luke Mode or requests its bundled setup-luke-mode or sync-matt-pocock-skills workflow.
+disable-model-invocation: true
 ---
 
 # Luke Mode
@@ -10,7 +11,7 @@ that task before treating an unrelated request as a new Luke Mode invocation.
 Resolve the links below from this skill's installation directory; keep the
 working directory in the user's project.
 Use the harness's native skill command: `$luke-mode` in Codex or `/luke-mode` in
-Cursor Cloud. Read [harness selection](references/harnesses.md) before resolving
+Cursor Cloud and Claude Code. Read [harness selection](references/harnesses.md) before resolving
 skills, configuring models, or delegating work.
 
 ## Start and route
@@ -42,7 +43,7 @@ report the dependency and route an authorized setup request to install it.
 Read and follow the installed upstream workflow; keep one procedure owner.
 The bundled setup and sync files are available before the harness indexes
 their separate commands. A plain request to run `setup-luke-mode` explicitly selects this bundle's setup workflow;
-`$luke-mode setup-luke-mode` (Cursor: `/luke-mode setup-luke-mode`) is the native
+`$luke-mode setup-luke-mode` (Cursor and Claude Code: `/luke-mode setup-luke-mode`) is the native
 bootstrap route when the separate command is not listed. Setup registers the
 bundled commands, installs missing Matt and PStack dependencies, configures
 model roles, and sets up the current repository. A requested refresh runs sync before setup;

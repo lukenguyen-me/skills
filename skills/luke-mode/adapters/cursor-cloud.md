@@ -26,11 +26,11 @@ parent-run evidence, not a subagent catalog or proof of a delegate's model.
 
 ## Skills and invocation
 
-Invoke Luke explicitly with `/luke-mode`. The prepared Cursor package sets
-`disable-model-invocation: true` in `SKILL.md`. Codex's `agents/openai.yaml` alone
-does not configure Cursor invocation. Use the repository's `scripts/package-luke-mode-cursor.py`
+Invoke Luke explicitly with `/luke-mode`. The main `SKILL.md` sets
+`disable-model-invocation: true`, which Cursor reads; Codex's `agents/openai.yaml`
+alone does not configure Cursor invocation. Use the repository's `scripts/package-luke-mode-cursor.py`
 to prepare one `luke-mode` directory containing setup and sync.
-The helper converts invocation metadata in every bundled entry point. The main skill is explicit-only; setup and sync support matching requests
+The helper keeps the main entry point's explicit-only flag and leaves the others auto-invocable. The main skill is explicit-only; setup and sync support matching requests
 and routing from Luke. Setup installs the external PStack verification skills
 with their upstream invocation policy. Naming a verification companion in the user's
 Luke request explicitly selects that workflow.

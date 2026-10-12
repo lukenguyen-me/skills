@@ -11,7 +11,8 @@ the selected skill's actual directory.
 Before invoking a candidate, check:
 
 - Its name, description, and invocation policy. Read `agents/openai.yaml` for
-  Codex policy and `disable-model-invocation` frontmatter for Cursor. User-only
+  Codex policy and `disable-model-invocation` frontmatter for Cursor and
+  Claude Code. User-only
   skills require explicit invocation by the user; opening their files is not a bypass.
   Full/toolkit Luke setup explicitly selects Matt's setup as its repository stage;
   this scoped setup contract does not permit other user-only workflows implicitly.
