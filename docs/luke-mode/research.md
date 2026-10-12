@@ -115,11 +115,10 @@ preserve explicit-only behavior. Claude Code support remains future work.
 ## Cursor Cloud
 
 Cursor's skill format supports explicit slash-command invocation using
-`disable-model-invocation: true`. The Cursor package is generated from the shared
-source with that frontmatter field, retaining Codex metadata and all linked
-resources. Cloud delivery uses actual project files or personal skill sync from
-`~/.cursor/skills/`; `.agents` user skills and arbitrary personal config do not
-sync. The optional repository models file carries separately keyed harness
+`disable-model-invocation: true`. Luke's shared source carries that field, so
+the Skills CLI installs the same directory for Cursor, with Codex metadata and
+all linked resources. Cloud delivery uses project files the clone carries: the
+CLI's `.agents/skills/` install, committed with `skills-lock.json`. The optional repository models file carries separately keyed harness
 profiles into a clone.
 [Skills and sync](https://cursor.com/docs/skills)
 

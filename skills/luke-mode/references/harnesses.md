@@ -11,16 +11,16 @@ An external Cursor connector in a Codex session does not make that session Curso
 | Cursor Cloud Agent | `Cursor Cloud` | [Cursor Cloud](../adapters/cursor-cloud.md) | `/luke-mode` |
 | Claude Code | `Claude Code` | [Claude Code](../adapters/claude-code.md) | `/luke-mode` |
 
-All bundled sub-skills use the same native command prefix once discovered or
-registered by setup:
-`$setup-luke-mode` and `$sync-matt-pocock-skills` in Codex, or
-`/setup-luke-mode` and `/sync-matt-pocock-skills` in Cursor Cloud and Claude Code.
+Setup and sync run inside the bundle as `$luke-mode setup` and
+`$luke-mode sync` in Codex, or `/luke-mode setup` and `/luke-mode sync` in
+Cursor Cloud and Claude Code.
 The verification companions are `$create-verification-skill` and
 `$maintain-verification-skill` in Codex, or `/create-verification-skill` and
 `/maintain-verification-skill` in Cursor Cloud and Claude Code. Naming either as an argument to
 Luke is an explicit invocation of that companion as well.
-Before separate commands are indexed, use `$luke-mode setup-luke-mode` or
-`/luke-mode setup-luke-mode`; the bundled workflow is already installed.
+Matt's triage runs as `$luke-mode triage <request>` in Codex or
+`/luke-mode triage <request>` in Cursor Cloud and Claude Code, through the
+[Triage playbook](../playbooks/triage.md).
 
 The external Matt workflow uses `$luke-mode implement-spec <spec-ref>` in Codex
 or `/luke-mode implement-spec <spec-ref>` in Cursor Cloud and Claude Code, routed through the

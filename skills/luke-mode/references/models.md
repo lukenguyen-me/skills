@@ -9,6 +9,10 @@ Resolve explicit relative paths from the user's working directory. Report the
 selected path when model routing matters. Keep one source for the whole profile;
 do not fill missing roles from a second file.
 
+When the selected file lacks the active harness's heading but a lower-priority
+file has it, warn: name both files and say the active harness runs without a
+profile until the selected file gains that heading.
+
 Read only the heading matching the active harness: `Codex`, `Cursor Cloud`, or
 `Claude Code`.
 A file containing only another harness's settings has no active profile, even

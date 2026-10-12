@@ -9,84 +9,60 @@ Matt Pocock's skills remain the engineering toolkit. Luke adds routing, sequenci
 and optional model-aware delegation. It contains none of Matt's skill files and
 requires no custom MCP server or orchestration service.
 
-Luke Mode bundles two sub-skills:
+Luke Mode carries two bundle routes:
 
-| Sub-skill | Purpose | Codex command |
+| Route | Purpose | Codex command |
 | --- | --- | --- |
-| [setup-luke-mode](../../skills/luke-mode/skills/setup-luke-mode/SKILL.md) | Install dependencies, configure model roles, and set up this repository | `$setup-luke-mode` |
-| [sync-matt-pocock-skills](../../skills/luke-mode/skills/sync-matt-pocock-skills/SKILL.md) | Refresh Matt's full upstream skill set, including new skills | `$sync-matt-pocock-skills` |
+| [Setup](../../skills/luke-mode/playbooks/setup.md) | Install dependencies, configure model roles, and set up this repository | `$luke-mode setup` |
+| [Sync](../../skills/luke-mode/playbooks/sync.md) | Update Luke's dependencies to a newer upstream tag | `$luke-mode sync` |
+| [Triage](../../skills/luke-mode/playbooks/triage.md) | Move issues through Matt's triage states, with codebase evidence | `$luke-mode triage` |
 
-Matt's toolkit and PStack's `create-verification-skill` and
-`maintain-verification-skill` are external dependencies installed by setup.
-Luke contains none of their upstream files. The verification workflows retain
-explicit-only invocation. In Cursor, use `/` instead of `$`.
+Matt's skills and PStack's `create-verification-skill` and
+`maintain-verification-skill` are external
+[dependencies](../../skills/luke-mode/references/dependencies.md) installed by
+setup. Luke installs and updates only the listed skills and contains none of
+their upstream files. The verification workflows retain explicit-only
+invocation. In Cursor and Claude Code, use `/` instead of `$`.
 
-## Install globally in Codex
+## Install
 
-With Node.js, npm, and Git installed, run:
+The [Skills CLI](https://github.com/vercel-labs/skills) installs and updates
+every skill, Luke and its dependencies alike. With Node.js, npm, and Git
+installed, run from the project root and name every agent you use:
 
 ```sh
-npx skills add lukenguyen-me/skills --skill luke-mode --agent codex --global
+npx skills add lukenguyen-me/skills --skill luke-mode --agent codex claude-code
 ```
 
-The [Skills CLI](https://github.com/vercel-labs/skills) installs the complete
-Luke directory, including setup and sync resources. Omit `--global` for a project
-installation. You do not need to select other skills from this repository.
-
-For a manual install, clone this repository and link only `skills/luke-mode`
-into your active skill root. Keep the checkout at the link's target. Inspect
-existing installations before replacing them.
-
-Open your new project in Codex and run:
+The CLI keeps one copy in `.agents/skills/`, which Codex and Cursor read, and
+links `.claude/skills/` to it for Claude Code. You do not need to select other
+skills from this repository. Then run setup in the project:
 
 ```text
-$luke-mode setup-luke-mode
+$luke-mode setup
 ```
 
-If `$setup-luke-mode` already appears in the harness catalog, it runs the same
-workflow. You can also ask the harness to run `setup-luke-mode` from Luke Mode.
-Setup registers links for the two bundled commands when native discovery needs
-them. A harness may need a restart to index those links; the parent route works
-immediately. Registration reuses matching links and preserves conflicting old
-standalone installations for inspection.
+Setup installs the missing dependencies at project scope, for the same agents,
+then configures models and the repository. Global installations are left
+alone.
 
-Luke's `agents/openai.yaml` makes the main entry point explicit-only. Setup and
-sync support matching scoped requests. No always-on project rule is installed
-for Luke. [Codex skill documentation](https://developers.openai.com/codex/skills)
+Luke's `agents/openai.yaml` makes it explicit-only in Codex, and the
+`disable-model-invocation` flag does the same in Cursor and Claude Code. No
+always-on project rule is installed for Luke.
+[Codex skill documentation](https://developers.openai.com/codex/skills)
 
-## Install in Claude Code
+In Claude Code, setup proposes the `Claude Code` model profile from the
+[Claude Code adapter](../../skills/luke-mode/adapters/claude-code.md): Opus for
+Reasoning and Reviewer, Sonnet as the main Coding worker, and Haiku only for
+read-only exploration that needs little judgment.
 
-```sh
-npx skills add lukenguyen-me/skills --skill luke-mode --agent claude-code --global
-```
+### Cursor Cloud
 
-Then run `/luke-mode setup-luke-mode` in your project. Setup proposes the
-`Claude Code` model profile from the [Claude Code adapter](../../skills/luke-mode/adapters/claude-code.md):
-Opus for Reasoning and Reviewer, Sonnet as the main Coding worker, and Haiku
-only for read-only exploration that needs little judgment.
-
-## Install for Cursor Cloud
-
-From the skills checkout, use Python 3.9 or later:
-
-```sh
-python3 scripts/package-luke-mode-cursor.py "/absolute/path/to/your-project/.cursor/skills/luke-mode"
-```
-
-The helper creates one complete `luke-mode` folder, with setup and sync inside.
-The main entry point already carries the explicit-only flag that Cursor and
-Claude Code read. The helper leaves sources unchanged, and refuses an existing destination. Include that one folder in the
-repository version supplied to the Cloud Agent. Setup installs external
-dependencies in the actual Cloud environment.
-
-For a personal installation, package to `~/.cursor/skills/luke-mode`, then enable
-**Sync Skills for Cloud Agents** in Cursor Settings → Agents → Context and Tools.
-Personal Codex installs and model preferences do not travel with Cursor skill
-sync. [Cursor skill discovery and sync](https://cursor.com/docs/skills)
-
-In the Cloud chat, run `/luke-mode setup-luke-mode`, or `/setup-luke-mode` when
-indexed. Confirm native discovery in the actual run; local package checks do
-not exercise Cursor's live loader.
+Install with `--agent cursor` among the agents, and commit `.agents/skills/` and
+`skills-lock.json` so the Cloud Agent's clone carries them. Run
+`/luke-mode setup` in the Cloud chat; it installs dependencies in the actual
+Cloud checkout. Confirm native discovery in the actual run.
+[Cursor skill discovery](https://cursor.com/docs/skills)
 
 ## Use
 
@@ -120,35 +96,33 @@ including the delivery settings of an authorized Cloud run.
 ## Set up Luke Mode
 
 ```text
-$setup-luke-mode
+$luke-mode setup
 ```
 
-`$luke-mode setup` routes to the same sub-skill.
+Full setup runs three stages:
 
-Full setup runs four stages:
-
-1. Register the bundled setup and sync commands if native discovery needs them.
-2. Install missing external dependencies: Matt's complete toolkit from
-   [mattpocock/skills](https://github.com/mattpocock/skills), and only the two
-   verification-authoring skills from [backnotprop/pstack](https://github.com/backnotprop/pstack).
-3. Configure or reuse accepted model roles, normally saved at
+1. Install missing [dependencies](../../skills/luke-mode/references/dependencies.md)
+   with the Skills CLI at project scope: the listed Matt skills from
+   [mattpocock/skills](https://github.com/mattpocock/skills), pinned to a tag,
+   and only the two verification-authoring skills from
+   [backnotprop/pstack](https://github.com/backnotprop/pstack). Every agent the
+   repository already uses gets them.
+2. Configure or reuse accepted model roles, normally saved at
    `~/.config/luke-mode/models.md`.
-4. Run Matt's repository setup when guidance is missing, covering the tracker,
+3. Run Matt's repository setup when guidance is missing, covering the tracker,
    domain docs, and triage labels.
 
 The full setup request includes dependency installation and Matt's repository
 setup; no second sync or setup command is required. Matt's installed workflow
 owns its project choices and reviewable drafts. Re-running Luke setup reuses
-complete installations, accepted models, and repository guidance. A complete
-dependency installation is refreshed only on a requested update. Disabled skills,
-conflicting installations, and local customizations remain protected.
+complete installations, accepted models, and repository guidance. Disabled
+skills, hand installs, and local customizations remain protected.
 
-Setup reports registration, dependencies, models, and repository readiness
-separately. Installation does not execute the verification-authoring workflows;
-explicitly name one when you want to create or maintain an app verifier.
+Setup reports dependencies, models, and repository readiness separately.
+Installation does not execute the verification-authoring workflows; explicitly
+name one when you want to create or maintain an app verifier.
 
-Use `$setup-luke-mode configure models` to configure only the portable model
-roles. `$luke-mode configure models` remains supported.
+Use `$luke-mode configure models` to configure only the portable model roles.
 
 | Role | Work | Selection target |
 | --- | --- | --- |
@@ -168,12 +142,14 @@ For settings that travel with the repository, explicitly choose this optional
 save location in the Cloud chat:
 
 ```text
-/setup-luke-mode configure models. Save the profile to .luke-mode/models.md.
+/luke-mode configure models. Save the profile to .luke-mode/models.md.
 ```
 
 Model lookup uses an explicit path first, then the repository's
 `.luke-mode/models.md` if present, then the personal file. Each selected file
 keeps harness profiles separate; missing roles are not merged from another file.
+When the selected file lacks the active harness's section but a lower-priority
+file has one, Luke warns that the harness runs without a profile.
 Create or commit the repository file only when that shared configuration is
 desired. Personal config files are not included in Cursor skill sync.
 
@@ -203,7 +179,7 @@ requirements, then code review and delivery.
 Luke automatically composes **permitted primitives** such as `tdd`,
 `diagnosing-bugs`, `codebase-design`, and `code-review` when installed and compatible.
 It recommends **user-only workflows** such as `implement`, `implement-spec`, `grill-with-docs`,
-`to-spec`, and `to-tickets` for explicit invocation. It does not circumvent their
+`to-spec`, `to-tickets`, and `triage` for explicit invocation. It does not circumvent their
 policy by reading their files as executable instructions.
 
 Luke's own Implement playbook therefore works from a natural-language request.
@@ -211,17 +187,16 @@ It chooses single-ticket or whole-spec execution after resolving the target,
 without automatically invoking Matt's separate `$implement` or `$implement-spec`
 workflow. Installed primitives supply their detailed methods. [Matt's invocation rules](https://github.com/mattpocock/skills/blob/b0618bc436ad893b3c5e84e55fba86586d34a404/skills/productivity/writing-for-agents/SKILL-MECHANICS.md)
 
-Useful optional additions are `grilling`, `codebase-design`, `domain-modeling`,
-`diagnosing-bugs`, and `code-review`, alongside `tdd`. Include
-`setup-matt-pocock-skills` through Luke setup when installing Matt's toolkit.
-Choose one installation method to avoid duplicates. Some Matt workflows require
-per-project setup, a tracker, confirmed test seams, or a committed review
-baseline; Luke checks the installed version's requirements before invoking it.
-[Matt's installation guide](https://github.com/mattpocock/skills#installation-30-second-setup)
+Setup installs the Matt skills the playbooks use, listed in
+[dependencies](../../skills/luke-mode/references/dependencies.md), including
+`setup-matt-pocock-skills`. Add any other Matt skill yourself with the Skills
+CLI; setup and sync leave it alone. Some Matt workflows require per-project
+setup, a tracker, confirmed test seams, or a committed review baseline; Luke
+checks the installed version's requirements before invoking it.
 
 Missing or incompatible optional skills produce a disclosed direct fallback.
 Ordinary engineering leaves installed skill files alone; full setup installs
-missing dependencies and a requested sync refreshes Matt's toolkit.
+missing dependencies and a requested sync updates them.
 Explicitly required skills
 and independent-review requirements cannot be satisfied by pretending a fallback
 ran the same process.
@@ -299,7 +274,7 @@ Selecting his native `$implement-spec` or `/implement-spec` alongside Luke is
 equivalent. This explicit path requires his installed workflow, dependencies,
 tracker setup, and native worktree/delegation capabilities. Missing requirements
 leave that request pending rather than silently selecting Luke's own mode.
-Use a requested `$sync-matt-pocock-skills` for missing upstream files, or explicitly
+Use a requested `$luke-mode sync` for missing upstream files, or explicitly
 invoke `$setup-matt-pocock-skills` for missing repository setup. Matt's workflow
 remains upstream rather than becoming another bundled companion.
 
@@ -308,35 +283,52 @@ and [usage notes](https://github.com/mattpocock/skills/blob/49dd158d1076134a641b
 for the inspected upstream version. His installed version owns the explicitly
 selected Matt procedure.
 
-## Sync Matt's latest skill set
+## Sync Luke's dependencies
 
 ```text
-$sync-matt-pocock-skills
+$luke-mode sync
 ```
 
-`$luke-mode sync Matt's skills` routes to the same sub-skill. Sync discovers the
-full current inventory from `mattpocock/skills`, refreshes installed files, and
-includes new upstream skills. It preserves the existing installation method,
-agent, scope, local customizations, and unrelated skills. Conflicts that require
-a user decision remain pending.
-
-For Skills CLI installations, the sub-skill re-runs `add` for the official source
-with all skills selected and one specific agent. This also picks up new skills.
-For an existing plugin, it uses the host's update controls instead of adding a
-second installation. The sub-skill checks current upstream instructions when it
-runs and reports revision evidence and installed versus loaded state.
+Sync moves the listed Matt skills to the latest `mattpocock/skills` release tag,
+or to a tag you name, and refreshes the two PStack skills. It re-runs the Skills
+CLI's `add` with exactly those skill names and the repository's agents, so the
+lock file records the new tag. Other skills, including Matt skills you added
+yourself, stay at their installed version; the report names them. A dependency
+renamed or removed upstream stops the Matt refresh until the dependency list is
+updated.
 
 Sync and setup are separate. Sync does not configure model roles, repository
 guidance, or tracker labels, and it does not invoke Matt's user-only setup skill.
 When both operations are requested, sync runs first so setup checks the refreshed
 requirements. In Cursor Cloud, verify the files and discovery inside the Cloud
-environment. [Matt's installation guide](https://github.com/mattpocock/skills#installation-30-second-setup)
+environment.
+
+## Triage issues
+
+```text
+$luke-mode triage Show me anything that needs my attention.
+$luke-mode triage #42
+$luke-mode triage Move #42 to ready-for-agent.
+```
+
+Naming `triage` invokes Matt's installed `triage`, which owns the roles, state
+transitions, label mapping, agent briefs, and `.out-of-scope/` notes. Luke adds
+a blast-radius look at the code the issue names, a repro held to the Fix
+playbook's evidence standard, and read-only Workers when several issues need
+codebase context. Triage changes no application code. Tracker writes happen at
+Matt's confirmation points, after your direction. An item that reaches
+`ready-for-agent` ends with `$luke-mode fix #42` or `$luke-mode implement #42`
+as the offered next step.
+
+Setup installs `triage` with the other dependencies, so Matt's repository setup
+also writes the triage-label mapping. A question about an issue that does not
+name triage goes to Explore.
 
 ## Create and maintain project verification
 
 Full Luke setup installs these two skills from
-[backnotprop/pstack](https://github.com/backnotprop/pstack#install) into the active
-harness's skill root. Their upstream instructions, resources, and invocation
+[backnotprop/pstack](https://github.com/backnotprop/pstack#install) into the
+project for every agent it uses. Their upstream instructions, resources, and invocation
 policies are preserved. Neither workflow is bundled in Luke.
 
 ```text
@@ -372,10 +364,10 @@ acceptance criteria need checks that exercise the affected behavior.
 
 The core and playbooks are Markdown. [Harness selection](../../skills/luke-mode/references/harnesses.md)
 routes to [Codex](../../skills/luke-mode/adapters/codex.md) or
-[Cursor Cloud](../../skills/luke-mode/adapters/cursor-cloud.md). Cursor packaging and
-local package checks are implemented; live Cloud discovery, delegation, and
-model overrides still need validation in Cursor. Claude Code and Cursor's local
-editor/CLI adapters are not implemented. Codex metadata alone does not enforce
+[Cursor Cloud](../../skills/luke-mode/adapters/cursor-cloud.md), or
+[Claude Code](../../skills/luke-mode/adapters/claude-code.md). Live Cloud
+discovery, delegation, and model overrides still need validation in Cursor.
+Cursor's local editor/CLI adapter is not implemented. Codex metadata alone does not enforce
 another harness's invocation policy.
 
 Try the [routing and behavior scenarios](scenarios/routing.md). See

@@ -45,31 +45,25 @@ runtime model inheritance, concurrent execution, or completed spec implementatio
 
 ## Current single-install package checks
 
-Updated on 2026-10-11. Luke now bundles only setup and Matt sync. PStack's
-verification-authoring skills are external setup dependencies; the earlier
-behavioral observations above do not validate the revised bootstrap workflow.
-
-Validate the three owned skill entry points:
+Updated on 2026-10-13. Setup and sync are bundle routes (`playbooks/setup.md`
+and `playbooks/sync.md`), not separate skills. Every dependency is installed
+and updated with the Skills CLI at project scope. The earlier behavioral
+observations above do not validate the revised workflow.
 
 ```sh
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode/skills/setup-luke-mode
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/luke-mode/skills/sync-matt-pocock-skills
-python3 -B -m unittest discover -s tests -p test_package_luke_mode_cursor.py -v
+python3 -B -m unittest discover -s tests -p test_luke_mode_bundle.py -v
+npx skills@latest add ./ --list --full-depth
 ```
 
 The first check reports one expected error: `disable-model-invocation` is not in
 the Codex validator's allowed keys. Luke keeps it so Claude Code and Cursor
 treat the main entry point as explicit-only; any other error is a real failure.
 
-The local bundle tests cover one complete Cursor directory, main-entry invocation
-metadata, unchanged source resources, relocated cross-skill links, paths with
-spaces, packaging from another working directory, preservation of existing
-files/directories/symlinks, and rejection of destinations inside the source.
-Registration tests copy only Luke into an isolated root, expose both commands
-from their bundled sources, repeat registration without changes, and preserve
-the whole command root when a conflicting entry exists. No Matt or PStack
-workflow is vendored or included in Cursor packaging.
+The bundle tests check that `luke-mode/SKILL.md` is the bundle's only skill
+entry point and that every relative link resolves inside the bundle, so a CLI
+install works from any skill root. The CLI listing must show `luke-mode` and
+no setup or sync skill. No Matt or PStack workflow is vendored.
 
 ## Remaining coverage
 

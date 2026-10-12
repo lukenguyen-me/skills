@@ -1,5 +1,0 @@
-interface:
-  display_name: "Sync Matt Pocock Skills"
-  short_description: "Refresh Matt's full toolkit, including new skills"
-policy:
-  allow_implicit_invocation: true

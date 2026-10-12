@@ -18,13 +18,10 @@ names and descriptions, then use targeted name or description searches in the
 user roots for the affected app or surface. Match purpose and scope rather than
 requiring a `verify-*` name. Load only relevant candidates.
 
-Luke's `agents/openai.yaml` disables implicit invocation for the main skill.
-Its setup and sync sub-skills permit discovery for their scoped requests and
-routing from Luke. Both ship under Luke's `skills/` directory.
+Luke's `agents/openai.yaml` disables implicit invocation. Setup and sync run
+inside the bundle as `$luke-mode setup` and `$luke-mode sync`.
 PStack verification workflows are installed externally by setup. Read their
-installed policy and preserve explicit-only invocation. Setup can register links
-in the active discovery root when separate commands are absent; those links point to the bundled files.
-Two unrelated same-name installations can create ambiguous choices.
+installed policy and preserve explicit-only invocation. Two unrelated same-name installations can create ambiguous choices.
 Project instructions remain project-owned; Luke does not install an always-on
 `AGENTS.md` rule.
 

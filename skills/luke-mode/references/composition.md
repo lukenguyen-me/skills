@@ -37,7 +37,8 @@ Luke borrows sequencing from user-only workflows such as `implement`, `implement
 `grill-with-docs`, `to-spec`, and `to-tickets`. It does not invoke them implicitly,
 copy their content, or load them as a workaround for their policy. If the user
 explicitly invokes one, let that workflow own its stage rather than running a
-second Luke workflow over it. Apply the user's scope and existing authorization.
+second Luke workflow over it. Matt's `triage` runs only this way, through the
+[Triage playbook](../playbooks/triage.md). Apply the user's scope and existing authorization.
 
 Implement automatically selects Luke-owned [whole-spec mode](implement-spec.md)
 for a resolved parent spec with implementation children. Luke owns its graph
@@ -61,9 +62,8 @@ fallback, use project conventions, and preserve the same acceptance criteria.
 If the user explicitly requires that skill or the missing capability is essential,
 report the blocked step and continue only independent work. Installation and
 updating require a requested sync or full/toolkit Luke setup; ordinary engineering work does not repair skill installations automatically.
-For a requested Matt toolkit refresh, use Luke's
-[sync sub-skill](../skills/sync-matt-pocock-skills/SKILL.md); for Luke configuration,
-use its [setup sub-skill](../skills/setup-luke-mode/SKILL.md).
+For a requested dependency refresh, use Luke's [sync](../playbooks/sync.md);
+for Luke configuration, use its [setup](../playbooks/setup.md).
 For explicitly named verification authoring, use
 the installed PStack `create-verification-skill` or `maintain-verification-skill`,
 resolved through the active harness's catalog and skill roots. Their external

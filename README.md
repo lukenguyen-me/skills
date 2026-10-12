@@ -69,49 +69,48 @@ environment credentials, while connected image tools use existing authentication
 
 Coordinate engineering requests with playbooks, compatible installed skills, and
 verified outcomes. Invoke explicitly with `$luke-mode` in Codex or `/luke-mode`
-in Cursor Cloud. Luke Mode is maintained in this repository.
+in Cursor Cloud and Claude Code. Luke Mode is maintained in this repository.
 
-Install only `luke-mode`. It contains two setup workflows:
+Install only `luke-mode`. It carries two bundle routes:
 
-- [setup-luke-mode](skills/luke-mode/skills/setup-luke-mode/SKILL.md): install missing
-  dependencies, configure model roles, and set up the current repository.
-- [sync-matt-pocock-skills](skills/luke-mode/skills/sync-matt-pocock-skills/SKILL.md):
-  refresh Matt's full upstream toolkit, including newly added skills.
+- [setup](skills/luke-mode/playbooks/setup.md): install missing dependencies,
+  configure model roles, and set up the current repository.
+- [sync](skills/luke-mode/playbooks/sync.md): update Luke's dependencies to a
+  newer upstream tag.
 
-Full setup installs Matt's toolkit and PStack's `create-verification-skill` and
-`maintain-verification-skill` as external dependencies. Their upstream files
-remain the source of truth. Installing verification workflows makes them
-available; creating a project's `verify-<app>` skill remains an explicitly
+Full setup installs the Matt and PStack skills listed in
+[dependencies](skills/luke-mode/references/dependencies.md), and only those.
+Their upstream files remain the source of truth. Installing verification
+workflows makes them available; creating a project's `verify-<app>` skill remains an explicitly
 requested action.
 
 Ask Luke to implement a ticket or spec. The Implement playbook resolves the
 target: a parent spec with implementation children automatically selects
 [whole-spec mode](skills/luke-mode/references/implement-spec.md); an individual
 ticket keeps its own scope. This mode belongs to Luke and uses permitted testing
-and review primitives, so Matt's separate `implement-spec` installation is optional.
+and review primitives, so it does not need Matt's separate `implement-spec`.
 To select Matt's original workflow explicitly, use
 `$luke-mode implement-spec <spec-path-or-issue>` (Cursor: `/luke-mode implement-spec`).
-That choice requires his installed workflow and dependencies; use the sync
-companion when their installation or refresh is requested.
+That choice requires his installed workflow and dependencies; run
+`$luke-mode sync` when their installation or refresh is requested.
 
-Install globally for Codex:
+Install in the project, for every agent you use:
 
 ```sh
-npx skills add lukenguyen-me/skills --skill luke-mode --agent codex --global
+npx skills add lukenguyen-me/skills --skill luke-mode --agent codex claude-code
 ```
 
-Open the new project in your CLI harness and run `setup-luke-mode` from Luke Mode.
-Use `$setup-luke-mode` when listed. On a first run where the separate command is
-not indexed, invoke the installed parent:
+Then run setup from the project:
 
 ```text
-$luke-mode setup-luke-mode
+$luke-mode setup
 ```
 
-Setup registers both bundled commands, installs missing upstream skills, and
-configures the project. In Cursor, use `/` instead of `$`.
+Setup installs missing dependencies through the Skills CLI at project scope,
+then configures models and the repository. Run `$luke-mode sync` to update
+them later. In Cursor and Claude Code, use `/` instead of `$`.
 
-See the [Luke Mode guide](docs/luke-mode/README.md) for Cursor Cloud packaging,
+See the [Luke Mode guide](docs/luke-mode/README.md) for Cursor Cloud,
 setup, model roles, and verification coverage.
 
 ### mac-dev-storage-cleanup
