@@ -181,13 +181,16 @@ worktree_removable() {
 # running keep using their newer files.
 old_entries() { find "$1" -mindepth 1 -maxdepth 1 -mtime +1 2>/dev/null; }
 
-# Prints the path of an Android SDK tool, looking on PATH and in the SDK.
+# Prints the path of an Android SDK tool. The SDK's cmdline-tools come before
+# PATH: PATH often lists the legacy tools/bin, whose sdkmanager and avdmanager
+# need Java 8 and crash on newer Java. The legacy copy is the last resort.
 find_tool() {
   local sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}" t
-  if have "$1"; then command -v "$1"; return 0; fi
-  for t in "$sdk"/cmdline-tools/*/bin/"$1" "$sdk/tools/bin/$1"; do
+  for t in "$sdk/cmdline-tools/latest/bin/$1" "$sdk"/cmdline-tools/*/bin/"$1"; do
     [ -x "$t" ] && { echo "$t"; return 0; }
   done
+  if have "$1"; then command -v "$1"; return 0; fi
+  [ -x "$sdk/tools/bin/$1" ] && { echo "$sdk/tools/bin/$1"; return 0; }
   return 1
 }
 

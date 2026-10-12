@@ -429,6 +429,23 @@ class CleanupScriptTests(unittest.TestCase):
         clear = self.sh("clean.sh", "preflight", env={"DEV_CLEANUP_APPS": "no-such-process-xyz"})
         self.assertIn("ok", clear.stdout)
 
+    def test_sdkmanager_prefers_cmdline_tools_over_legacy_on_path(self):
+        # The legacy tools/bin is on PATH, as many shell profiles set it. Its
+        # sdkmanager needs Java 8 and crashes, so the cmdline-tools copy must win.
+        sdk = self.home / "Library/Android/sdk"
+        self.write(sdk / "ndk/27.1.12297006/source.properties")
+        for rel, body in (("tools/bin/sdkmanager", "exit 1"),
+                          ("cmdline-tools/latest/bin/sdkmanager", "")):
+            tool = self.write(sdk / rel, f'#!/bin/bash\necho "{rel} $*" >> "{self.stub_log}"\n{body}\n')
+            tool.chmod(0o755)
+        env = {"PATH": f"{sdk}/tools/bin:{self.env['PATH']}"}
+        self.sh("scan.sh", "--out", str(self.plan), "--roots", str(self.projects), env=env)
+        row = self.find(action="cmd", label="ndk;27.1.12297006")[0]
+        self.sh("clean.sh", "run", "--plan", str(self.plan), row["id"], env=env)
+        log = self.stub_log.read_text()
+        self.assertIn("cmdline-tools/latest/bin/sdkmanager --uninstall ndk;27.1.12297006", log)
+        self.assertNotIn("\ntools/bin/sdkmanager", "\n" + log)
+
 
     # ---- review regressions ----
 
