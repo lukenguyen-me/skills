@@ -45,24 +45,27 @@ Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 
 ## Setup and portability
 
-Run `$setup-luke-mode configure models` in a disposable configuration environment, or
+Run `$luke-mode configure models` in a disposable configuration environment, or
 pass a temporary models-file path. Verify that it proposes four exact role choices,
 requests confirmation, and writes only the accepted Luke profile. It should
 preserve an existing other-harness profile and read back what it saved. Already
 accepted exact choices need no repeated confirmation. Unknown IDs and unsupported
 efforts remain unresolved.
 
-For full setup, use a disposable repository and temporary model preferences.
+For full setup, use a disposable repository with both `.agents/skills/` and
+`.claude/skills/`, and temporary model preferences.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| Install only Luke; `$luke-mode setup-luke-mode` in a new project | Reads bundled setup directly, registers setup/sync commands, installs Matt's full toolkit and only PStack's two verification-authoring skills in the inferred active agent/scope, then configures models and the project. No vendored verification copies are needed. |
-| Complete accepted setup run a second time | Reuses matching registrations, upstream dependencies, models, and repository guidance; no needless refresh or repeated choices. |
+| Install only Luke; `$luke-mode setup` in a new project | Installs only the listed Matt and PStack dependencies with the Skills CLI at project scope, for every agent in use, with Matt pinned to a tag; then configures models and the project. Every dependency has a `skills-lock.json` entry; each `.claude/skills/` entry is a CLI link into `.agents/skills/`; `find -L .claude/skills -maxdepth 1 -type l` prints nothing; no hand-made links or copies exist. |
+| Complete accepted setup run a second time | Reuses dependencies, models, and repository guidance; the skill roots and `skills-lock.json` are unchanged; no repeated choices. |
+| A dependency exists in `.agents/skills/` but not `.claude/skills/`, or as a Claude-only copy | Re-runs `add` with every agent in use; the CLI leaves one copy in `.agents/skills/` and a link in `.claude/skills/`. |
+| A dependency is a hand-made link or copy without a lock entry | Reports its path and target; replaces it through `add` only after the user agrees. |
+| A global copy of a dependency exists | Installs the project dependency anyway and leaves the global copy untouched. |
 | Missing PStack skill, unknown provenance, or network failure | Installs missing official files when permitted; protects conflicting customizations and reports concrete pending dependencies without claiming readiness. |
-| `$setup-luke-mode` | Runs the setup stages directly, using Luke's shared harness/model references; registers bundled commands, installs missing Matt and PStack dependencies, configures models, and sets up the repository without entering an application playbook. |
 | `$luke-mode setup`; Matt's repository guidance and referenced configuration already satisfy the installed skills | Reuses existing toolkit settings, configures or reuses personal models, and reports both stages ready without rerunning Matt setup. |
 | `$luke-mode setup`; repository configuration is missing and the installed setup skill is user-only | Reuses or configures personal models and runs Matt's repository setup as an explicitly selected stage, honoring project choices and reviewable drafts without requiring a second skill command. |
-| `$luke-mode setup`; `setup-matt-pocock-skills` is missing | Installs the official toolkit through the bundled sync workflow, verifies resources, then runs repository setup. Disabled or incompatible installations remain pending. Independent model configuration can finish. |
+| `$luke-mode setup`; `setup-matt-pocock-skills` is missing | Installs it with the other missing dependencies, verifies resources, then runs repository setup. Disabled or incompatible installations remain pending. Independent model configuration can finish. |
 | `$luke-mode setup` together with an explicit `$setup-matt-pocock-skills` invocation | Follows the installed Matt workflow for the repository stage, including its drafts and confirmations; verifies generated guidance and reports both stages accurately. |
 | Existing setup has a missing referenced configuration file or required label mapping | Identifies the incomplete prerequisite; file presence alone does not establish readiness. |
 | Run `$luke-mode setup` in a second unconfigured repository with an accepted personal model profile | Reuses personal choices and checks the second repository independently; the first repository's setup does not mark the second ready. |
@@ -73,22 +76,22 @@ Luke skill works without application-specific paths or repository scaffolding.
 Repeat ordinary work without a models file to check direct execution. A profile
 for another harness must not be mistaken for a Codex profile.
 
-## Matt toolkit sync
+## Dependency sync
 
-Use isolated skill roots and a disposable project. Preserve unrelated markers,
-local customizations, and the initial installer metadata for comparison.
+Use a disposable project with CLI-installed dependencies. Preserve unrelated
+markers, local customizations, and the initial `skills-lock.json` for comparison.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| `$sync-matt-pocock-skills` with one established Skills CLI installation | Resolves its agent, scope, source, and target; fetches the current official inventory; refreshes existing entries and adds new ones, including setup; verifies resources and provenance. |
-| `$luke-mode sync Matt's skills` | Routes to the sync sub-skill; does not treat the request as application implementation or model setup. |
-| An unrelated skill and a customized Matt skill exist in the target | Leaves the unrelated skill untouched; backs up and reconciles customizations; surfaces unresolved conflicts before replacement. |
-| Existing Matt plugin installation | Uses the host's update controls and verifies the plugin revision/discovery; adds no duplicate file installation. |
-| Conflicting project/global installs or uncertain provenance | Establishes the intended target before writes; does not overwrite a same-name local skill based only on its name. |
-| Network or plugin refresh is unavailable | Reports the pending sync and preserves the existing usable installation; does not claim latest from stale local files. |
+| `$luke-mode sync` | Resolves the latest `mattpocock/skills` tag, re-runs `add` with exactly the listed Matt skills, that tag, and every agent in use; refreshes the two PStack skills; the lock's `ref` moves to the new tag. |
+| The project also has Matt skills outside the dependency list | Leaves them at their installed ref and names them in the report. |
+| `$luke-mode sync to v1.3.1` | Uses the named tag instead of the latest. |
+| A listed dependency is renamed or removed in the target tag | Stops the Matt refresh and reports the missing name; installs nothing from that tag. |
+| An unrelated skill and a customized dependency exist in the target | Leaves the unrelated skill untouched; backs up and reconciles customizations; surfaces unresolved conflicts before replacement. |
+| Network is unavailable | Reports the pending sync and preserves the existing usable installation; does not claim latest from stale local files. |
 | Sync requested alone | Leaves Luke's models, repository instructions, and tracker configuration unchanged; does not invoke Matt's user-only setup. |
-| `$luke-mode sync Matt's skills, then setup Luke Mode` | Syncs first, then checks setup against the refreshed requirements; honors Matt's installed invocation policy. |
-| Installer reports success but the expected inventory has missing skills/resources | Reports an incomplete sync and the missing entries; installer exit status alone does not establish completeness. |
+| `$luke-mode sync, then setup` | Syncs first, then checks setup against the refreshed requirements; honors Matt's installed invocation policy. |
+| Installer reports success but a dependency fails the checks | Reports an incomplete sync and the failing entries; installer exit status alone does not establish completeness. |
 
 ## Whole-spec execution
 
@@ -141,14 +144,14 @@ upstream contract, not a Luke-maintained copy.
 
 ## Cursor Cloud compatibility
 
-Prepare the Cursor package in a disposable project or sync its personal
-installation. Keep the actual run transcript, advertised tool schemas, selected
+Install Luke with the Skills CLI in a disposable project, including
+`--agent cursor`, and commit the result. Keep the actual run transcript, advertised tool schemas, selected
 profile, task cards or returned model metadata, final diff, and check artifacts.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| Package Luke Mode | Creates one Luke directory with bundled setup and sync, preserves resources and links, and applies explicit-only metadata to the main entry. External Matt and PStack skills are absent until setup installs them. |
-| `/setup-luke-mode` or `/sync-matt-pocock-skills` in a Cloud run | Discovers the selected sub-skill and shared Luke references; uses the Cloud environment's actual roots and capabilities. |
+| Install Luke Mode | The CLI writes one `luke-mode` directory in `.agents/skills/` with its explicit-only metadata. External Matt and PStack skills are absent until setup installs them. |
+| `/luke-mode setup` or `/luke-mode sync` in a Cloud run | Reads the bundled playbook and shared Luke references; installs with the CLI in the Cloud checkout's actual roots. |
 | `/create-verification-skill` or `/luke-mode maintain-verification-skill` in a Cloud run | Selects the explicitly named workflow, uses the Cloud checkout's actual verification controls, and preserves evidence there. The laptop's runtime is not proof. |
 | `/luke-mode Implement ticket #123`; the target is a parent spec with implementation children | Selects Luke-owned whole-spec mode without an extra command or original Matt workflow installation; applies the Cloud profile, native capacity, isolation, and fallback rules. |
 | `/luke-mode implement-spec docs/spec.md` in a Cloud run | Resolves Matt's workflow inside the run, applies the Cloud role profile and shared whole-spec contract, and verifies actual worktree/resource isolation. Luke's single package does not supply Matt's dependency. |

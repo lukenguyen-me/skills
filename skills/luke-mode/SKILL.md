@@ -1,6 +1,6 @@
 ---
 name: luke-mode
-description: Coordinate engineering work, bootstrap dependencies with setup-luke-mode, and sync Matt's toolkit. Use when the user explicitly invokes Luke Mode or requests its bundled setup-luke-mode or sync-matt-pocock-skills workflow.
+description: Coordinate engineering work, and set up or sync Luke's skill dependencies. Use when the user explicitly invokes Luke Mode, including its setup and sync routes.
 disable-model-invocation: true
 ---
 
@@ -16,16 +16,17 @@ skills, configuring models, or delegating work.
 
 ## Start and route
 
-Luke Mode bundles setup and sync under `skills/`. Matt's toolkit and PStack's
-verification-authoring skills are external dependencies installed by setup.
-Route requested setup, toolkit sync, and explicitly named verification-authoring
-workflows before selecting an
-engineering playbook:
+Setup and sync run inside this bundle as `$luke-mode setup` and
+`$luke-mode sync` (`/luke-mode setup` and `/luke-mode sync` in Cursor Cloud and
+Claude Code). Matt's toolkit and PStack's verification-authoring skills are
+external [dependencies](references/dependencies.md) installed by setup.
+Route requested setup, sync, and explicitly named verification-authoring
+workflows before selecting an engineering playbook:
 
-| Requested stage | Companion skill |
+| Requested stage | Route |
 | --- | --- |
-| `setup`, `setup-luke-mode`, configure Luke's models, or check Luke's Matt toolkit setup | [setup-luke-mode](skills/setup-luke-mode/SKILL.md) |
-| `sync-matt-pocock-skills`, sync or update Matt Pocock's skill set, including newly added skills | [sync-matt-pocock-skills](skills/sync-matt-pocock-skills/SKILL.md) |
+| `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [Setup](playbooks/setup.md) |
+| `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
 | `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
 | `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
 
@@ -41,12 +42,8 @@ workflows from the active harness catalog and skill roots, checking their
 PStack provenance, supporting resources, and invocation policy. If missing,
 report the dependency and route an authorized setup request to install it.
 Read and follow the installed upstream workflow; keep one procedure owner.
-The bundled setup and sync files are available before the harness indexes
-their separate commands. A plain request to run `setup-luke-mode` explicitly selects this bundle's setup workflow;
-`$luke-mode setup-luke-mode` (Cursor and Claude Code: `/luke-mode setup-luke-mode`) is the native
-bootstrap route when the separate command is not listed. Setup registers the
-bundled commands, installs missing Matt and PStack dependencies, configures
-model roles, and sets up the current repository. A requested refresh runs sync before setup;
+Setup installs missing dependencies, configures model roles, and sets up the
+current repository. A requested refresh runs sync before setup;
 otherwise setup reuses a complete installation. `Setup OAuth for this app`
 and `implement offline sync` remain engineering requests.
 

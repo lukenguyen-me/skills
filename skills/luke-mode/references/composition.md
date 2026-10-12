@@ -61,9 +61,8 @@ fallback, use project conventions, and preserve the same acceptance criteria.
 If the user explicitly requires that skill or the missing capability is essential,
 report the blocked step and continue only independent work. Installation and
 updating require a requested sync or full/toolkit Luke setup; ordinary engineering work does not repair skill installations automatically.
-For a requested Matt toolkit refresh, use Luke's
-[sync sub-skill](../skills/sync-matt-pocock-skills/SKILL.md); for Luke configuration,
-use its [setup sub-skill](../skills/setup-luke-mode/SKILL.md).
+For a requested dependency refresh, use Luke's [sync](../playbooks/sync.md);
+for Luke configuration, use its [setup](../playbooks/setup.md).
 For explicitly named verification authoring, use
 the installed PStack `create-verification-skill` or `maintain-verification-skill`,
 resolved through the active harness's catalog and skill roots. Their external

@@ -1,5 +1,0 @@
-interface:
-  display_name: "Setup Luke Mode"
-  short_description: "Install Luke dependencies and configure project setup"
-policy:
-  allow_implicit_invocation: true

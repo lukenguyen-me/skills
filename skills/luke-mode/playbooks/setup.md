@@ -1,91 +1,41 @@
----
-name: setup-luke-mode
-description: Bootstrap Luke Mode from one installation by registering bundled commands, installing missing Matt Pocock and PStack skills, configuring model roles, and setting up the current repository. Use for setup-luke-mode, first-project setup, or scoped model/toolkit configuration.
----
+# Setup
 
-# Setup Luke Mode
+Run as `$luke-mode setup` in Codex or `/luke-mode setup` in Cursor Cloud and
+Claude Code. Keep the working directory in the user's project. Read applicable
+project instructions before configuration.
 
-This sub-skill ships inside `luke-mode`; install only the parent bundle.
-Resolve shared references from this file's actual installation directory.
-Keep the working directory in the user's project. Read applicable project
-instructions before configuration.
+Full setup runs dependency installation, model configuration, and repository
+setup in that order. It authorizes those stages together; do not require another
+sync or Matt setup command from the user. A model-only request, such as
+`configure models`, runs only the model stages. A toolkit-only request runs
+dependency installation and repository setup.
 
-Invoke with `$setup-luke-mode` in Codex or `/setup-luke-mode` in Cursor Cloud and
-Claude Code. `$luke-mode setup`, `$luke-mode setup-luke-mode`, and their `/` equivalents
-route here as well. When the separate command is not indexed yet, use the
-parent route or a plain request to run `setup-luke-mode` from Luke Mode.
-Full setup runs command registration, dependency installation, model
-configuration, and repository setup in that order. It authorizes those setup
-stages together; do not require another sync or Matt setup command from the user.
-A model-only request, such as `configure models`, runs only the model stages.
-A toolkit-only request runs dependency installation and repository setup.
-
-Read [harness selection](../../references/harnesses.md),
-[models](../../references/models.md), and the selected adapter before proposing
+Read [harness selection](../references/harnesses.md),
+[models](../references/models.md), and the selected adapter before proposing
 settings. Model configuration writes only the chosen Luke models file.
 Matt's installed setup skill owns repository configuration. Preserve the
 harness's global defaults and unrelated skills.
 
-## Register bundled commands
-
-Inspect native discovery first. If both bundled commands already resolve
-to this Luke installation, reuse them. Otherwise run the bundled helper with
-the active harness's writable skill root as an explicit argument:
-
-```sh
-python3 <luke-mode-directory>/scripts/register-subskills.py <active-skill-root>
-```
-
-Prefer the root containing the installed Luke entry, preserving its scope;
-resolve the entry's symlink target separately from the discovery root. In
-Cursor Cloud use files in the actual checkout or synced Cursor skill root.
-The helper links each command to its bundled source, so Luke remains the source
-of truth. It preserves existing matching links and refuses conflicting entries.
-Inspect conflicts, including older standalone companions, before replacing
-anything; keep using the bundled route while a conflict is unresolved. Obtain
-filesystem permission only when the harness requires it. Refresh discovery if
-supported; report any restart needed without stopping the remaining setup.
-
 ## Install missing dependencies
 
-Resolve Matt's installation method, agent, and scope using the
-[sync workflow](../sync-matt-pocock-skills/SKILL.md). Reuse a complete, compatible
-installation. If required skills or resources are absent, use that workflow
-to install the complete official toolkit, including `setup-matt-pocock-skills`.
-For a new installation, default to the active agent and Luke's installation
-scope; ask only when the target cannot be inferred or installations conflict.
-A full setup request authorizes this installation. It does not authorize
-overwriting unresolved customizations or enabling disabled skills.
+Read [dependencies](../references/dependencies.md): it owns the skill list,
+the agents, the ref, and the install checks. A dependency is missing when it
+fails those checks at project scope, including when one agent's root lacks it.
+Install all missing skills of a source in one `add`. A full setup request
+authorizes this installation. It does not authorize replacing a hand install,
+overwriting unresolved customizations, or enabling disabled skills.
 
-Install PStack's two verification-authoring skills as external dependencies
-from [backnotprop/pstack](https://github.com/backnotprop/pstack). Check its current
-installation guide and fetch a current inventory before installing. Select only
-`create-verification-skill` and `maintain-verification-skill`, with all their
-supporting resources; Luke contains no copies of them. For global Codex:
-
-```sh
-npx skills@latest add backnotprop/pstack --skill create-verification-skill maintain-verification-skill --agent codex --global --yes
-```
-
-Use the same resolved agent and scope as the Matt installation; omit `--global`
-for project scope and use `--agent cursor` for Cursor or `--agent claude-code` for
-Claude Code. Reuse a complete existing
-PStack installation, including a plugin route; preserve customizations and
-resolve conflicting copies or unknown provenance before writes, following the
-sync workflow's installation safeguards. Keep disabled skills disabled. Never
-install all of PStack: its `tdd` would conflict with Matt's toolkit. Preserve
-upstream invocation metadata, licenses, and linked resources. Verify both skills
-and their resources from installed files, and record source/revision evidence.
-Installation makes them available; it does not create or maintain this project's
-`verify-<app>` skill. Run either authoring workflow only when explicitly named.
+Installation makes the PStack skills available; it does not create or maintain
+this project's `verify-<app>` skill. Run either authoring workflow only when
+explicitly named.
 
 Check required tools from the installed instructions and selected project
 workflow. Use existing tools; install missing local dependencies with the
 project's package manager when permitted. Account login, credentials, unavailable
 package managers, or external service provisioning remain explicit pending
 steps. Run read-only version or availability checks afterward. Models can be
-configured independently while a toolkit dependency is pending. Refresh an
-otherwise complete dependency installation only when the user requests an update.
+configured independently while a toolkit dependency is pending. Updating a
+complete dependency installation belongs to [sync](sync.md), on request.
 
 ## Discover and propose
 
@@ -95,6 +45,7 @@ otherwise complete dependency installation only when the user requests an update
    Do not spawn agents or make inference calls just to enumerate models.
 2. Read the existing models file, if any. Preserve other harness profiles and
    unrelated user notes. Reuse confirmed choices unless the user wants changes.
+   Apply the missing-heading warning from [models](../references/models.md).
 3. Recommend one exact model and a supported reasoning effort for each role:
 
 | Role | Selection target |
@@ -162,7 +113,7 @@ updates the same profile.
 
 Matt's setup is per repository; a saved personal model profile does not establish
 toolkit readiness in another project. Read
-[composition](../../references/composition.md) before resolving the installed
+[composition](../references/composition.md) before resolving the installed
 `setup-matt-pocock-skills` workflow.
 
 1. Inspect the current repository's `AGENTS.md` or `CLAUDE.md` and the setup files
@@ -184,8 +135,8 @@ toolkit readiness in another project. Read
    project instructions, `docs/agents/`, and tracker labels; model confirmation
    alone does not authorize those changes.
 5. Read back generated guidance and its referenced configuration to verify
-   installed prerequisites. Report command registration, dependency availability,
-   model configuration, and repository toolkit readiness separately. Full setup
-   is complete when all four stages are verified or explicitly skipped by the
+   installed prerequisites. Report dependency availability, model
+   configuration, and repository toolkit readiness separately. Full setup is
+   complete when all three stages are verified or explicitly skipped by the
    user. A pending stage still permits independent work under the composition
    fallback rules. Re-running setup reuses completed stages.

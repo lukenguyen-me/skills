@@ -15,10 +15,9 @@ Do not treat Codex-only `.agents/skills` or Cursor-only installations as active
 Claude Code skills.
 
 Luke's `SKILL.md` sets `disable-model-invocation: true`, so it runs only when the
-user invokes it. Its setup and sync sub-skills permit matching scoped requests.
-Invoke skills through the native Skill tool. Luke runs as `/luke-mode`; setup and
-sync run as `/setup-luke-mode` and `/sync-matt-pocock-skills` once registered in
-the active Claude skill root. Project instructions live in `CLAUDE.md`; Luke
+user invokes it. Invoke skills through the native Skill tool. Luke runs as
+`/luke-mode`; setup and sync run as `/luke-mode setup` and `/luke-mode sync`.
+Project instructions live in `CLAUDE.md`; Luke
 does not install an always-on rule there.
 
 ## Models
