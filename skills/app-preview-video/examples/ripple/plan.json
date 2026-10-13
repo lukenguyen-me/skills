@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "Ripple",
+    "tagline": "Small habits. Big change.",
+    "category": "Habit tracker"
+  },
+  "brand": {"primary": "#5B5BF7", "primary2": "#9B6BFF", "accent": "#1FC79A", "ink": "#11142A", "bg": "#F4F5FB"},
+  "fps": 30,
+  "crossfade": 10,
+  "screen": {"w": 886, "h": 1920},
+  "mock": "screens.js",
+  "scenes": [
+    {
+      "id": "today", "dur": 210,
+      "caption": "Build habits that stick",
+      "headline": ["Build habits", "that stick."],
+      "sub": "One tap to check in. Watch your day come together.",
+      "chip": {"text": "🎉  Perfect day", "at": 88}
+    },
+    {
+      "id": "streak", "dur": 150,
+      "caption": "Never break the chain",
+      "headline": ["Never break", "the chain."],
+      "sub": "Streaks and a living calendar keep you showing up.",
+      "chip": {"text": "🔥  30-day streak", "at": 80}
+    },
+    {
+      "id": "insights", "dur": 150,
+      "caption": "Track progress at a glance",
+      "headline": ["See progress", "at a glance."],
+      "sub": "Clear weekly and monthly trends. No spreadsheets.",
+      "chip": {"text": "📈  +12% this month", "at": 96}
+    },
+    {
+      "id": "reminders", "dur": 150,
+      "caption": "Reminders that fit your day",
+      "headline": ["Nudges at the", "right moment."],
+      "sub": "Smart reminders that learn your routine.",
+      "chip": {"text": "🔔  Smart timing", "at": 92}
+    }
+  ],
+  "end": {
+    "dur": 90,
+    "disclosure": "Free to download · Optional Premium subscription",
+    "stores": ["App Store", "Google Play"]
+  },
+  "music": {"src": "music", "vol": 0.42},
+  "cues": [
+    {"at": 20, "sfx": "tap", "vol": 0.5}, {"at": 21, "sfx": "check", "vol": 0.55},
+    {"at": 60, "sfx": "tap", "vol": 0.5}, {"at": 61, "sfx": "check", "vol": 0.55},
+    {"at": 85, "sfx": "chime", "vol": 0.55}, {"at": 86, "sfx": "sparkle", "vol": 0.45},
+    {"at": 200, "sfx": "whoosh", "vol": 0.35},
+    {"at": 222, "sfx": "tick", "vol": 0.16, "repeat": 10, "every": 6},
+    {"at": 290, "sfx": "stamp", "vol": 0.6}, {"at": 291, "sfx": "sparkle", "vol": 0.3},
+    {"at": 350, "sfx": "whoosh", "vol": 0.35},
+    {"at": 372, "sfx": "tick", "vol": 0.12, "repeat": 7, "every": 3},
+    {"at": 440, "sfx": "tap", "vol": 0.5}, {"at": 441, "sfx": "toggle", "vol": 0.3},
+    {"at": 446, "sfx": "tick", "vol": 0.1, "repeat": 7, "every": 3},
+    {"at": 500, "sfx": "whoosh", "vol": 0.35},
+    {"at": 530, "sfx": "tap", "vol": 0.5}, {"at": 531, "sfx": "toggle", "vol": 0.4},
+    {"at": 542, "sfx": "tick", "vol": 0.12, "repeat": 7, "every": 6},
+    {"at": 600, "sfx": "notif", "vol": 0.55},
+    {"at": 660, "sfx": "impact", "vol": 0.55}, {"at": 662, "sfx": "chime", "vol": 0.35}
+  ],
+  "outputs": ["appstore", "googleplay", "landing"]
+}
