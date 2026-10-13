@@ -65,6 +65,29 @@ shadows, and both portrait and landscape canvases. Helpers require Python 3.10+
 and Pillow; code mode needs no image-provider key. Optional API adapters use
 environment credentials, while connected image tools use existing authentication.
 
+### app-preview-video
+
+Produce a 15–30 second app preview video with motion, captions, music, and
+sound effects from an app repository. One `plan.json` drives three cuts from
+the same timeline: an App Store preview that meets Apple's specification
+(886×1920, H.264 High 4.0, 11 Mbps, AAC 256k), a Google Play preview for
+YouTube with captions, and a 1920×1080 landing-page hero with a 3D device
+mockup. Real screen recordings are the footage for store cuts; code-drawn mock
+screens cover storyboards and landing pages before a build exists. Bundled
+music and effects are synthesized, so they carry no licensing risk.
+
+See [the skill](skills/app-preview-video/SKILL.md) and the
+[Ripple example](skills/app-preview-video/examples/ripple/plan.json).
+
+```sh
+npx skills add lukenguyen-me/skills --skill app-preview-video
+```
+
+The render engine is an HTML overlay page captured frame by frame through
+Chrome, then encoded by ffmpeg. It needs Node 22+, ffmpeg, and
+[agent-browser](https://github.com/vercel-labs/agent-browser) or any Chrome
+with a remote debugging port. No npm install and no video framework license.
+
 ### luke-mode
 
 Coordinate engineering requests with playbooks, compatible installed skills, and
