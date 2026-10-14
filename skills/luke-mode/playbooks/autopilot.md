@@ -13,8 +13,9 @@ Design, or Review runs its ordinary route; say that autopilot did not apply.
 ## Run
 
 1. Route the request through Luke's ordinary steps and read the selected
-   playbook. Plan the evidence with [PR evidence](../references/evidence.md)
-   and capture the before state before the first edit.
+   playbook. Plan the evidence with [PR evidence](../references/evidence.md),
+   including the [shared device](../references/evidence.md#shared-devices)
+   each mobile capture uses, and capture the before state before the first edit.
 2. Do the playbook's work. Where the playbook would ask the user, decide and
    continue (see Decisions). Stop only at a hard stop.
 3. Finish the playbook: checks, review, and its done criteria. Capture, inspect,

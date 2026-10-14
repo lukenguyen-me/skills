@@ -26,8 +26,8 @@ Responsive or theme changes add a phone viewport or dark theme to the plan.
 The before state exists only until the first edit. Capture it from the base
 before changing code. When edits already exist (a resumed run, a whole-spec run
 from its pinned SHA), build the base in a temporary worktree
-(`git worktree add <tmp> <base-sha>`), run it on a free port or device, capture,
-and remove the worktree.
+(`git worktree add <tmp> <base-sha>`), run it on a free port or the
+[shared device](#shared-devices), capture, and remove the worktree.
 
 Write down a capture recipe: URL or deep link, account and seed data, viewport
 or device, theme, and the steps that reach the state. The after capture replays
@@ -56,18 +56,22 @@ agent-browser close
 
 Pass `--color-scheme dark` for dark theme. Recording needs `ffmpeg`.
 
-**iOS Simulator.** Build and install with the project's scheme or scripts.
+**iOS Simulator.** Boot the [shared device](#shared-devices), then build and
+install with the project's scheme or scripts.
 
 ```sh
+xcrun simctl boot 'iPhone 16 Pro'   # skip when it is already booted
 xcrun simctl status_bar booted override --time 9:41 --batteryState charged --batteryLevel 100
 xcrun simctl openurl booted 'myapp://settings'
 xcrun simctl io booted screenshot "$EV/settings-after.png"
 xcrun simctl io booted recordVideo --codec h264 "$EV/flow.mp4"   # stop with SIGINT
 ```
 
-**Android emulator or device.**
+**Android emulator or device.** Start the [shared device](#shared-devices)
+unless one is already running in `adb devices`.
 
 ```sh
+emulator -avd Pixel_8_API_35 &   # skip when it is already running
 adb shell settings put global sysui_demo_allowed 1
 adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
 adb shell am start -a android.intent.action.VIEW -d 'myapp://settings'
@@ -80,6 +84,34 @@ adb shell screenrecord --time-limit 15 /sdcard/flow.mp4 && adb pull /sdcard/flow
 
 A missing tool, simulator, or credential makes that capture a gap; record the
 reason and continue with the remaining plan.
+
+## Shared devices
+
+Simulators and emulators are machine-global: every project on the machine
+shares them, and each device holds gigabytes of data. Captures, verification,
+and the scripts a task writes reuse the existing devices:
+
+1. List the devices: `xcrun simctl list devices available --json` and
+   `xcrun simctl list runtimes`, or `avdmanager list avd` and `adb devices`.
+   Pick the device type the plan needs on the newest installed runtime, and
+   prefer one that is already booted.
+2. For a clean state, erase that device: `xcrun simctl shutdown <device>` then
+   `xcrun simctl erase <device>`, or `emulator -avd <name> -wipe-data`.
+3. Create a device only when no listed device matches. Name it after its device
+   type and runtime (`iPhone 16 Pro`, `Pixel_8_API_35`), never after the
+   project, and delete it when the task ends (`xcrun simctl delete <device>`,
+   `avdmanager delete avd -n <name>`).
+4. Scripts and project docs resolve the device at run time by name or by the
+   rule in step 1, and accept a name or UDID as an override (for example
+   `--device`). A hardcoded UDID exists on one machine only.
+5. Install a runtime only when no installed runtime covers the targeted
+   platform generation; each iOS runtime takes about 8 GB. Report unused
+   runtimes to the user as cleanup; removing one affects every project.
+
+A shared device is a shared runtime resource: one run drives it at a time. A
+device that another run or project is using counts as no match in step 1, so
+wait for it or create a device by step 3. Before and after captures replay on
+the same device.
 
 ## Inspect every capture
 

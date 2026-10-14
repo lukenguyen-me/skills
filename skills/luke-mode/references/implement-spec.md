@@ -117,8 +117,9 @@ working directory and paths. Schedule within actual native concurrency limits.
 
 Assess resource overlap before dispatch. Serialize tickets that share files,
 public contracts, generated outputs, migrations, or non-isolated services,
-databases, fixtures, ports, and profiles. Worktrees isolate checkout files, not
-those runtime resources. Record resource waits separately from declared blocker
+databases, fixtures, ports, profiles, and
+[shared devices](evidence.md#shared-devices). Worktrees isolate checkout files,
+not those runtime resources. Record resource waits separately from declared blocker
 edges. One integration writer handles the shared branch at a time; implementation
 delegates update only their own branches. Reviewers inspect a frozen snapshot.
 
