@@ -170,10 +170,10 @@ subagent's `.meta.json` and message `model` fields.
 | --- | --- |
 | Fable parent; `/luke-mode Explore: which function in app.py returns the greeting?` | Spawns `luke-explorer`; the subagent's messages show a Haiku model. Observed for the former `luke-worker` 2026-10-14 on Claude Code 2.1.299. |
 | Whole-spec run; a tip check after an integration | Spawns `luke-verifier`, not `luke-explorer`; its messages show a Sonnet model and it edits no source. |
-| Personal profile still lists `Worker` | The hook denies role agent calls and names setup; setup proposes Explorer at the Worker model and Verifier at the Coding model, then `write` removes `luke-worker.md`. |
+| Personal profile still lists `Worker` | Explorer and Verifier run on Sonnet and the parent announces them as defaulted; `check` names the missing rows. Setup proposes Explorer at the Worker model and Verifier at the Coding model, then `write` removes `luke-worker.md`. |
 | `/luke-mode` request that asks for a `general-purpose` delegate | The hook denies the call with the roster; the parent switches to a role agent or stops and asks, and does not do the lookup itself. Observed 2026-10-14. |
 | Agent call to a role agent with a `model` that differs from the profile | Denied; the reason says to omit `model`. |
-| Models file edited, role agents not rewritten | Role agent calls are denied until `/luke-mode setup` rewrites them; `role_agents.py check` reports the drift. |
+| Models file edited, role agents not rewritten | Calls to the drifted role agents are denied until `/luke-mode setup` rewrites them; other role agents still pass. `role_agents.py check` reports the drift. |
 | Profile configured, role agents absent | `general-purpose`, `Explore`, or `Plan` with a profile `model` passes; the same call without `model` is denied and points to setup. |
 | Same session before `/luke-mode`, or no `Claude Code` profile | The hook is not registered, or allows every call. |
 | Same session after the Luke task finishes; an unrelated request needs `Explore` | The hook still denies; the parent tells the user a new session lifts it. |

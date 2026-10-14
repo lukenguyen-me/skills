@@ -43,7 +43,8 @@ Recommended profile, used when the user accepts defaults:
 | Reviewer | opus | inherit | Independent review and evidence checks |
 
 Haiku serves Explorer only; every role whose work needs judgment starts at
-Sonnet.
+Sonnet. A role without a row in the profile runs `sonnet` with `inherit` effort;
+`write` generates its agent on that default and `check` names the missing rows.
 
 The Agent tool's `effort` field accepts `low`, `medium`, `high`, `xhigh`, and
 `max`. It may be set only when the user or a skill asks for it explicitly; a
@@ -115,7 +116,8 @@ does nothing without a `Claude Code` profile. With one, it denies:
 - a fork;
 - a type outside the five role agents while they are installed;
 - a role agent call whose `model` or `effort` differs from the profile;
-- a role agent whose definition disagrees with the profile's model or effort;
+- a role agent whose definition is missing or disagrees with the profile's
+  model or effort; the hook checks only the requested role;
 - a fallback call without a profile model while the role agents are missing.
 
 Enforcement lasts for the rest of the session, beyond the Luke task. When later

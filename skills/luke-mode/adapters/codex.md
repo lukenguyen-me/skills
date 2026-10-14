@@ -34,6 +34,7 @@ Without one, readable `$CODEX_HOME/models_cache.json` is only cached evidence;
 setup, ask the user to confirm choices with `/model` if access is uncertain.
 Inspect relevant `agents` defaults or custom-agent overrides only when needed to
 resolve effective settings. User config is not proof of the active thread's model.
+A role without a row in the `Codex` profile runs `inherit` for model and effort.
 
 Codex selects the parent model at launch with `codex --model MODEL`, or through
 `/model` in an interactive session. A Markdown skill cannot change it. With a

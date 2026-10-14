@@ -31,9 +31,13 @@ personal file does not travel with the repository or Cursor skill sync.
 An absent profile is an unconfigured state: the parent does role work directly
 in the current session, reports it as direct execution, and says so when model
 routing matters. Setup is optional. A configured profile makes routing strict
-(see [Role use](#role-use)). A supplied profile without an entry for a required
-role needs that role configured; do not guess a model. A profile that still
-lists the retired `Worker` role lacks `Verifier` and `Explorer`; setup migrates it.
+(see [Role use](#role-use)). A role without a row in a supplied profile runs on
+the adapter's default for missing roles, with the profile's fallback `stop`.
+Announce it as defaulted in the route announcement, and point to setup to choose
+it. A profile that still lists the retired `Worker` role lacks `Verifier` and
+`Explorer`, so both run on that default until setup migrates it. The default
+covers a missing row only; a chosen model that is unavailable still follows the
+rules below.
 
 For a delegated or explicitly required role:
 

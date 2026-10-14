@@ -63,6 +63,9 @@ model cache are not Cloud capability evidence. When exact choices cannot be
 established, use the user's picker choices or confirmed `inherit` preferences.
 [Cloud model catalog](https://cursor.com/docs/cloud-agent/api/endpoints#list-models)
 
+A role without a row in the `Cursor Cloud` profile runs `inherit` for model and
+effort, so the run's own model serves it.
+
 Keep the catalog model ID and reasoning effort in separate saved columns. At
 invocation, use the native tool's separate effort field if supported. If its
 schema instead accepts Cursor's documented model-parameter syntax, translate a

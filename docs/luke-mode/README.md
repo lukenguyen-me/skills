@@ -193,6 +193,8 @@ save location in the Cloud chat:
 Model lookup uses an explicit path first, then the repository's
 `.luke-mode/models.md` if present, then the personal file. Each selected file
 keeps harness profiles separate; missing roles are not merged from another file.
+A role without a row runs on the harness default instead: Sonnet in Claude Code,
+`inherit` in Codex and Cursor Cloud. Luke announces it, and setup fills the row.
 When the selected file lacks the active harness's section but a lower-priority
 file has one, Luke warns that the harness runs without a profile.
 Create or commit the repository file only when that shared configuration is

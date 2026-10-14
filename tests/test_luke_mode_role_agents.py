@@ -80,14 +80,25 @@ class RoleAgentsTests(unittest.TestCase):
         self.assertEqual(profile['Verifier'], ('sonnet', 'inherit'))
         self.assertIsNone(role_agents.parse_profile(PROFILE.split('## Claude Code')[0]))
 
-    def test_parse_rejects_a_profile_missing_a_role(self):
-        with self.assertRaises(role_agents.ProfileError):
-            role_agents.parse_profile(PROFILE.replace('| Explorer | haiku | inherit | stop |\n', ''))
+    def test_parse_defaults_a_missing_role_to_sonnet(self):
+        text = PROFILE.replace('| Explorer | haiku | inherit | stop |\n', '')
+        self.assertEqual(role_agents.parse_profile(text)['Explorer'], ('sonnet', 'inherit'))
+        self.assertIn('Explorer has no row', role_agents.missing_note(text))
+        self.assertIsNone(role_agents.missing_note(PROFILE))
 
-    def test_parse_points_a_worker_profile_to_setup(self):
+    def test_a_worker_profile_runs_the_new_roles_on_sonnet(self):
         legacy = PROFILE.replace('| Verifier | sonnet | inherit | stop |\n| Explorer |', '| Worker |')
-        with self.assertRaisesRegex(role_agents.ProfileError, 'Verifier, Explorer.*Worker role is retired'):
-            role_agents.parse_profile(legacy)
+        profile = role_agents.parse_profile(legacy)
+        self.assertEqual(profile['Explorer'], ('sonnet', 'inherit'))
+        self.assertNotIn('Worker', profile)
+        self.assertRegex(role_agents.missing_note(legacy), 'Verifier, Explorer have no row.*Worker row is retired')
+        self.models.write_text(legacy)
+        self.write_agents()
+        self.assertIn('model: sonnet\n', (self.agents / 'luke-explorer.md').read_text())
+        result = run('check', '--models', str(self.models), '--dest', str(self.agents))
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn('Worker row is retired', result.stdout)
+        self.assertIsNone(self.decide(subagent_type='luke-explorer'))
 
     def test_write_pins_model_effort_and_tools(self):
         self.write_agents()
@@ -141,6 +152,12 @@ class RoleAgentsTests(unittest.TestCase):
         self.write_agents()
         self.models.write_text(PROFILE.replace('| Explorer | haiku |', '| Explorer | sonnet |'))
         self.assertIn('/luke-mode setup', self.decide(subagent_type='luke-explorer'))
+
+    def test_hook_checks_only_the_requested_role_agent(self):
+        self.write_agents()
+        (self.agents / 'luke-explorer.md').unlink()
+        self.assertIsNone(self.decide(subagent_type='luke-coding'))
+        self.assertIn('luke-explorer.md: missing', self.decide(subagent_type='luke-explorer'))
 
     def test_write_removes_the_generated_worker_agent(self):
         self.agents.mkdir(parents=True)
