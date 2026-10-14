@@ -8,16 +8,15 @@ Deliver a correction tied to the reported symptom. Follow Matt's
    use the project's existing tests or control surface to establish a causal
    feedback loop; this is a direct fallback, not an invocation of that skill.
 2. Trace the mechanism and test the explanation against the repro. Assess blast
-   radius before the fix and include affected paths in verification. Use
-   Reasoning for complex debugging only when helpful. For a performance
+   radius before the fix and include affected paths in verification. Reasoning
+   owns complex debugging; Coding owns the repro and checks. For a performance
    regression, measure a comparable baseline before changing code.
 3. At an agreed public interface, compose `tdd` for a meaningful regression
    test before the fix. If no faithful test interface exists, retain the repro
-   and report that coverage gap. Make the smallest causal correction, with
-   Coding or direct execution as appropriate.
+   and report that coverage gap. Coding makes the smallest causal correction.
 4. Rerun the original scenario and relevant project verification after the fix.
    Run required checks, remove temporary instrumentation, then compose compatible
-   `code-review` or perform and label a direct diff review. Recheck findings
+   `code-review` or have Reviewer check the diff and label that fallback. Recheck findings
    that lead to further changes.
 
 Done when failing-then-passing evidence covers the original symptom and the

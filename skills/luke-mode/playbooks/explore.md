@@ -6,10 +6,10 @@ files and repository state stay unchanged; write a report only when requested.
 1. Pin the question and the evidence that would answer it. Trace relevant entry
    points, callers, tests, and history; use primary documentation for external
    facts. Read the project's existing glossary or ADRs when relevant.
-2. Use Worker for an independent reading task only when its scope warrants
-   delegation. A complex causal investigation can use Reasoning. Compose
+2. Worker gathers located facts: files, symbols, call sites, config values.
+   Reasoning owns a causal investigation, diagnosis, or recommendation. Compose
    `research` only if its background-agent and report-writing requirements fit
-   the request and available capabilities. Otherwise investigate directly.
+   the request and available capabilities.
 3. Distinguish observed behavior, inference, and unknowns. Safe existing checks
    can establish behavior; a command's side effects must fit the read-only
    request. Finding a defect does not authorize its fix.

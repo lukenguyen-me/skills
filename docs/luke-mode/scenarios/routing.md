@@ -25,10 +25,11 @@ Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 | `$luke-mode Review this bug fix.` | Review, not Fix. Findings do not trigger unsolicited edits. |
 | `$luke-mode Setup OAuth for this app.` | Application Implement/Design as appropriate, not Luke model setup. |
 | `$luke-mode Diagnose why startup is slow. Do not optimize it yet.` | Explore with measurements or trace evidence; no speculative performance patch. |
-| TDD installed; `code-review` absent; request a small implementation | Reuses TDD and discloses direct review. Missing optional review skill does not block useful work. |
+| TDD installed; `code-review` absent; request a small implementation | Reuses TDD and discloses a Reviewer pass in place of `code-review`. Missing optional review skill does not block useful work. |
 | `grill-me` present but `grilling` absent | Wrapper is not considered usable; no claim that the absent primitive ran. |
 | Matt's user-only `implement` is installed; request an implementation through Luke | Luke follows its inspired sequence and composes permitted primitives; it does not invoke the user-only workflow implicitly. |
-| Delegation unavailable; ordinary small task | Direct sequential execution with disclosed limitation; no nested CLI or remote-task substitute. |
+| Delegation unavailable; ordinary small task | Without a profile, direct sequential execution with disclosed limitation. With one, each role follows its saved fallback: `stop` leaves the work pending. No nested CLI or remote-task substitute. |
+| Configured profile; a one-line edit | Parent briefs Coding and spawns it; the parent itself edits no source and runs no checks. |
 | Request the configured Reviewer whose model is not advertised | Stop that role, report the unsupported ID, and ask for a choice. Code remains unchanged; no substitute model is launched. |
 | A saved parent fallback exists; user explicitly requires independent review | Parent fallback does not satisfy independence; report the blocked requirement. |
 
@@ -157,6 +158,24 @@ upstream contract, not a Luke-maintained copy.
 | Ordinary Luke implementation; no project verifier exists | Uses permitted documented checks and real controls under the fallback rules; does not invoke either authoring workflow implicitly. |
 | Several applicable verifiers or duplicate PStack installations | Resolves the intended target and source before writes; protects unrelated skills and local customizations. |
 | Existing verifier has incompatible policy or unavailable runtime controls | Reports the exact unmet prerequisite; does not claim the upstream workflow completed through a different procedure. |
+
+## Claude Code role agents
+
+Use a disposable repository with Luke linked into `.claude/skills/`, a
+repository `.luke-mode/models.md` with a `Claude Code` profile, and role agents
+written by setup. Inspect the parent transcript's Agent calls and each
+subagent's `.meta.json` and message `model` fields.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| Fable parent; `/luke-mode Explore: which function in app.py returns the greeting?` | Spawns `luke-worker`; the subagent's messages show a Haiku model. Observed 2026-10-14 on Claude Code 2.1.299. |
+| `/luke-mode` request that asks for a `general-purpose` delegate | The hook denies the call with the roster; the parent switches to a role agent or stops and asks, and does not do the lookup itself. Observed 2026-10-14. |
+| Agent call to a role agent with a `model` that differs from the profile | Denied; the reason says to omit `model`. |
+| Models file edited, role agents not rewritten | Role agent calls are denied until `/luke-mode setup` rewrites them; `role_agents.py check` reports the drift. |
+| Profile configured, role agents absent | `general-purpose`, `Explore`, or `Plan` with a profile `model` passes; the same call without `model` is denied and points to setup. |
+| Same session before `/luke-mode`, or no `Claude Code` profile | The hook is not registered, or allows every call. |
+| Same session after the Luke task finishes; an unrelated request needs `Explore` | The hook still denies; the parent tells the user a new session lifts it. |
+| `/luke-mode setup` with a hand-written `.claude/agents/luke-coding.md` present | Setup shows the file and replaces it only after approval. |
 
 ## Cursor Cloud compatibility
 
