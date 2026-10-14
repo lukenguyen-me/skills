@@ -73,10 +73,10 @@
   const K = screenW / 430;
   const p = (pt) => pt * K;
 
-  function caption(text, local, dur) {
+  function caption(text, local, dur, y) {
     const inn = pop(local, 6, {damping: 16, stiffness: 160});
     const out = interpolate(local, [dur - 4, dur + XF - 2], [1, 0]);
-    return div({position: 'absolute', left: 0, width: screenW, top: screenH - p(83) - p(124), display: 'flex', justifyContent: 'center', zIndex: 80, opacity: Math.min(inn, out)},
+    return div({position: 'absolute', left: 0, width: screenW, top: y != null ? y * screenH : screenH - p(83) - p(124), display: 'flex', justifyContent: 'center', zIndex: 80, opacity: Math.min(inn, out)},
       div({padding: `${p(14)}px ${p(24)}px`, borderRadius: p(22), background: PLAN.caption?.background || 'rgba(17,20,42,0.92)', color: PLAN.caption?.color || '#fff', fontSize: p(25), fontWeight: 800, letterSpacing: '-0.4px', boxShadow: '0 12px 36px rgba(17,20,42,0.35)', transform: `translateY(${(1 - inn) * p(30)}px) scale(${0.92 + 0.08 * inn})`, maxWidth: screenW - p(48), textAlign: 'center', whiteSpace: 'nowrap'}, esc(text)));
   }
 
@@ -97,7 +97,7 @@
       ? div({display: 'flex', gap: u * 0.025, justifyContent: 'center', marginTop: u * 0.05, opacity: foot, transform: `translateY(${(1 - foot) * u * 0.03}px)`},
           (END.stores || ['App Store', 'Google Play']).map((s) => div({padding: `${u * 0.018}px ${u * 0.04}px`, borderRadius: u * 0.03, background: '#fff', color: B.ink, fontSize: u * 0.03, fontWeight: 700}, esc('Get it on ' + s))))
       : div({fontSize: u * 0.03, opacity: foot * 0.75, marginTop: u * 0.06}, esc(END.disclosure || ''));
-    return div({position: 'absolute', inset: 0, background: `radial-gradient(120% 80% at 50% 35%, ${B.primary2} 0%, ${B.primary} 45%, #2A1F8F 100%)`, color: '#fff', overflow: 'hidden'}, [
+    return div({position: 'absolute', inset: 0, background: `radial-gradient(120% 80% at 50% 35%, ${B.primary2} 0%, ${B.primary} 45%, ${B.primary3 || '#2A1F8F'} 100%)`, color: '#fff', overflow: 'hidden'}, [
       ...rings,
       div({position: 'absolute', left: w / 2 - u * 0.15, top: h * 0.42 - u * 0.15, transform: `scale(${icon}) rotate(${(1 - icon) * -25}deg)`}, iconHtml),
       div({position: 'absolute', top: h * 0.42 + u * 0.2, width: '100%', textAlign: 'center'}, [
@@ -175,7 +175,7 @@
         l.mock.innerHTML = fn ? fn(local, SW, SH) : div({width: SW, height: SH, background: '#999', color: '#fff', fontSize: 60, padding: 60}, 'Missing screen: ' + esc(s.id));
       }
       if (isLanding) html += headline(s, local) + chip(s, local);
-      else if (s.caption) html += div({position: 'absolute', inset: 0, opacity: l.el.style.opacity}, caption(s.caption, local, s.dur));
+      else if (s.caption) html += div({position: 'absolute', inset: 0, opacity: l.el.style.opacity}, caption(s.caption, local, s.dur, s.captionY));
     }
     const endLocal = f - END.from;
     if (endLocal >= 0) {

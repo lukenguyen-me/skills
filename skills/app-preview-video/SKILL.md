@@ -83,9 +83,10 @@ Capture runs at roughly 10 frames per second, so iterate on one cut
 
 View frames from the final files at scene starts, each cue, and the end card
 (`work/<cut>.f<frame>.png` samples every 5 s are written during capture). Reject
-clipped captions, mistimed cues, footage that stalls, or any text naming a
-price, date, ranking, or a call to action in a store cut. Fix the plan and
-rebuild the affected cut.
+clipped captions, captions that cover the scene's subject (move them with
+`captionY`), mistimed cues, footage that stalls, or any text naming a price,
+date, ranking, or a call to action in a store cut. Fix the plan and rebuild
+the affected cut.
 
 Report the final paths, the checklist result per cut, the poster frame, the
 `.srt` captions for the YouTube upload, and which scenes use mocks. Upload to

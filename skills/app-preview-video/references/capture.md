@@ -53,10 +53,17 @@ action; the preview must not show spinners or empty states.
 Trim each take to its scene, scale to the plan's `screen`, and strip audio:
 
 ```bash
-ffmpeg -y -ss 1.20 -i captures/today-raw.mp4 -t 7.0 \
-  -vf "scale=886:1920:force_original_aspect_ratio=increase,crop=886:1920,fps=30" \
+ffmpeg -y -i captures/today-raw.mp4 \
+  -vf "fps=30,tpad=stop_mode=clone:stop_duration=5,trim=start=1.20:duration=7.0,setpts=PTS-STARTPTS,scale=886:1920:force_original_aspect_ratio=increase,crop=886:1920" \
   -an -c:v libx264 -crf 10 -pix_fmt yuv420p captures/today.mp4
 ```
+
+Simulator and `adb screenrecord` takes are variable frame rate: no frames are
+written while the screen is still. Do not trim with an input seek (`-ss` before
+`-i`): it jumps to the next written frame and drops the still part. `fps=30`
+fills the gaps with repeated frames, `tpad` holds the last frame so a take that
+ends on a still screen keeps its full length, and `trim` then cuts exact
+seconds. Check the result with `ffprobe` before registering the clip.
 
 Set `scenes[].dur` to `clip length × fps` (7.0 s → 210 frames) plus the
 crossfade, or shorter to cut early. `clip.in` offsets the start without
