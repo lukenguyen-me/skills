@@ -38,14 +38,12 @@ Recommended profile, used when the user accepts defaults:
 | --- | --- | --- | --- |
 | Reasoning | opus | inherit | Architecture, complex debugging, consequential trade-offs |
 | Coding | sonnet | inherit | Main implementation worker: features, refactors, tests, edits |
-| Worker | haiku | inherit | Read-only exploration needing little judgment: locating files, symbols, call sites, config values |
+| Verifier | sonnet | inherit | Check, test, build, and app-flow runs with failure triage |
+| Explorer | haiku | inherit | Read-only lookups: files, symbols, call sites, config values |
 | Reviewer | opus | inherit | Independent review and evidence checks |
 
-Keep Haiku to read-only lookups whose answer is a location or fact. Route test
-writing, mechanical edits, and any investigation that requires judgment to
-Coding even when the general role table calls it Worker work. Escalate a Worker
-result that turns out ambiguous to Reasoning or Coding instead of retrying
-with Haiku.
+Haiku serves Explorer only; every role whose work needs judgment starts at
+Sonnet.
 
 The Agent tool's `effort` field accepts `low`, `medium`, `high`, `xhigh`, and
 `max`. It may be set only when the user or a skill asks for it explicitly; a
@@ -67,11 +65,12 @@ model applies even when an Agent call omits `model`:
 | --- | --- | --- |
 | Reasoning | `luke-reasoning` | Read-only list plus web lookup |
 | Coding | `luke-coding` | All tools except `Agent` |
-| Worker | `luke-worker` | Read-only list |
+| Verifier | `luke-verifier` | All tools except `Agent`, `Edit`, `Write`, and `NotebookEdit` |
+| Explorer | `luke-explorer` | Read-only list |
 | Reviewer | `luke-reviewer` | Read-only list |
 
-The read-only list includes Bash, so read-only scope there is a prompt
-constraint, not a sandbox. Each body carries the delegate's standing rules,
+The read-only list and Verifier both keep Bash, so their no-edit scope is a
+prompt constraint, not a sandbox. Each body carries the delegate's standing rules,
 since a delegate cannot load Luke Mode.
 
 [`scripts/role_agents.py`](../scripts/role_agents.py) owns the files. It writes
@@ -86,15 +85,16 @@ python3 <skill-dir>/scripts/role_agents.py check --models <models-file> --dest <
 `write` refuses to replace a same-named file it did not generate; show it to the
 user and pass `--force` only with their approval. A project definition overrides
 a personal one with the same name. The models file stays the source of truth;
-edit it, then rewrite the agents.
+edit it, then rewrite the agents. `write` also removes the `luke-worker` agent it
+generated for the retired Worker role.
 
 ## Delegation
 
 Use the native Agent tool with the role agent as `subagent_type`, and omit
 `model` so the definition applies it. A call's `model` overrides the
 definition, so pass one only when it equals the profile. When the role agents
-are not installed, fall back to `Explore` for Worker, `Plan` or `Explore` for
-Reasoning, `general-purpose` for Coding, and a read-only type for Reviewer,
+are not installed, fall back to `Explore` for Explorer, `Plan` or `Explore` for
+Reasoning, `general-purpose` for Coding and Verifier, and a read-only type for Reviewer,
 each with `model` from the profile. A fallback call without `model` inherits
 the parent, which is the configured role only when the profile says `inherit`.
 A composed skill's agent seats, such as `code-review`'s reviewers, spawn as the
@@ -113,7 +113,7 @@ rest of that session. The hook resolves the models file as
 does nothing without a `Claude Code` profile. With one, it denies:
 
 - a fork;
-- a type outside the four role agents while they are installed;
+- a type outside the five role agents while they are installed;
 - a role agent call whose `model` or `effort` differs from the profile;
 - a role agent whose definition disagrees with the profile's model or effort;
 - a fallback call without a profile model while the role agents are missing.

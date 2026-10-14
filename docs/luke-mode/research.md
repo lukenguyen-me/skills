@@ -147,8 +147,8 @@ Implement selects whole-spec mode for parent specs with implementation children;
 an explicit `implement-spec` command selects Matt's original workflow. Whole-spec
 execution permits concurrency only across independently owned worktrees and
 resources, under one integration writer and native capacity.
-Setup configures four portable model roles: Reasoning, Coding, Worker, and
-Reviewer, using exact models per harness. Full setup installs missing Matt and
+Setup configures five portable model roles: Reasoning, Coding, Verifier,
+Explorer, and Reviewer, using exact models per harness. Full setup installs missing Matt and
 PStack dependencies and runs Matt's per-repository setup. Setup and Matt sync
 ship inside Luke; verification creation and maintenance remain external.
 The human keeps product and consequential architecture decisions. Verification

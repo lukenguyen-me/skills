@@ -45,6 +45,8 @@ In Claude Code, when the selected models file has a `Claude Code` profile and
 setup generated role agents, run the adapter's `check` against that file and
 its agents directory. Rewrite the agents with `write` when it reports drift,
 since a newer Luke may change their content; the models file stays unchanged.
+A profile that still lists the retired `Worker` role needs setup's migration
+first; report it as pending setup.
 
 Run the dependency checks for every dependency. Read back each refreshed
 `SKILL.md` for its name, description, and invocation policy. Distinguish

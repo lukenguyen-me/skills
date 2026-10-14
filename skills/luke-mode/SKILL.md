@@ -114,8 +114,9 @@ behalf.
 | Portable role | Responsibility and selection target |
 | --- | --- |
 | Reasoning | Architecture, complex debugging, design trade-offs; strongest available model |
-| Coding | Feature implementation and refactoring; balanced coding model |
-| Worker | Tests, mechanical edits, simple investigations; fast, lower-cost model |
+| Coding | Features, refactoring, tests, and every source edit; balanced coding model |
+| Verifier | Running checks, test suites, builds, and app flows and triaging failures, without source edits; balanced model |
+| Explorer | Read-only lookups whose answer is a location or fact; fastest, lowest-cost model |
 | Reviewer | Independent code review and verification; capable review model |
 
 With a configured model profile, the parent orchestrates and every role task

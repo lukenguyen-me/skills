@@ -47,7 +47,7 @@ Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 ## Setup and portability
 
 Run `$luke-mode configure models` in a disposable configuration environment, or
-pass a temporary models-file path. Verify that it proposes four exact role choices,
+pass a temporary models-file path. Verify that it proposes five exact role choices,
 requests confirmation, and writes only the accepted Luke profile. It should
 preserve an existing other-harness profile and read back what it saved. Already
 accepted exact choices need no repeated confirmation. Unknown IDs and unsupported
@@ -106,7 +106,7 @@ request.
 | `$luke-mode triage #42`; a reproducible bug | Gathers context with a blast-radius look, reproduces the symptom with recorded commands and output, recommends roles, and waits for direction. Fixes nothing; offers `$luke-mode fix #42` once it reaches `ready-for-agent`. |
 | `$luke-mode triage #43`; the repro cannot run | Reports the gap and keeps the claim unconfirmed; a `needs-info` recommendation is acceptable. |
 | `$luke-mode triage #44`; a vague enhancement | Grills in the parent session, using `grilling` and `domain-modeling` as the installed skill directs; posts a brief only after direction. |
-| Five issues to triage at once | May use read-only Workers for codebase context; all tracker reads and writes stay with the parent. |
+| Five issues to triage at once | May use read-only Explorers for codebase context; all tracker reads and writes stay with the parent. |
 | `triage` or the triage-label mapping is missing | Leaves triage pending and points to `$luke-mode setup`; does not improvise states or labels. |
 | `$luke-mode is #42 ready for an agent?` without naming triage | Routes to Explore and offers `$luke-mode triage #42`; makes no tracker writes. |
 
@@ -168,7 +168,9 @@ subagent's `.meta.json` and message `model` fields.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| Fable parent; `/luke-mode Explore: which function in app.py returns the greeting?` | Spawns `luke-worker`; the subagent's messages show a Haiku model. Observed 2026-10-14 on Claude Code 2.1.299. |
+| Fable parent; `/luke-mode Explore: which function in app.py returns the greeting?` | Spawns `luke-explorer`; the subagent's messages show a Haiku model. Observed for the former `luke-worker` 2026-10-14 on Claude Code 2.1.299. |
+| Whole-spec run; a tip check after an integration | Spawns `luke-verifier`, not `luke-explorer`; its messages show a Sonnet model and it edits no source. |
+| Personal profile still lists `Worker` | The hook denies role agent calls and names setup; setup proposes Explorer at the Worker model and Verifier at the Coding model, then `write` removes `luke-worker.md`. |
 | `/luke-mode` request that asks for a `general-purpose` delegate | The hook denies the call with the roster; the parent switches to a role agent or stops and asks, and does not do the lookup itself. Observed 2026-10-14. |
 | Agent call to a role agent with a `model` that differs from the profile | Denied; the reason says to omit `model`. |
 | Models file edited, role agents not rewritten | Role agent calls are denied until `/luke-mode setup` rewrites them; `role_agents.py check` reports the drift. |

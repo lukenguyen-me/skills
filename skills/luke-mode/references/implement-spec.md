@@ -93,10 +93,11 @@ Luke's model rules to delegated work; this mode does not switch the parent model
 | Work | Luke role |
 | --- | --- |
 | Substantial graph planning or unresolved architectural choices | Reasoning |
-| Optional bounded source investigation and shared research notes | Worker |
+| Optional located facts for shared research notes | Explorer |
 | Ticket implementation, TDD, conflict fixes, and review corrections | Coding |
 | Clean merges of finished worktrees | Parent, as orchestration |
 | Delegated integration, including Matt's merger delegation when selected | Coding |
+| Checks on each integration tip and the final assembled tip | Verifier |
 | The chosen review's required independent review axes | Reviewer |
 
 Keep shared research notes outside disposable worktrees and available through

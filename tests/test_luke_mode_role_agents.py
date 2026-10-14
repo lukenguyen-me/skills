@@ -3,11 +3,13 @@
 from pathlib import Path
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / 'skills' / 'luke-mode'
@@ -25,7 +27,8 @@ PROFILE = """# Luke Mode models
 | --- | --- | --- | --- |
 | Reasoning | gpt-5 | high | stop |
 | Coding | gpt-5 | medium | stop |
-| Worker | gpt-5-mini | low | stop |
+| Verifier | gpt-5 | medium | stop |
+| Explorer | gpt-5-mini | low | stop |
 | Reviewer | gpt-5 | high | stop |
 
 ## Claude Code
@@ -34,7 +37,8 @@ PROFILE = """# Luke Mode models
 | --- | --- | --- | --- |
 | Reasoning | opus | inherit | stop |
 | Coding | sonnet | high | stop |
-| Worker | haiku | inherit | stop |
+| Verifier | sonnet | inherit | stop |
+| Explorer | haiku | inherit | stop |
 | Reviewer | opus | inherit | stop |
 """
 
@@ -49,6 +53,10 @@ class RoleAgentsTests(unittest.TestCase):
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
         self.home = self.tmp / 'home'
+        # check reads ~/.claude/agents for overrides; keep it off the real home.
+        patcher = mock.patch.dict(os.environ, {'HOME': str(self.home)})
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.models = self.home / '.config' / 'luke-mode' / 'models.md'
         self.models.parent.mkdir(parents=True)
         self.models.write_text(PROFILE)
@@ -68,12 +76,18 @@ class RoleAgentsTests(unittest.TestCase):
     def test_parse_reads_only_the_claude_code_profile(self):
         profile = role_agents.parse_profile(PROFILE)
         self.assertEqual(profile['Coding'], ('sonnet', 'high'))
-        self.assertEqual(profile['Worker'], ('haiku', 'inherit'))
+        self.assertEqual(profile['Explorer'], ('haiku', 'inherit'))
+        self.assertEqual(profile['Verifier'], ('sonnet', 'inherit'))
         self.assertIsNone(role_agents.parse_profile(PROFILE.split('## Claude Code')[0]))
 
     def test_parse_rejects_a_profile_missing_a_role(self):
         with self.assertRaises(role_agents.ProfileError):
-            role_agents.parse_profile(PROFILE.replace('| Worker | haiku | inherit | stop |\n', ''))
+            role_agents.parse_profile(PROFILE.replace('| Explorer | haiku | inherit | stop |\n', ''))
+
+    def test_parse_points_a_worker_profile_to_setup(self):
+        legacy = PROFILE.replace('| Verifier | sonnet | inherit | stop |\n| Explorer |', '| Worker |')
+        with self.assertRaisesRegex(role_agents.ProfileError, 'Verifier, Explorer.*Worker role is retired'):
+            role_agents.parse_profile(legacy)
 
     def test_write_pins_model_effort_and_tools(self):
         self.write_agents()
@@ -82,10 +96,13 @@ class RoleAgentsTests(unittest.TestCase):
         self.assertIn('model: sonnet\n', coding)
         self.assertIn('effort: high\n', coding)
         self.assertIn('disallowedTools: Agent\n', coding)
-        worker = (self.agents / 'luke-worker.md').read_text()
-        self.assertIn('model: haiku\n', worker)
-        self.assertNotIn('effort:', worker)
-        self.assertIn('tools: Read, Grep, Glob, Bash\n', worker)
+        explorer = (self.agents / 'luke-explorer.md').read_text()
+        self.assertIn('model: haiku\n', explorer)
+        self.assertNotIn('effort:', explorer)
+        self.assertIn('tools: Read, Grep, Glob, Bash\n', explorer)
+        verifier = (self.agents / 'luke-verifier.md').read_text()
+        self.assertIn('model: sonnet\n', verifier)
+        self.assertIn('disallowedTools: Agent, Edit, Write, NotebookEdit\n', verifier)
         self.assertEqual(run('check', '--models', str(self.models), '--dest', str(self.agents)).returncode, 0)
 
     def test_check_reports_drift_after_the_profile_changes(self):
@@ -101,7 +118,7 @@ class RoleAgentsTests(unittest.TestCase):
         result = run('write', '--models', str(self.models), '--dest', str(self.agents))
         self.assertEqual(result.returncode, 2)
         self.assertIn('mine', (self.agents / 'luke-coding.md').read_text())
-        self.assertFalse((self.agents / 'luke-worker.md').exists())
+        self.assertFalse((self.agents / 'luke-explorer.md').exists())
         self.write_agents('--force')
         self.assertIn('model: sonnet', (self.agents / 'luke-coding.md').read_text())
 
@@ -122,8 +139,25 @@ class RoleAgentsTests(unittest.TestCase):
 
     def test_hook_blocks_role_agents_that_drift_from_the_profile(self):
         self.write_agents()
-        self.models.write_text(PROFILE.replace('| Worker | haiku |', '| Worker | sonnet |'))
-        self.assertIn('/luke-mode setup', self.decide(subagent_type='luke-worker'))
+        self.models.write_text(PROFILE.replace('| Explorer | haiku |', '| Explorer | sonnet |'))
+        self.assertIn('/luke-mode setup', self.decide(subagent_type='luke-explorer'))
+
+    def test_write_removes_the_generated_worker_agent(self):
+        self.agents.mkdir(parents=True)
+        worker = self.agents / 'luke-worker.md'
+        worker.write_text(role_agents.render('Explorer', 'haiku', 'inherit').replace('explorer', 'worker'))
+        result = run('check', '--models', str(self.models), '--dest', str(self.agents))
+        self.assertIn('luke-worker.md: the Worker role is retired', result.stdout)
+        self.write_agents()
+        self.assertFalse(worker.exists())
+        self.assertEqual(run('check', '--models', str(self.models), '--dest', str(self.agents)).returncode, 0)
+        self.assertIn('outside the roster', self.decide(subagent_type='luke-worker'))
+
+    def test_write_keeps_a_hand_written_worker_agent(self):
+        self.agents.mkdir(parents=True)
+        (self.agents / 'luke-worker.md').write_text('---\nname: luke-worker\n---\nmine\n')
+        self.write_agents()
+        self.assertTrue((self.agents / 'luke-worker.md').exists())
 
     def test_hook_fallback_needs_a_profile_model_while_agents_are_missing(self):
         self.assertIsNone(self.decide(subagent_type='general-purpose', model='sonnet'))
@@ -160,7 +194,7 @@ class RoleAgentsTests(unittest.TestCase):
         self.write_agents()
         self.assertIsNone(self.decide(subagent_type='luke-coding', effort='high'))
         self.assertIn('Omit the effort', self.decide(subagent_type='luke-coding', effort='low'))
-        self.assertIn('Omit the effort', self.decide(subagent_type='luke-worker', effort='low'))
+        self.assertIn('Omit the effort', self.decide(subagent_type='luke-explorer', effort='low'))
 
     def test_hook_fallback_lets_an_inherit_role_omit_the_model(self):
         self.models.write_text(PROFILE.replace('| Reasoning | opus |', '| Reasoning | inherit |'))

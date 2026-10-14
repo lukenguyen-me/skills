@@ -47,13 +47,17 @@ complete dependency installation belongs to [sync](sync.md), on request.
 2. Read the existing models file, if any. Preserve other harness profiles and
    unrelated user notes. Reuse confirmed choices unless the user wants changes.
    Apply the missing-heading warning from [models](../references/models.md).
+   Migrate a profile that still lists the retired `Worker` role: propose
+   Explorer at the Worker model and Verifier at the Coding model, and drop the
+   `Worker` row once the user confirms.
 3. Recommend one exact model and a supported reasoning effort for each role:
 
 | Role | Selection target |
 | --- | --- |
 | Reasoning | Strongest available for architecture, complex debugging, design trade-offs |
-| Coding | Balanced model suited to feature implementation and refactoring |
-| Worker | Fast, lower-cost model suited to tests, mechanical edits, simple investigation |
+| Coding | Balanced model suited to features, refactoring, tests, and every source edit |
+| Verifier | Balanced model that runs checks, tests, builds, and app flows and triages failures |
+| Explorer | Fastest, lowest-cost model for read-only lookups that need no judgment |
 | Reviewer | Capable model for independent code review and verification |
 
 Use current capability descriptions to make recommendations, not invented name
@@ -68,7 +72,7 @@ entitlement guarantee. Keep an unknown role unresolved instead of inventing an I
 ## Confirm and save
 
 Show the active harness, save path, Claude Code's role agents directory when it
-applies, and one four-row table with exact model IDs,
+applies, and one table with a row per role, exact model IDs,
 supported effort, and any unverified access. Ask for confirmation or role-specific
 changes, unless the user already accepted those exact settings. Default fallback
 is `stop`. An optional `parent` fallback must be explicitly accepted, means direct
@@ -90,7 +94,8 @@ here with valid intentional inheritance choices:
 | --- | --- | --- | --- |
 | Reasoning | inherit | inherit | stop |
 | Coding | inherit | inherit | stop |
-| Worker | inherit | inherit | stop |
+| Verifier | inherit | inherit | stop |
+| Explorer | inherit | inherit | stop |
 | Reviewer | inherit | inherit | stop |
 ```
 
@@ -112,7 +117,7 @@ against a catalog and which were actually observed in a run. Choosing a Reasonin
 model does not switch the parent session. If the user wants that model as the
 parent, provide the harness's supported launch or model-picker instructions.
 
-Model configuration is done when all four choices are accepted, persisted, and
+Model configuration is done when every role's choice is accepted, persisted, and
 accurately described, and in Claude Code when `check` reports the role agents
 match. If writing is blocked, return the exact accepted draft and
 pending step without claiming model configuration completed. Re-running setup
