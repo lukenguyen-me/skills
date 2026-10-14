@@ -6,7 +6,8 @@ frames at `fps`. The complete example is `examples/ripple/plan.json`.
 ```jsonc
 {
   "app": {"name": "Ripple", "tagline": "Small habits. Big change.", "category": "Habit tracker", "icon": "icon.png"},
-  "brand": {"primary": "#5B5BF7", "primary2": "#9B6BFF", "accent": "#1FC79A", "ink": "#11142A", "bg": "#F4F5FB"},
+  "brand": {"primary": "#5B5BF7", "primary2": "#9B6BFF", "primary3": "#2A1F8F", "accent": "#1FC79A", "ink": "#11142A", "bg": "#F4F5FB"},
+                                  // end card: primary2 center → primary → primary3 edges (default #2A1F8F)
   "fps": 30,                      // ≤ 30 for the App Store
   "crossfade": 10,                // dissolve length between scenes, frames
   "screen": {"w": 886, "h": 1920},// footage resolution: the App Store canvas
@@ -16,6 +17,7 @@ frames at `fps`. The complete example is `examples/ripple/plan.json`.
       "id": "today", "dur": 210,
       "clip": {"src": "captures/today.mp4", "in": 0.4},   // real footage; `in` = start offset in seconds
       "caption": "Build habits that stick",               // store cuts, ≤ 5 words, muted-friendly
+      "captionY": 0.12,                                   // optional caption top, fraction of screen height; default above the tab bar
       "headline": ["Build habits", "that stick."],        // landing cut, two lines
       "sub": "One tap to check in.",                      // landing cut
       "chip": {"text": "🎉  Perfect day", "at": 88}       // landing callout, frame within the scene
@@ -44,10 +46,11 @@ frames at `fps`. The complete example is `examples/ripple/plan.json`.
 An output may be an object to override fields: `{"id": "landing", "w": 1600, "h": 900}`.
 
 **store** layout: footage fills the canvas, scenes dissolve, one caption per
-scene above the tab bar, end card with app icon, name, tagline, and
-`end.disclosure`. **landing** layout: dark gradient background, 3D phone
-mockup at `landing.phoneX` (default 1180) and `landing.phoneScale` (0.43),
-kinetic headline, chips, end card with store buttons. The end card uses
+scene above the tab bar (or at `captionY` when the subject sits there), end
+card with app icon, name, tagline, and `end.disclosure`. **landing** layout:
+dark gradient background, 3D phone mockup at `landing.phoneX` (default 1180)
+and `landing.phoneScale` (0.43), kinetic headline, chips, end card with store
+buttons. The end card uses
 `app.icon` when given; otherwise `window.APP_ICON` from the mock file.
 
 Footage at a different resolution than `screen` is scaled to cover the canvas,
