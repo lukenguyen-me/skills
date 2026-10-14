@@ -2,6 +2,12 @@
 name: luke-mode
 description: Coordinate engineering work, and set up or sync Luke's skill dependencies. Use when the user explicitly invokes Luke Mode, including its setup and sync routes.
 disable-model-invocation: true
+hooks:
+  PreToolUse:
+    - matcher: Agent
+      hooks:
+        - type: command
+          command: python3 "${CLAUDE_PLUGIN_ROOT}/scripts/role_agents.py" hook
 ---
 
 # Luke Mode
@@ -72,7 +78,8 @@ implementation children. Read-only and plan-only scope still takes precedence.
    when it improves confidence in the outcome.
 3. Select one primary playbook by the requested deliverable. Read
    its file before doing the work. Announce the route in one sentence, with
-   any material fallback or planned delegation. Gather facts yourself; ask only
+   any material fallback or planned delegation. Establish facts from the
+   environment, through role delegates when a profile is configured; ask only
    for decisions or information the environment cannot establish.
 
 | Requested deliverable | Playbook |
@@ -111,12 +118,13 @@ behalf.
 | Worker | Tests, mechanical edits, simple investigations; fast, lower-cost model |
 | Reviewer | Independent code review and verification; capable review model |
 
-A role does not require a new agent. Do bounded work directly when delegation
-adds more coordination than useful isolation or speed. Before delegation, or
-when the user requires a particular role/model, read [models](references/models.md)
-and the selected harness adapter.
+With a configured model profile, the parent orchestrates and every role task
+runs in a delegate on that role's mapping, however small. Without a profile, the
+parent does role work directly and reports it as direct execution. Read
+[models](references/models.md) and the selected harness adapter before the first
+role task.
 
-Delegate only a bounded task whose benefit you can name. Keep code modifications
+Size each delegated task as a bounded unit with checkable output. Keep code modifications
 and test runs sequential, with one owner of mutable project state at a time.
 The [whole-spec mode](references/implement-spec.md#scoped-concurrency) selected
 by Implement, or by an explicit Matt workflow request,

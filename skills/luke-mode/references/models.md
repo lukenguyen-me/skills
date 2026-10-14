@@ -13,6 +13,10 @@ When the selected file lacks the active harness's heading but a lower-priority
 file has it, warn: name both files and say the active harness runs without a
 profile until the selected file gains that heading.
 
+The models file is the source of truth. A harness may generate native
+definitions from it, such as Claude Code's role agents; those pin each role's
+model when the parent omits it, and setup regenerates them on change.
+
 Read only the heading matching the active harness: `Codex`, `Cursor Cloud`, or
 `Claude Code`.
 A file containing only another harness's settings has no active profile, even
@@ -24,12 +28,11 @@ The repository file is optional and makes preferences available to Cloud runs
 that clone it. Create it only when the user chooses that save path. A local
 personal file does not travel with the repository or Cursor skill sync.
 
-An absent profile is an unconfigured state: continue ordinary work in the current
-session and say so when model routing matters. Setup is optional. A supplied
-profile without an entry for a required role needs that role configured; do not
-guess a model. The four role mappings govern delegated work. Direct execution
-uses the current session and is reported as direct execution, not as the mapped
-role model having run.
+An absent profile is an unconfigured state: the parent does role work directly
+in the current session, reports it as direct execution, and says so when model
+routing matters. Setup is optional. A configured profile makes routing strict
+(see [Role use](#role-use)). A supplied profile without an entry for a required
+role needs that role configured; do not guess a model.
 
 For a delegated or explicitly required role:
 
@@ -56,9 +59,11 @@ for a model choice; continue unrelated work only. Never choose a closest model,
 lower effort, or native default silently. If actual model metadata is unavailable,
 distinguish a requested setting from an observed setting.
 
-If delegation is absent and the request has no explicit model or independence
-requirement, work sequentially in the parent and disclose the limitation. Do not
-start a nested CLI, remote task, or new orchestration service as a substitute.
+If delegation is absent, a configured role follows its saved fallback: `stop`
+leaves that work pending, and an accepted `parent` fallback runs it directly as
+disclosed direct execution. Without a profile, work sequentially in the parent
+and disclose the limitation. Do not start a nested CLI, remote task, or new
+orchestration service as a substitute.
 The [whole-spec mode](implement-spec.md) has its own capability preflight.
 Luke-owned graph execution can use disclosed sequential parent work when the
 requirements allow it. An explicitly requested Matt workflow still requires its
@@ -68,22 +73,31 @@ does not silently satisfy that different owner choice.
 ## Role use
 
 Reasoning is for unresolved architecture, complex debugging, and consequential
-trade-offs. Coding is for substantial feature work and refactoring. Worker is
-for bounded tests, mechanical edits, or simple fact gathering. Reviewer is for
-independent review or checking evidence in a separate context; independence does
-not require a different model family.
+trade-offs. Coding is for implementation: features, refactors, tests, and edits.
+Worker is for bounded tests, mechanical edits, or simple fact gathering.
+Reviewer is for independent review or checking evidence in a separate context;
+independence does not require a different model family.
 
-Keep small steps with their current owner. Avoid creating a Worker just to run
-one short command or a Coding agent just to make one obvious edit. A composed
-skill's required reviewers use Reviewer settings; do not add another panel over
-the same work. Respect actual harness concurrency limits. If a required review
-process cannot run, disclose the limitation and use direct review only when the
-user's process and independence requirements allow it.
+With a configured profile, the parent is the orchestrator. It routes, plans,
+briefs, integrates results, settles decisions with the human, and reports.
+Every Reasoning, Coding, Worker, and Reviewer task runs in a delegate on that
+role's mapping, including a one-line edit or a single test run. The parent's
+own commands are orchestration: reading state and files to scope a brief,
+`git status` and diffs, branch, commit, and PR delivery, and merging delegate
+worktrees. Source edits, test and check runs, the investigation behind an
+answer, and reviews belong to a role. Report any role work the parent did
+itself as a routing violation, not as the role having run.
 
-Plan the allocation before spawning. Each brief contains the task, owning
-directory, permitted writes, relevant absolute pointers, acceptance evidence,
-selected primitive if any, and a request for findings plus gaps. Specify no
-nested delegation. Use disjoint outputs for read-heavy tasks; serialize editing
+A composed skill's required reviewers use Reviewer settings; do not add another
+panel over the same work. Respect actual harness concurrency limits. If a
+required review process cannot run, disclose the limitation; direct review needs
+an accepted `parent` fallback and a request that does not require independence.
+
+Plan the allocation before spawning. A delegate starts without Luke Mode loaded,
+so its brief is its only copy of the rules it follows. Each brief contains the
+task, owning directory, permitted writes, relevant absolute pointers, acceptance
+evidence, selected primitive if any, and a request for findings plus gaps.
+Specify no nested delegation. Use disjoint outputs for read-heavy tasks; serialize editing
 and test execution. For [whole-spec execution](implement-spec.md#scoped-concurrency)
 selected by Implement or an explicit Matt workflow request, independent
 worktrees and runtime resources permit concurrent Coding owners, with one

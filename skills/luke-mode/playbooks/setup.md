@@ -12,7 +12,8 @@ dependency installation and repository setup.
 
 Read [harness selection](../references/harnesses.md),
 [models](../references/models.md), and the selected adapter before proposing
-settings. Model configuration writes only the chosen Luke models file.
+settings. Model configuration writes the chosen Luke models file and, in
+Claude Code, the role agents generated from it.
 Matt's installed setup skill owns repository configuration. Preserve the
 harness's global defaults and unrelated skills.
 
@@ -66,7 +67,8 @@ entitlement guarantee. Keep an unknown role unresolved instead of inventing an I
 
 ## Confirm and save
 
-Show the active harness, save path, and one four-row table with exact model IDs,
+Show the active harness, save path, Claude Code's role agents directory when it
+applies, and one four-row table with exact model IDs,
 supported effort, and any unverified access. Ask for confirmation or role-specific
 changes, unless the user already accepted those exact settings. Default fallback
 is `stop`. An optional `parent` fallback must be explicitly accepted, means direct
@@ -99,13 +101,20 @@ each configured harness; use `Codex`, `Cursor Cloud`, or `Claude Code` as select
 by the adapter. Change the example heading for a Cloud or Claude Code profile;
 retain existing sections for other harnesses unchanged.
 
+In Claude Code, generate the role agents from the saved file with the
+adapter's `write` command: personal profile to `~/.claude/agents/`, repository
+profile to `<repo>/.claude/agents/`. A same-named file the script did not generate stays
+untouched until the user approves replacing it. Run `check` afterwards; it
+must report a match. Other harnesses skip this step.
+
 Read back the saved profile and report its path. Say which values were validated
 against a catalog and which were actually observed in a run. Choosing a Reasoning
 model does not switch the parent session. If the user wants that model as the
 parent, provide the harness's supported launch or model-picker instructions.
 
 Model configuration is done when all four choices are accepted, persisted, and
-accurately described. If writing is blocked, return the exact accepted draft and
+accurately described, and in Claude Code when `check` reports the role agents
+match. If writing is blocked, return the exact accepted draft and
 pending step without claiming model configuration completed. Re-running setup
 updates the same profile.
 

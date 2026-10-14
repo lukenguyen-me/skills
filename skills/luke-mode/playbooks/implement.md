@@ -26,16 +26,16 @@ these single-ticket steps around every ticket in a whole-spec run.
    Preserve prior agreement on test interfaces. If `tdd` requires approval of a
    new seam, obtain it before writing those tests.
 3. Compose `tdd` wherever meaningful behavioral tests are appropriate. Build
-   one verifiable slice at a time. Coding owns substantial implementation;
-   Worker can own bounded mechanical work or test execution when delegation
-   earns its cost. Keep the owner and tests sequential.
+   one verifiable slice at a time. Coding owns implementation and its tests;
+   Worker can own bounded mechanical work or test execution where the adapter
+   allows. Keep the owner and tests sequential.
 4. Run focused tests and applicable type checks as work develops. At the end,
    run the project's required checks and verification selected from the blast
    radius. Run the full relevant suite once for substantive changes; a trivial
    isolated edit needs only focused evidence unless risk or project requirements
    warrant more.
 5. Compose `code-review` after implementation and verification when its scope,
-   prerequisites, and fan-out fit. Otherwise review the actual diff directly
+   prerequisites, and fan-out fit. Otherwise have Reviewer check the actual diff
    against the requirements and project standards, and disclose that fallback.
    Resolve material in-scope findings, then recheck affected behavior.
 

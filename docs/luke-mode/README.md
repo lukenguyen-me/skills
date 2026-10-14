@@ -55,7 +55,14 @@ always-on project rule is installed for Luke.
 In Claude Code, setup proposes the `Claude Code` model profile from the
 [Claude Code adapter](../../skills/luke-mode/adapters/claude-code.md): Opus for
 Reasoning and Reviewer, Sonnet as the main Coding worker, and Haiku only for
-read-only exploration that needs little judgment.
+read-only exploration that needs little judgment. Setup also generates one agent
+per role (`luke-reasoning`, `luke-coding`, `luke-worker`, `luke-reviewer`) from
+the saved profile, in `~/.claude/agents/` or the repository's `.claude/agents/`,
+so each role keeps its model even when the parent omits one. Once `/luke-mode`
+runs, a hook declared in the skill blocks forks, other agent types, and model
+overrides that leave the profile for the rest of that session; start a new
+session for unrelated work that needs other agent types. Rerun setup after
+editing the models file; the hook blocks role agents that disagree with it.
 
 ### Cursor Cloud
 
@@ -82,9 +89,11 @@ In Cursor Cloud, use `/luke-mode` for the same requests.
 Luke works in small verified steps and adapts investigation and verification to
 the task's complexity, uncertainty, and impact. Before edits, it assesses affected
 modules, callers, interfaces, shared state, and regression risks; trivial changes
-need only a brief check. Delegate when a separate context, expertise,
-or independent review improves the work; keep routine steps with their owner.
-Most small tasks need no agents. Code changes and test runs are sequential;
+need only a brief check. With a configured model profile, the parent session
+orchestrates: it plans, briefs, integrates, and reports, and every Reasoning,
+Coding, Worker, and Reviewer task runs in a delegate on that role's model, even
+a one-line edit. Without a profile, Luke works directly in the current session.
+Code changes and test runs are sequential;
 whole-spec execution has a scoped exception for isolated worktrees and runtime
 resources, with one writer per worktree and one integration writer.
 
@@ -168,8 +177,9 @@ The role names are portable; their model IDs are harness-specific. Setup preserv
 separate `## Codex` and `## Cursor Cloud` profiles. It selects by execution harness,
 even when Cursor uses a GPT model. Codex choices never serve as a missing Cloud
 profile. `inherit` is a valid deliberate choice. Without setup,
-Luke can work directly in the current session. Four roles do not require four
-agents, and a saved mapping does not imply its model ran during direct execution.
+Luke works directly in the current session, and a saved mapping does not imply
+its model ran during direct execution. With setup, role work goes to delegates;
+a direct run needs the role's accepted `parent` fallback.
 
 For settings that travel with the repository, explicitly choose this optional
 save location in the Cloud chat:

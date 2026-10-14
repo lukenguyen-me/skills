@@ -9,15 +9,14 @@ branches, and tracker state unchanged. The user may separately authorize fixes.
 2. Compose `code-review` if its installed requirements match. Its current
    committed-diff workflow may not cover uncommitted work. Do not commit work
    merely to make that skill usable.
-3. Use Reviewer in a fresh context when independent review earns the cost or
-   the user requests it. If `code-review` owns two reviewer agents, assign those
-   seats the Reviewer mapping and let it own the review; add no redundant panel.
-   Otherwise review directly and label the result accordingly. An explicit
-   role/model or independence requirement follows the model policy even when
-   direct review would be cheaper.
+3. Reviewer owns the review in a fresh context. Without a profile, review
+   directly and label it direct, unless the user requires independence. If `code-review` owns two
+   reviewer agents, assign those seats the Reviewer mapping and let it own the
+   review; add no redundant panel. Label the result independent only when it
+   ran in a separate context.
 4. Inspect the actual code and evidence. Reproduce a finding with safe existing
    checks when possible; serialize checks and respect the read-only scope.
-   Apply the composed skill's findings format. For direct review, prioritize
+   Apply the composed skill's findings format. Without a composed format, prioritize
    actionable findings with locations, consequences, and supporting evidence.
 
 Done when findings have been assessed against the requested scope. State review

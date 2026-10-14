@@ -7,8 +7,8 @@ cues from Matt's `grill-with-docs` and `to-spec`; invoke neither automatically.
    from the request and project. Read existing domain vocabulary and decisions.
 2. Compose `grilling` for a substantial requirements interview, `domain-modeling`
    for an actual domain-language problem, and `codebase-design` for module shape
-   or interface choices, when their installed requirements fit. Use Reasoning
-   for consequential trade-offs; use direct analysis for a small settled change.
+   or interface choices, when their installed requirements fit. Reasoning
+   analyzes trade-offs and options; the parent runs the interview with the human.
 3. Research observable facts before asking the human. Present viable choices
    and a recommendation for unresolved product or architecture decisions. A
    requested prototype answers one named empirical question in an isolated

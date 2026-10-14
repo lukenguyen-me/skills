@@ -36,8 +36,8 @@ Inspect relevant `agents` defaults or custom-agent overrides only when needed to
 resolve effective settings. User config is not proof of the active thread's model.
 
 Codex selects the parent model at launch with `codex --model MODEL`, or through
-`/model` in an interactive session. A Markdown skill cannot change it. A configured
-role can run directly when the active settings satisfy the requirement; otherwise
+`/model` in an interactive session. A Markdown skill cannot change it. With a
+configured profile the parent orchestrates, even when its settings match a role;
 use a compatible delegated context or report the unresolved requirement.
 
 ## Delegation
