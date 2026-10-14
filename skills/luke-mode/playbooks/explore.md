@@ -6,7 +6,7 @@ files and repository state stay unchanged; write a report only when requested.
 1. Pin the question and the evidence that would answer it. Trace relevant entry
    points, callers, tests, and history; use primary documentation for external
    facts. Read the project's existing glossary or ADRs when relevant.
-2. Worker gathers located facts: files, symbols, call sites, config values.
+2. Explorer gathers located facts: files, symbols, call sites, config values.
    Reasoning owns a causal investigation, diagnosis, or recommendation. Compose
    `research` only if its background-agent and report-writing requirements fit
    the request and available capabilities.

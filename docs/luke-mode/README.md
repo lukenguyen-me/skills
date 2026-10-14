@@ -54,9 +54,10 @@ always-on project rule is installed for Luke.
 
 In Claude Code, setup proposes the `Claude Code` model profile from the
 [Claude Code adapter](../../skills/luke-mode/adapters/claude-code.md): Opus for
-Reasoning and Reviewer, Sonnet as the main Coding worker, and Haiku only for
-read-only exploration that needs little judgment. Setup also generates one agent
-per role (`luke-reasoning`, `luke-coding`, `luke-worker`, `luke-reviewer`) from
+Reasoning and Reviewer, Sonnet for Coding and Verifier, and Haiku only for
+Explorer's read-only lookups that need no judgment. Setup also generates one agent
+per role (`luke-reasoning`, `luke-coding`, `luke-verifier`, `luke-explorer`,
+`luke-reviewer`) from
 the saved profile, in `~/.claude/agents/` or the repository's `.claude/agents/`,
 so each role keeps its model even when the parent omits one. Once `/luke-mode`
 runs, a hook declared in the skill blocks forks, other agent types, and model
@@ -91,7 +92,7 @@ the task's complexity, uncertainty, and impact. Before edits, it assesses affect
 modules, callers, interfaces, shared state, and regression risks; trivial changes
 need only a brief check. With a configured model profile, the parent session
 orchestrates: it plans, briefs, integrates, and reports, and every Reasoning,
-Coding, Worker, and Reviewer task runs in a delegate on that role's model, even
+Coding, Verifier, Explorer, and Reviewer task runs in a delegate on that role's model, even
 a one-line edit. Without a profile, Luke works directly in the current session.
 Code changes and test runs are sequential;
 whole-spec execution has a scoped exception for isolated worktrees and runtime
@@ -169,8 +170,9 @@ Use `$luke-mode configure models` to configure only the portable model roles.
 | Role | Work | Selection target |
 | --- | --- | --- |
 | Reasoning | Architecture, complex debugging, design trade-offs | Strongest available |
-| Coding | Feature implementation and refactoring | Balanced coding model |
-| Worker | Tests, mechanical edits, simple investigations | Fast, lower-cost model |
+| Coding | Features, refactoring, tests, and every source edit | Balanced coding model |
+| Verifier | Runs checks, tests, builds, and app flows; triages failures; no source edits | Balanced model |
+| Explorer | Read-only lookups whose answer is a location or fact | Fastest, lowest-cost model |
 | Reviewer | Independent code review and verification | Capable review model |
 
 The role names are portable; their model IDs are harness-specific. Setup preserves
@@ -191,6 +193,8 @@ save location in the Cloud chat:
 Model lookup uses an explicit path first, then the repository's
 `.luke-mode/models.md` if present, then the personal file. Each selected file
 keeps harness profiles separate; missing roles are not merged from another file.
+A role without a row runs on the harness default instead: Sonnet in Claude Code,
+`inherit` in Codex and Cursor Cloud. Luke announces it, and setup fills the row.
 When the selected file lacks the active harness's section but a lower-priority
 file has one, Luke warns that the harness runs without a profile.
 Create or commit the repository file only when that shared configuration is
@@ -281,8 +285,8 @@ integration checkout when model and review requirements allow it. It discloses
 the allocation and retains the requested parent scope.
 
 The parent coordinates the graph. Reasoning supports substantial planning;
-Worker handles bounded research or straightforward merger work; Coding owns
-ticket implementation and corrections; Reviewer runs the chosen review's
+Explorer gathers located facts for research notes; Coding owns ticket
+implementation, corrections, and delegated merges; Verifier runs the tip checks; Reviewer runs the chosen review's
 required axes. The existing model profile rules apply, including exact overrides
 and fallbacks. The parent model does not change when this route is selected.
 
@@ -358,7 +362,7 @@ $luke-mode triage Move #42 to ready-for-agent.
 Naming `triage` invokes Matt's installed `triage`, which owns the roles, state
 transitions, label mapping, agent briefs, and `.out-of-scope/` notes. Luke adds
 a blast-radius look at the code the issue names, a repro held to the Fix
-playbook's evidence standard, and read-only Workers when several issues need
+playbook's evidence standard, and read-only Explorers when several issues need
 codebase context. Triage changes no application code. Tracker writes happen at
 Matt's confirmation points, after your direction. An item that reaches
 `ready-for-agent` ends with `$luke-mode fix #42` or `$luke-mode implement #42`

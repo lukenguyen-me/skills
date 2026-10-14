@@ -9,10 +9,9 @@ codebase-design practices and implementation sequence for checks and review.
 2. Assess blast radius using relevant contracts, callers, and project decisions.
    Compose `codebase-design` when module shape or interfaces need design. Resolve a
    consequential architecture choice with the human before restructuring.
-3. Move in small steps, checking the pin between them. Coding owns the refactor;
-   Worker may handle a bounded mechanical step after the owner has finished its
-   preceding step, where the adapter lets Worker edit. Search callers and non-code references after renames.
-4. Run relevant project verification and required checks. Compose compatible
+3. Move in small steps, checking the pin between them. Coding owns the refactor,
+   including its mechanical steps. Search callers and non-code references after renames.
+4. Verifier runs relevant project verification and required checks. Compose compatible
    `code-review` or have Reviewer check the final diff and label that fallback. Resolve in-scope
    findings and recheck changed areas.
 

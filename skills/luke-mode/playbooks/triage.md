@@ -15,8 +15,8 @@ A question about an issue that does not name triage routes to Explore; offer
    missing skill or mapping leaves triage pending; point to `$luke-mode setup`.
    Follow its instructions for the rest of the run.
 2. When gathering context, assess blast radius in the code area the item names:
-   affected modules, callers, interfaces. For several items, a Worker can gather
-   each item's codebase context read-only; tracker reads and writes stay with
+   affected modules, callers, interfaces. For several items, Explorers can gather
+   each item's located facts read-only; tracker reads and writes stay with
    the parent. Grilling is an interview with the maintainer, so it stays in the
    parent session.
 3. Verify the claim to [Fix](fix.md)'s evidence standard: a repro that detects

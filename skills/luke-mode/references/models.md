@@ -31,8 +31,13 @@ personal file does not travel with the repository or Cursor skill sync.
 An absent profile is an unconfigured state: the parent does role work directly
 in the current session, reports it as direct execution, and says so when model
 routing matters. Setup is optional. A configured profile makes routing strict
-(see [Role use](#role-use)). A supplied profile without an entry for a required
-role needs that role configured; do not guess a model.
+(see [Role use](#role-use)). A role without a row in a supplied profile runs on
+the adapter's default for missing roles, with the profile's fallback `stop`.
+Announce it as defaulted in the route announcement, and point to setup to choose
+it. A profile that still lists the retired `Worker` role lacks `Verifier` and
+`Explorer`, so both run on that default until setup migrates it. The default
+covers a missing row only; a chosen model that is unavailable still follows the
+rules below.
 
 For a delegated or explicitly required role:
 
@@ -72,16 +77,22 @@ does not silently satisfy that different owner choice.
 
 ## Role use
 
-Reasoning is for unresolved architecture, complex debugging, and consequential
-trade-offs. Coding is for implementation: features, refactors, tests, and edits.
-Worker is for bounded tests, mechanical edits, or simple fact gathering.
-Reviewer is for independent review or checking evidence in a separate context;
-independence does not require a different model family.
+Reasoning is for unresolved architecture, complex debugging, causal
+investigation, and consequential trade-offs. Coding is for implementation:
+features, refactors, tests, and every source edit, however mechanical. Verifier
+runs the checks, test suites, builds, and app flows a brief names, triages their
+failures with quoted evidence, and leaves source files unchanged. Explorer is for
+read-only lookups whose answer is a location or fact: files, symbols, call sites,
+config values. Work that needs judgment, such as deciding whether a result
+passes, belongs above Explorer; escalate an ambiguous Explorer result to
+Reasoning or Coding instead of retrying it. Reviewer is for independent review
+or checking evidence in a separate context; independence does not require a
+different model family.
 
 With a configured profile, the parent is the orchestrator. It routes, plans,
 briefs, integrates results, settles decisions with the human, and reports.
-Every Reasoning, Coding, Worker, and Reviewer task runs in a delegate on that
-role's mapping, including a one-line edit or a single test run. The parent's
+Every Reasoning, Coding, Verifier, Explorer, and Reviewer task runs in a
+delegate on that role's mapping, including a one-line edit or a single test run. The parent's
 own commands are orchestration: reading state and files to scope a brief,
 `git status` and diffs, branch, commit, and PR delivery, and merging delegate
 worktrees. Source edits, test and check runs, the investigation behind an

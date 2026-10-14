@@ -63,6 +63,9 @@ model cache are not Cloud capability evidence. When exact choices cannot be
 established, use the user's picker choices or confirmed `inherit` preferences.
 [Cloud model catalog](https://cursor.com/docs/cloud-agent/api/endpoints#list-models)
 
+A role without a row in the `Cursor Cloud` profile runs `inherit` for model and
+effort, so the run's own model serves it.
+
 Keep the catalog model ID and reasoning effort in separate saved columns. At
 invocation, use the native tool's separate effort field if supported. If its
 schema instead accepts Cursor's documented model-parameter syntax, translate a
@@ -97,7 +100,8 @@ Keep mutations and test runs sequential, except when the selected
 establishes isolated worktrees and resources. Native background tasks may serve
 independent tickets when exposed; dependent integration and review await
 completed results. Verify each worker's owning checkout and resource isolation
-inside this Cloud run. Reviewers inspect completed changes; use an available native read-only
+inside this Cloud run. Explorers and Reviewers run read-only, and Verifiers write
+only build outputs, logs, and evidence; use an available native read-only
 definition or permission control, and otherwise describe the brief as a prompt
 constraint. Inspect returned diffs, artifacts, and model evidence. Never substitute
 a built-in fast worker for an exact configured role just because it is available.

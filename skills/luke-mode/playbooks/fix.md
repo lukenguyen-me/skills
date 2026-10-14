@@ -9,7 +9,7 @@ Deliver a correction tied to the reported symptom. Follow Matt's
    feedback loop; this is a direct fallback, not an invocation of that skill.
 2. Trace the mechanism and test the explanation against the repro. Assess blast
    radius before the fix and include affected paths in verification. Reasoning
-   owns complex debugging; Coding owns the repro and checks. For a performance
+   owns complex debugging; Coding owns the repro; Verifier runs the checks. For a performance
    regression, measure a comparable baseline before changing code.
 3. At an agreed public interface, compose `tdd` for a meaningful regression
    test before the fix. If no faithful test interface exists, retain the repro
