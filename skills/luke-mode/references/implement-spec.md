@@ -117,9 +117,11 @@ working directory and paths. Schedule within actual native concurrency limits.
 
 Assess resource overlap before dispatch. Serialize tickets that share files,
 public contracts, generated outputs, migrations, or non-isolated services,
-databases, fixtures, ports, profiles, and
-[shared devices](evidence.md#shared-devices). Worktrees isolate checkout files,
-not those runtime resources. Record resource waits separately from declared blocker
+databases, fixtures, ports, and profiles. Worktrees isolate checkout files,
+not those runtime resources. Simulators and emulators are a
+[device pool](evidence.md#shared-devices): tickets run concurrently while each
+claims its own free device, and wait only when the pool is exhausted or a
+before and after pair needs a device another ticket holds. Record resource waits separately from declared blocker
 edges. One integration writer handles the shared branch at a time; implementation
 delegates update only their own branches. Reviewers inspect a frozen snapshot.
 

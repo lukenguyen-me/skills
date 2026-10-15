@@ -126,10 +126,12 @@ skill. For a change you can see, Luke captures the before state before its
 first edit and the after state once the work is verified: screenshots for
 visual changes, a GIF for flows, and command output for CLI changes. It uses
 `agent-browser` for web, `simctl` for the iOS Simulator, and `adb` for Android.
-It reuses the simulators and emulators already on the machine, erases one for a
-clean state, and creates a device only when none matches, named after its type
-and deleted afterwards. Its scripts find the device by name at run time, not by
-a hardcoded UDID. Luke inspects each capture, publishes it, and shows it as a Before | After
+It reuses the simulators and emulators already on the machine as one pool:
+each run claims a free device with the bundled `device_claim.py`, so parallel
+worktrees and projects use different devices and wait only when all are busy.
+It erases a device for a clean state and creates one only when none fits,
+named after its type and deleted afterwards. Its scripts find the device by
+rule at run time, not by a hardcoded UDID. Luke inspects each capture, publishes it, and shows it as a Before | After
 table in the PR. Captures it could not take are listed as gaps.
 
 GitHub has no API for PR image uploads, so the bundled

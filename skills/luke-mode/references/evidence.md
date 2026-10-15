@@ -56,27 +56,35 @@ agent-browser close
 
 Pass `--color-scheme dark` for dark theme. Recording needs `ffmpeg`.
 
-**iOS Simulator.** Boot the [shared device](#shared-devices), then build and
-install with the project's scheme or scripts.
+**iOS Simulator.** Claim a [shared device](#shared-devices), boot it, then
+build and install with the project's scheme or scripts. Address it by UDID:
+`booted` is ambiguous while another run has a device booted. `<luke-mode>` is
+this skill's directory.
 
 ```sh
-xcrun simctl boot 'iPhone 16 Pro'   # skip when it is already booted
-xcrun simctl status_bar booted override --time 9:41 --batteryState charged --batteryLevel 100
-xcrun simctl openurl booted 'myapp://settings'
-xcrun simctl io booted screenshot "$EV/settings-after.png"
-xcrun simctl io booted recordVideo --codec h264 "$EV/flow.mp4"   # stop with SIGINT
+DEV=$(python3 <luke-mode>/scripts/device_claim.py claim <udid-1> <udid-2> --minutes 30 --label <task>)
+xcrun simctl boot "$DEV"   # skip when it is already booted
+xcrun simctl status_bar "$DEV" override --time 9:41 --batteryState charged --batteryLevel 100
+xcrun simctl openurl "$DEV" 'myapp://settings'
+xcrun simctl io "$DEV" screenshot "$EV/settings-after.png"
+xcrun simctl io "$DEV" recordVideo --codec h264 "$EV/flow.mp4"   # stop with SIGINT
+python3 <luke-mode>/scripts/device_claim.py release "$DEV"
 ```
 
-**Android emulator or device.** Start the [shared device](#shared-devices)
-unless one is already running in `adb devices`.
+**Android emulator or device.** Claim a [shared device](#shared-devices) and
+start it unless it already runs in `adb devices`. Pass its serial to every
+`adb` call with `-s`.
 
 ```sh
+python3 <luke-mode>/scripts/device_claim.py claim Pixel_8_API_35 --minutes 30 --label <task>
 emulator -avd Pixel_8_API_35 &   # skip when it is already running
-adb shell settings put global sysui_demo_allowed 1
-adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
-adb shell am start -a android.intent.action.VIEW -d 'myapp://settings'
-adb exec-out screencap -p > "$EV/settings-after.png"
-adb shell screenrecord --time-limit 15 /sdcard/flow.mp4 && adb pull /sdcard/flow.mp4 "$EV/"
+S=emulator-5554   # its serial from `adb devices`
+adb -s "$S" shell settings put global sysui_demo_allowed 1
+adb -s "$S" shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
+adb -s "$S" shell am start -a android.intent.action.VIEW -d 'myapp://settings'
+adb -s "$S" exec-out screencap -p > "$EV/settings-after.png"
+adb -s "$S" shell screenrecord --time-limit 15 /sdcard/flow.mp4 && adb -s "$S" pull /sdcard/flow.mp4 "$EV/"
+python3 <luke-mode>/scripts/device_claim.py release Pixel_8_API_35
 ```
 
 **Other surfaces.** Use the project's UI automation for desktop apps, or
@@ -87,31 +95,42 @@ reason and continue with the remaining plan.
 
 ## Shared devices
 
-Simulators and emulators are machine-global: every project on the machine
-shares them, and each device holds gigabytes of data. Captures, verification,
-and the scripts a task writes reuse the existing devices:
+Simulators and emulators are machine-global: every project and worktree on the
+machine draws from one device pool, and each device holds gigabytes of data.
+Captures, verification, and the scripts a task writes reuse the pool:
 
 1. List the devices: `xcrun simctl list devices available --json` and
    `xcrun simctl list runtimes`, or `avdmanager list avd` and `adb devices`.
-   Pick the device type the plan needs on the newest installed runtime, and
-   prefer one that is already booted.
-2. For a clean state, erase that device: `xcrun simctl shutdown <device>` then
-   `xcrun simctl erase <device>`, or `emulator -avd <name> -wipe-data`.
-3. Create a device only when no listed device matches. Name it after its device
-   type and runtime (`iPhone 16 Pro`, `Pixel_8_API_35`), never after the
-   project, and delete it when the task ends (`xcrun simctl delete <device>`,
-   `avdmanager delete avd -n <name>`).
-4. Scripts and project docs resolve the device at run time by name or by the
-   rule in step 1, and accept a name or UDID as an override (for example
-   `--device`). A hardcoded UDID exists on one machine only.
-5. Install a runtime only when no installed runtime covers the targeted
+   The candidates are every listed device the plan accepts on the newest
+   installed runtime, booted ones first. A plan that needs one model or screen
+   size names it; otherwise every device of the form factor is a candidate
+   (any iPad for an iPad app, any phone for a phone app).
+2. Claim the first free candidate with
+   [`device_claim.py`](../scripts/device_claim.py) before driving it.
+   `hold <candidates> -- <command>` claims for one command; `claim --minutes N`
+   then `release` spans several commands. A claimed device is taken: move to the
+   next free candidate. Wait (`--wait-minutes N`) only when every candidate is
+   claimed.
+3. For a clean state, erase the claimed device: `xcrun simctl shutdown <device>`
+   then `xcrun simctl erase <device>`, or `emulator -avd <name> -wipe-data`.
+4. Create a device only when no listed device fits the plan; a busy pool is a
+   reason to wait. Name it after its device type and runtime (`iPhone 16 Pro`,
+   `Pixel_8_API_35`), never after the project, and delete it when the task ends
+   (`xcrun simctl delete <device>`, `avdmanager delete avd -n <name>`).
+5. Scripts and project docs resolve the device at run time by name or by the
+   rule in step 1, skip claimed devices, and accept a name or UDID as an
+   override (for example `--device`). A script claims with `--pid` set to its
+   own process, or imports `claim_first`, so the claim ends when the script
+   does. A hardcoded UDID exists on one machine only.
+6. Install a runtime only when no installed runtime covers the targeted
    platform generation; each iOS runtime takes about 8 GB. Report unused
    runtimes to the user as cleanup; removing one affects every project.
 
-A shared device is a shared runtime resource: one run drives it at a time. A
-device that another run or project is using counts as no match in step 1, so
-wait for it or create a device by step 3. Before and after captures replay on
-the same device.
+One run drives a device at a time; parallel runs each claim their own. Pin a
+device only when the evidence compares runs: a before and after pair, or a
+rerun against a baseline, replays on the device the first capture used, so
+claim that device by its identifier and wait for it. Each booted device takes a
+few GB of memory: boot another one only while the machine has the memory free.
 
 ## Inspect every capture
 
