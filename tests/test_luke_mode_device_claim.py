@@ -21,12 +21,13 @@ class DeviceClaimTests(unittest.TestCase):
     def setUp(self):
         self.pool = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.pool)
+        self.excluded = os.path.join(self.pool, 'config', 'excluded.txt')
 
     def claim(self, *devices, **kwargs):
-        return dc.claim_first(list(devices), directory=self.pool, **kwargs)
+        return dc.claim_first(list(devices), directory=self.pool, excluded_file=self.excluded, **kwargs)
 
     def cli(self, *args):
-        env = dict(os.environ, DEVICE_CLAIMS_DIR=self.pool)
+        env = dict(os.environ, DEVICE_CLAIMS_DIR=self.pool, DEVICE_EXCLUDED_FILE=self.excluded)
         return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True, env=env)
 
     def test_a_second_run_gets_the_next_free_device(self):
@@ -81,6 +82,29 @@ class DeviceClaimTests(unittest.TestCase):
                         'import os; print(os.environ["DEVICE_CLAIM"])')
         self.assertEqual((held.returncode, held.stdout.strip()), (0, 'SMALL'))
         self.assertNotIn('SMALL', dc.live_claims(self.pool))
+
+    def test_an_excluded_device_is_never_claimed(self):
+        dc.exclude('PHONE', note='personal', path=self.excluded)
+        self.assertEqual(self.claim('PHONE', 'TABLET'), ('TABLET', None))
+        self.assertEqual(self.claim('PHONE'), (None, {}))
+
+    def test_include_returns_a_device_to_the_pool(self):
+        dc.exclude('PHONE', path=self.excluded)
+        dc.exclude('OTHER', path=self.excluded)
+        self.assertTrue(dc.include('PHONE', path=self.excluded))
+        self.assertFalse(dc.include('PHONE', path=self.excluded))
+        self.assertEqual(dc.excluded_devices(self.excluded), {'OTHER'})
+        self.assertEqual(self.claim('PHONE'), ('PHONE', None))
+
+    def test_cli_exclude_skips_the_device_and_list_shows_it(self):
+        self.assertIn('excluded PHONE', self.cli('exclude', 'PHONE', '--note', 'personal').stdout)
+        self.assertIn('already excluded', self.cli('exclude', 'PHONE').stdout)
+        self.assertIn('PHONE   # personal', Path(self.excluded).read_text())
+        self.assertIn('PHONE: excluded', self.cli('list').stdout)
+        only = self.cli('claim', 'PHONE')
+        self.assertEqual(only.returncode, 1)
+        self.assertIn('excluded', only.stderr)
+        self.assertEqual(self.cli('claim', 'PHONE', 'TABLET').stdout.strip(), 'TABLET')
 
 
 if __name__ == '__main__':
