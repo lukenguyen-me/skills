@@ -31,7 +31,7 @@ verification-authoring workflows before selecting an engineering playbook:
 
 | Requested stage | Route |
 | --- | --- |
-| `setup`, configure Luke's models, or check Luke's Matt toolkit setup | [Setup](playbooks/setup.md) |
+| `setup`, configure Luke's models, check Luke's Matt toolkit setup, or choose the devices the pool skips | [Setup](playbooks/setup.md) |
 | `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
 | `autopilot <request>`: carry a change to a draft PR with evidence, without check-ins | [Autopilot](playbooks/autopilot.md), wrapping the engineering playbook |
 | `triage`: move issues or external PRs through Matt's triage states | [Triage](playbooks/triage.md), with the installed `triage` as procedure owner |
@@ -52,8 +52,8 @@ workflows from the active harness catalog and skill roots, checking their
 PStack provenance, supporting resources, and invocation policy. If missing,
 report the dependency and route an authorized setup request to install it.
 Read and follow the installed upstream workflow; keep one procedure owner.
-Setup installs missing dependencies, configures model roles, and sets up the
-current repository. A requested refresh runs sync before setup;
+Setup installs missing dependencies, configures model roles, sets up the
+current repository, and sets the device pool's skip list. A requested refresh runs sync before setup;
 otherwise setup reuses a complete installation. `Setup OAuth for this app`
 and `implement offline sync` remain engineering requests.
 

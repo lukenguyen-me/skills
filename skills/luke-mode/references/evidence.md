@@ -56,13 +56,39 @@ agent-browser close
 
 Pass `--color-scheme dark` for dark theme. Recording needs `ffmpeg`.
 
-**iOS Simulator.** Claim a [shared device](#shared-devices), boot it, then
-build and install with the project's scheme or scripts. Address it by UDID:
-`booted` is ambiguous while another run has a device booted. `<luke-mode>` is
-this skill's directory.
+**iOS device or Simulator.** Claim a [shared device](#shared-devices), listing
+connected physical devices first, then build and install with the project's
+scheme or scripts. Address the device by UDID: `booted` is ambiguous while
+another run has a device booted. `<luke-mode>` is this skill's directory.
 
 ```sh
-DEV=$(python3 <luke-mode>/scripts/device_claim.py claim <udid-1> <udid-2> --minutes 30 --label <task>)
+DEV=$(python3 <luke-mode>/scripts/device_claim.py claim <phone-udid> <sim-udid-1> <sim-udid-2> --minutes 30 --label <task>)
+```
+
+A physical device builds with `-destination "id=$DEV"` and the project's
+development signing team; a signing or install failure moves the run to the
+next candidate. Drive it with `devicectl`:
+
+```sh
+xcrun devicectl device install app --device "$DEV" <build-dir>/MyApp.app
+xcrun devicectl device simulate statusBar preset screenshot --device "$DEV"
+xcrun devicectl device process launch --device "$DEV" --terminate-existing --payload-url 'myapp://settings' <bundle-id>
+xcrun devicectl device capture screenshot --device "$DEV" --destination "$EV/settings-after.png"
+xcrun devicectl device capture screen-record --device "$DEV" --duration 15 --destination "$EV/flow.mp4"
+xcrun devicectl device simulate statusBar clear --device "$DEV"
+python3 <luke-mode>/scripts/device_claim.py release "$DEV"
+```
+
+Dark theme is `xcrun devicectl device settings appearance --device "$DEV" --mode dark`;
+read the current setting first with `device info appearance` and set it back.
+A device that reports status bar override or screen recording as unsupported
+(iOS 18 does) still takes screenshots. There, record a flow as one screenshot per
+step and join them into the GIF (`ffmpeg -framerate 1 -i step-%02d.png ...`),
+or record it on a simulator when the motion itself is the change.
+
+A simulator boots and runs through `simctl`:
+
+```sh
 xcrun simctl boot "$DEV"   # skip when it is already booted
 xcrun simctl status_bar "$DEV" override --time 9:41 --batteryState charged --batteryLevel 100
 xcrun simctl openurl "$DEV" 'myapp://settings'
@@ -71,66 +97,91 @@ xcrun simctl io "$DEV" recordVideo --codec h264 "$EV/flow.mp4"   # stop with SIG
 python3 <luke-mode>/scripts/device_claim.py release "$DEV"
 ```
 
-**Android emulator or device.** Claim a [shared device](#shared-devices) and
-start it unless it already runs in `adb devices`. Pass its serial to every
-`adb` call with `-s`.
+**Android device or emulator.** Claim a [shared device](#shared-devices),
+listing connected phones (by adb serial) before AVDs (by name). A claimed AVD
+starts unless it already runs in `adb devices`. Pass the serial to every `adb`
+call with `-s`; the same commands drive a phone and an emulator.
 
 ```sh
-python3 <luke-mode>/scripts/device_claim.py claim Pixel_8_API_35 --minutes 30 --label <task>
-emulator -avd Pixel_8_API_35 &   # skip when it is already running
-S=emulator-5554   # its serial from `adb devices`
+DEV=$(python3 <luke-mode>/scripts/device_claim.py claim <phone-serial> Pixel_8_API_35 --minutes 30 --label <task>)
+emulator -avd "$DEV" &   # an AVD only; skip when it is already running
+S="$DEV"   # a phone; for an AVD, its emulator-NNNN serial from `adb devices`
 adb -s "$S" shell settings put global sysui_demo_allowed 1
 adb -s "$S" shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
 adb -s "$S" shell am start -a android.intent.action.VIEW -d 'myapp://settings'
 adb -s "$S" exec-out screencap -p > "$EV/settings-after.png"
 adb -s "$S" shell screenrecord --time-limit 15 /sdcard/flow.mp4 && adb -s "$S" pull /sdcard/flow.mp4 "$EV/"
-python3 <luke-mode>/scripts/device_claim.py release Pixel_8_API_35
+adb -s "$S" shell am broadcast -a com.android.systemui.demo -e command exit
+python3 <luke-mode>/scripts/device_claim.py release "$DEV"
 ```
+
+Some vendor builds ignore demo mode; check the status bar in the capture.
 
 **Other surfaces.** Use the project's UI automation for desktop apps, or
 `screencapture -l <window-id>` on macOS. Capture terminal output as text.
 
-A missing tool, simulator, or credential makes that capture a gap; record the
+A missing tool, device, or credential makes that capture a gap; record the
 reason and continue with the remaining plan.
 
 ## Shared devices
 
-Simulators and emulators are machine-global: every project and worktree on the
-machine draws from one device pool, and each device holds gigabytes of data.
+Physical devices, simulators, and emulators are machine-global: every project
+and worktree on the machine draws from one device pool. Prefer a physical
+device: the app runs on the device's own hardware, so the Mac spends no memory
+or CPU on a simulator, and the run sees real performance, camera, and sensors.
 Captures, verification, and the scripts a task writes reuse the pool:
 
-1. List the devices: `xcrun simctl list devices available --json` and
-   `xcrun simctl list runtimes`, or `avdmanager list avd` and `adb devices`.
-   The candidates are every listed device the plan accepts on the newest
-   installed runtime, booted ones first. A plan that needs one model or screen
-   size names it; otherwise every device of the form factor is a candidate
-   (any iPad for an iPad app, any phone for a phone app).
-2. Claim the first free candidate with
+1. List the devices. Physical: `xcrun devicectl list devices --json-output -`
+   (`hardwareProperties.reality` is `physical`) and `adb devices -l` (serials
+   other than `emulator-*`). Virtual: `xcrun simctl list devices available --json`
+   and `xcrun simctl list runtimes`, or `avdmanager list avd`.
+2. Order the candidates: physical devices first, then booted simulators and
+   emulators, then the rest on the newest installed runtime. `claim` skips the
+   devices on the machine's skip list (`device_claim.py list` shows it), such
+   as the user's personal phone; setup maintains it. A physical device
+   is a candidate when it is paired and unlocked (`xcrun devicectl device info lockState`)
+   or authorized (`device` in `adb devices`), and its OS meets the app's
+   deployment target or `minSdk`. A plan that needs one model or screen size
+   names it; otherwise every device of the form factor is a candidate (any
+   iPad for an iPad app, any phone for a phone app).
+3. Claim the first free candidate with
    [`device_claim.py`](../scripts/device_claim.py) before driving it.
    `hold <candidates> -- <command>` claims for one command; `claim --minutes N`
    then `release` spans several commands. A claimed device is taken: move to the
    next free candidate. Wait (`--wait-minutes N`) only when every candidate is
    claimed.
-3. For a clean state, erase the claimed device: `xcrun simctl shutdown <device>`
-   then `xcrun simctl erase <device>`, or `emulator -avd <name> -wipe-data`.
-4. Create a device only when no listed device fits the plan; a busy pool is a
-   reason to wait. Name it after its device type and runtime (`iPhone 16 Pro`,
-   `Pixel_8_API_35`), never after the project, and delete it when the task ends
+4. A physical device keeps its pairing, Developer Mode, accounts, and other
+   apps across runs. Reset only the app under test:
+   `xcrun devicectl device uninstall app --device <device> <bundle-id>`, or `adb -s <serial> shell pm clear <package>`. Restore every setting the run
+   changed (status bar, appearance, demo mode) before release. Device-wide
+   reset stays with the user: `devicectl device settings reset` erases the
+   whole device and its pairing, so leave it unrun.
+5. For a clean simulator or emulator, erase the claimed device:
+   `xcrun simctl shutdown <device>` then `xcrun simctl erase <device>`, or
+   `emulator -avd <name> -wipe-data`.
+6. Use a simulator or emulator when the plan needs what no free physical device
+   gives: a model, screen size, or OS version none of them has, a device-wide
+   clean state, a `simctl`-only hook (`simctl push`, `simctl privacy`), or a
+   second device while the physical ones are claimed.
+7. Create a simulator or emulator only when no listed device fits the plan; a
+   busy pool is a reason to wait. Name it after its device type and runtime
+   (`iPhone 16 Pro`, `Pixel_8_API_35`), never after the project, and delete it when the task ends
    (`xcrun simctl delete <device>`, `avdmanager delete avd -n <name>`).
-5. Scripts and project docs resolve the device at run time by name or by the
-   rule in step 1, skip claimed devices, and accept a name or UDID as an
+8. Scripts and project docs resolve the device at run time by name or by the
+   rule in steps 1 and 2, skip claimed devices, and accept a name or UDID as an
    override (for example `--device`). A script claims with `--pid` set to its
    own process, or imports `claim_first`, so the claim ends when the script
    does. A hardcoded UDID exists on one machine only.
-6. Install a runtime only when no installed runtime covers the targeted
+9. Install a runtime only when no installed runtime covers the targeted
    platform generation; each iOS runtime takes about 8 GB. Report unused
    runtimes to the user as cleanup; removing one affects every project.
 
 One run drives a device at a time; parallel runs each claim their own. Pin a
 device only when the evidence compares runs: a before and after pair, or a
 rerun against a baseline, replays on the device the first capture used, so
-claim that device by its identifier and wait for it. Each booted device takes a
-few GB of memory: boot another one only while the machine has the memory free.
+claim that device by its identifier and wait for it. Each booted simulator or
+emulator takes a few GB of memory: boot another one only while the machine has
+the memory free.
 
 ## Inspect every capture
 

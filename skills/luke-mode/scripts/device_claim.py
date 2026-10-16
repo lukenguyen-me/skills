@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Claim a simulator or emulator from the machine's shared device pool.
+"""Claim a physical device, simulator, or emulator from the machine's shared device pool.
 
   device_claim.py claim DEVICE [DEVICE ...] [--label TEXT] [--minutes N | --pid PID] [--wait-minutes N]
   device_claim.py hold  DEVICE [DEVICE ...] [--label TEXT] [--wait-minutes N] -- COMMAND ...
   device_claim.py release DEVICE
   device_claim.py list
+  device_claim.py exclude DEVICE [--note TEXT]
+  device_claim.py include DEVICE
 
-A DEVICE is the identifier the driver uses: a simulator UDID, an AVD name, or an adb serial. `claim` and `hold`
+A DEVICE is the identifier the driver uses: a device or simulator UDID, an AVD name, or an adb serial. `claim` and `hold`
 take the first free candidate in the order given and print it. `hold` keeps the claim while COMMAND runs and passes
 the device to it in DEVICE_CLAIM. A claim ends when its process exits (`--pid`, `hold`), when its time runs out
 (`--minutes`, default 60 for `claim`), or on `release`.
@@ -14,6 +16,10 @@ the device to it in DEVICE_CLAIM. A claim ends when its process exits (`--pid`, 
 Claims live in DEVICE_CLAIMS_DIR, else ~/Library/Caches/device-claims (macOS) or ~/.cache/device-claims, so every
 project and worktree on the machine sees the same pool. Projects may import this file and call claim_first,
 live_claims, and release. Standard library only.
+
+`exclude` keeps a device out of the pool for good, such as the owner's personal phone: `claim` and `hold` skip it.
+The list lives in DEVICE_EXCLUDED_FILE, else ~/.config/device-claims/excluded.txt, one identifier per line with `#`
+comments, outside the cache so a cache cleanup cannot drop it.
 """
 
 import argparse
@@ -37,6 +43,44 @@ def claims_dir():
     if sys.platform == 'darwin':
         return os.path.expanduser('~/Library/Caches/device-claims')
     return os.path.expanduser('~/.cache/device-claims')
+
+
+def excluded_path():
+    return os.environ.get('DEVICE_EXCLUDED_FILE') or os.path.expanduser('~/.config/device-claims/excluded.txt')
+
+
+def excluded_devices(path=None):
+    """The set of excluded device identifiers."""
+    try:
+        with open(path or excluded_path()) as handle:
+            lines = handle.read().splitlines()
+    except OSError:
+        return set()
+    return {line.split('#', 1)[0].strip() for line in lines} - {''}
+
+
+def exclude(device, note='', path=None):
+    """Add device to the excluded list. Returns False when it was already there."""
+    path = path or excluded_path()
+    if device in excluded_devices(path):
+        return False
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'a') as handle:
+        handle.write(device + (f'   # {note}' if note else '') + '\n')
+    return True
+
+
+def include(device, path=None):
+    """Remove device from the excluded list. Returns False when it was not there."""
+    path = path or excluded_path()
+    if device not in excluded_devices(path):
+        return False
+    with open(path) as handle:
+        lines = handle.read().splitlines()
+    kept = [line for line in lines if line.split('#', 1)[0].strip() != device]
+    with open(path, 'w') as handle:
+        handle.write(''.join(line + '\n' for line in kept))
+    return True
 
 
 def claim_path(directory, device):
@@ -106,12 +150,16 @@ def live_claims(directory=None):
     return claims
 
 
-def claim_first(candidates, label='', pid=None, minutes=None, directory=None):
-    """Claim the first free candidate. Returns (device, None), or (None, {device: holder record}) when all are taken."""
+def claim_first(candidates, label='', pid=None, minutes=None, directory=None, excluded_file=None):
+    """Claim the first free candidate that is not excluded.
+    Returns (device, None), or (None, {device: holder record}) when all are taken."""
     directory = directory or claims_dir()
+    skipped = excluded_devices(excluded_file)
     holders = {}
     with pool_lock(directory):
         for device in candidates:
+            if device in skipped:
+                continue
             path = claim_path(directory, device)
             current = read_claim(path)
             if current and is_live(current):
@@ -161,7 +209,10 @@ def claim_with_wait(candidates, wait_minutes, **kwargs):
 
 
 def report_taken(holders):
-    print('PROBLEM: every candidate device is claimed:', file=sys.stderr)
+    if not holders:
+        print(f'PROBLEM: every candidate device is excluded in {excluded_path()}', file=sys.stderr)
+        return
+    print('PROBLEM: every candidate device is claimed or excluded:', file=sys.stderr)
     for record in holders.values():
         print('  ' + describe(record), file=sys.stderr)
 
@@ -186,7 +237,14 @@ def main(argv=None):
     p = sub.add_parser('release', help='end the claim on a device')
     p.add_argument('device')
 
-    sub.add_parser('list', help='print live claims')
+    sub.add_parser('list', help='print live claims and excluded devices')
+
+    p = sub.add_parser('exclude', help='keep a device out of the pool for good')
+    p.add_argument('device')
+    p.add_argument('--note', default='')
+
+    p = sub.add_parser('include', help='return an excluded device to the pool')
+    p.add_argument('device')
 
     argv = list(sys.argv[1:] if argv is None else argv)
     rest = argv[argv.index('--') + 1:] if '--' in argv else []
@@ -197,6 +255,16 @@ def main(argv=None):
     if args.command == 'list':
         for record in live_claims().values():
             print(describe(record))
+        for device in sorted(excluded_devices()):
+            print(f'{device}: excluded')
+        return 0
+    if args.command == 'exclude':
+        added = exclude(args.device, args.note)
+        print(f'excluded {args.device}' if added else f'{args.device} was already excluded')
+        return 0
+    if args.command == 'include':
+        removed = include(args.device)
+        print(f'included {args.device}' if removed else f'{args.device} was not excluded')
         return 0
     if args.command == 'release':
         record = release(args.device)

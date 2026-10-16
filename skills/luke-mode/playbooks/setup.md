@@ -4,11 +4,12 @@ Run as `$luke-mode setup` in Codex or `/luke-mode setup` in Cursor Cloud and
 Claude Code. Keep the working directory in the user's project. Read applicable
 project instructions before configuration.
 
-Full setup runs dependency installation, model configuration, and repository
-setup in that order. It authorizes those stages together; do not require another
-sync or Matt setup command from the user. A model-only request, such as
-`configure models`, runs only the model stages. A toolkit-only request runs
-dependency installation and repository setup.
+Full setup runs dependency installation, model configuration, repository
+setup, and the device pool in that order. It authorizes those stages together;
+do not require another sync or Matt setup command from the user. A model-only
+request, such as `configure models`, runs only the model stages. A toolkit-only
+request runs dependency installation and repository setup. A device-only
+request, such as `skip my phone`, runs only the device pool stage.
 
 Read [harness selection](../references/harnesses.md),
 [models](../references/models.md), and the selected adapter before proposing
@@ -150,7 +151,33 @@ toolkit readiness in another project. Read
    alone does not authorize those changes.
 5. Read back generated guidance and its referenced configuration to verify
    installed prerequisites. Report dependency availability, model
-   configuration, and repository toolkit readiness separately. Full setup is
-   complete when all three stages are verified or explicitly skipped by the
-   user. A pending stage still permits independent work under the composition
+   configuration, repository toolkit readiness, and the device pool separately.
+   Full setup is complete when all four stages are verified or explicitly
+   skipped by the user. A pending stage still permits independent work under the composition
    fallback rules. Re-running setup reuses completed stages.
+
+## Set up the device pool
+
+The [device pool](../references/evidence.md#shared-devices) uses every
+connected physical device first, so a personal phone paired with the Mac is a
+candidate unless it is on the skip list. The list is machine-wide: one answer
+covers every project. Skip this stage where the harness has no local devices,
+such as Cursor Cloud.
+
+1. List the connected physical devices: `xcrun devicectl list devices` (rows
+   whose Reality is `physical`) and `adb devices -l` (serials other than
+   `emulator-*`). Show the current skip list with
+   `python3 <luke-mode>/scripts/device_claim.py list` (`<luke-mode>` is this
+   skill's directory).
+2. Show one table with each device's name, model, OS version, identifier, and
+   whether it is skipped. Ask which devices the pool skips, such as a personal
+   phone. On a re-run, reuse the existing list unless the user wants changes.
+3. Apply the answer with `device_claim.py exclude <identifier> --note <name>`
+   and `device_claim.py include <identifier>`. The identifier is the UDID or
+   adb serial a claim uses.
+4. Read the list back with `device_claim.py list` and report its path.
+
+The device pool is done when every listed physical device is confirmed as used
+or skipped, and the read-back matches. No connected physical device makes the
+stage complete with nothing to ask; a device paired later joins the pool until
+the user skips it.
