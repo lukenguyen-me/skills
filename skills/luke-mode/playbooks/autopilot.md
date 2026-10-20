@@ -21,8 +21,10 @@ Design, or Review runs its ordinary route; say that autopilot did not apply.
 3. Finish the playbook: checks, review, and its done criteria. Capture, inspect,
    and publish the after state through PR evidence.
 4. Deliver:
-   - On the default branch, create a branch named by the project's convention;
-     otherwise continue the current branch.
+   - On the default branch, create a branch named as in
+     [branch names](../references/branch-names.md). On a branch the harness generated for the
+     session that has no pushes yet, rename it the same way before the first
+     push. Otherwise continue the current branch.
    - Commit only this task's changes, in the project's commit style. Changes
      that predate the run stay uncommitted; a file that holds both is a hard stop.
    - Push the branch. Write the body with the installed `pr` skill, filling its
