@@ -149,6 +149,7 @@ updates, and other external actions follow the user's request or existing
 authorization; invoking Luke does not grant blanket permission for them.
 Authorized whole-spec execution includes the local Git history needed for its
 integration branch; external delivery still follows established authorization.
+Every branch Luke creates or renames follows [branch names](references/branch-names.md).
 Every PR Luke opens carries [PR evidence](references/evidence.md) and a body
 from the installed `pr` skill. [Autopilot](playbooks/autopilot.md) changes both
 rules for its run: Luke decides instead of asking, and delivers a draft PR.

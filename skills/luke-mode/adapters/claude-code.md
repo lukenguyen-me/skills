@@ -143,3 +143,19 @@ explicit opt-in.
 
 The Agent result does not echo the serving model. Report delegated settings as
 requested rather than observed unless the harness returns model evidence.
+
+## Cloud sessions
+
+A Claude cloud session starts on a branch it generated, such as
+`claude/sweet-johnson-nquy7x`. Its git proxy accepts pushes to any branch under
+`claude/`. Rename the generated branch by [branch names](../references/branch-names.md)
+before its first push and keep the prefix:
+
+```sh
+git branch -m claude/feat/123-streak-reminder
+git push -u origin HEAD
+```
+
+Once the branch is pushed or has a PR, keep its name. The prefix also keeps the
+branch under the `claude/**` trigger of the
+[evidence workflow](../references/evidence.md#publish).
