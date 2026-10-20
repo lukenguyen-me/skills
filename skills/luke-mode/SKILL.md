@@ -26,7 +26,7 @@ Setup and sync run inside this bundle as `$luke-mode setup` and
 `$luke-mode sync` (`/luke-mode setup` and `/luke-mode sync` in Cursor Cloud and
 Claude Code). Matt's toolkit and PStack's verification-authoring skills are
 external [dependencies](references/dependencies.md) installed by setup.
-Route requested setup, sync, autopilot, and explicitly named
+Route requested setup, sync, autopilot, local verify, and explicitly named
 verification-authoring workflows before selecting an engineering playbook:
 
 | Requested stage | Route |
@@ -35,6 +35,7 @@ verification-authoring workflows before selecting an engineering playbook:
 | `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
 | `autopilot <request>`: carry a change to a draft PR with evidence, without check-ins | [Autopilot](playbooks/autopilot.md), wrapping the engineering playbook |
 | `triage`: move issues or external PRs through Matt's triage states | [Triage](playbooks/triage.md), with the installed `triage` as procedure owner |
+| `local-verify [#N]`: check cloud PRs on this machine and hand them to review | [Local verify](playbooks/local-verify.md) |
 | `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
 | `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
 
@@ -151,8 +152,9 @@ Authorized whole-spec execution includes the local Git history needed for its
 integration branch; external delivery still follows established authorization.
 Every branch Luke creates or renames follows [branch names](references/branch-names.md).
 Every PR Luke opens carries [PR evidence](references/evidence.md) and a body
-from the installed `pr` skill. [Autopilot](playbooks/autopilot.md) changes both
-rules for its run: Luke decides instead of asking, and delivers a draft PR.
+from the installed `pr` skill. [Autopilot](playbooks/autopilot.md) changes these
+rules for its run: Luke decides instead of asking, delivers a draft PR, and
+hands the PR and its ticket off through labels and the PR's ready state.
 
 End with the outcome, what was verified and how, what was not verified, and
 remaining risks or decisions. Name material fallbacks. Distinguish direct review
