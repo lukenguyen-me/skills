@@ -242,17 +242,26 @@ session's branches (`claude/**`) with `contents: write` and
 2. Shrinks the captures and runs
    `publish_evidence.py <files> --ref "$GITHUB_REF_NAME"`; the workflow token
    pushes the ref.
-3. Writes the URLs to the job summary and to one comment on the branch's open
-   PR, found by a marker line and updated on each push.
+3. Writes the URLs to the job summary and into the open PR's description,
+   between a start and an end marker line (HTML comments such as
+   `<!-- <name>:start -->` and `<!-- <name>:end -->`; the project picks
+   `<name>`). Each push replaces only that block. The workflow appends the
+   block when the markers are absent, keeps the rest of the body unchanged, and
+   posts no PR comment.
 
-When the run finishes, fill the Evidence section from the comment's URLs; until
-then, link the comment there. With no runner, publish nothing: committing the
-captures to a branch would carry them into every clone. Name each planned
-capture as `Not captured: <what> (<reason>)`.
+When opening the PR, put the empty marker block in the Evidence section and
+leave the capture URLs to the workflow. When editing the body later, read the
+current body first and keep the block unchanged. The run is done when the block
+shows the head commit. A run that finished before the PR existed left the block
+empty: start the workflow again on the branch. With no runner, publish nothing:
+committing the captures to a branch would carry them into every clone. Name
+each planned capture as `Not captured: <what> (<reason>)`.
 
 ## Fill the Evidence section
 
-The `pr` skill owns the body. Fill its Evidence section from this plan:
+The `pr` skill owns the body. Fill its Evidence section from this plan. In a
+Claude cloud session with a runner, the marked block holds the images; write the
+captions and gaps around it.
 
 ```markdown
 ## Evidence
@@ -271,5 +280,5 @@ Not captured: Android layout (no emulator in this environment).
 Caption each pair with its recipe in one line. Name each planned capture that
 did not happen as `Not captured: <what> (<reason>)`.
 
-Done when every planned capture is published in the PR body or named there as
-a gap.
+Done when every planned capture is published in the PR body (in a cloud
+session, in the marked block) or named there as a gap.
