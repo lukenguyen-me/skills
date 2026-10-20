@@ -17,6 +17,7 @@ Luke Mode carries these bundle routes:
 | [Sync](../../skills/luke-mode/playbooks/sync.md) | Update Luke's dependencies to a newer upstream tag | `$luke-mode sync` |
 | [Autopilot](../../skills/luke-mode/playbooks/autopilot.md) | Carry a change to a draft PR with evidence, without check-ins | `$luke-mode autopilot <request>` |
 | [Triage](../../skills/luke-mode/playbooks/triage.md) | Move issues through Matt's triage states, with codebase evidence | `$luke-mode triage` |
+| [Local verify](../../skills/luke-mode/playbooks/local-verify.md) | Check cloud PRs on this machine's devices, then hand them to review | `$luke-mode local-verify [#N]` |
 
 Matt's skills and PStack's `create-verification-skill` and
 `maintain-verification-skill` are external
@@ -115,9 +116,37 @@ check-ins. Where Luke would normally ask, it takes its recommended option and
 lists each choice under `## Decisions taken` in the PR. It stops only before
 actions a revert cannot undo: destroying or migrating data, deleting work
 outside the task, or touching production, secrets, or billing. Even then it
-pushes what it has and asks in the draft PR. Marking the PR ready, merging,
-and tracker updates stay with you. Explore, Design, and Review requests run
-their ordinary route.
+pushes what it has and asks in the draft PR. Explore, Design, and Review
+requests run their ordinary route.
+
+`$luke-mode autopilot issue #42` needs no other input: a `bug` goes to Fix, an
+`enhancement` to Implement, and a parent spec to whole-spec mode. When its
+checks pass, autopilot marks the PR ready for review, or, when the diff touches
+a path the project marks for local checks, labels it `needs-local-verify` and
+keeps the draft. It removes the ticket's `in-progress` label once the draft PR
+is open; a run that stops before a PR keeps the label and comments the reason
+on the ticket. Merging stays with you; autopilot never merges or enables
+auto-merge.
+
+### Cloud pipeline
+
+Triage, autopilot, and local verify form a pipeline from a ticket to a PR you
+review:
+
+1. Triage marks a ticket `ready-for-agent` and, when a cloud agent can do it,
+   `ready-for-cloud`.
+2. A dispatcher you set up outside Luke assigns each such ticket, adds
+   `in-progress`, and starts a cloud session with `/luke-mode autopilot issue #N`.
+3. Autopilot opens the PR: ready for review, or a draft labeled
+   `needs-local-verify`.
+4. On your Mac, `$luke-mode local-verify` checks each labeled PR on real devices.
+   A pass marks it ready; a fail swaps the label for `verify-failed`.
+5. You review every ready PR and merge it.
+
+Draft means the agents are not done; ready means it is your turn to review, not
+that it is approved. The project's docs name the labels, the paths that need a
+local check, the local build, and the verification skill, so the playbooks
+stay project-neutral.
 
 ### PR evidence
 
@@ -376,14 +405,35 @@ Naming `triage` invokes Matt's installed `triage`, which owns the roles, state
 transitions, label mapping, agent briefs, and `.out-of-scope/` notes. Luke adds
 a blast-radius look at the code the issue names, a repro held to the Fix
 playbook's evidence standard, and read-only Explorers when several issues need
-codebase context. Triage changes no application code. Tracker writes happen at
-Matt's confirmation points, after your direction. An item that reaches
-`ready-for-agent` ends with `$luke-mode fix #42` or `$luke-mode implement #42`
-as the offered next step.
+codebase context. Triage changes no application code. Luke applies labels,
+agent briefs, and `needs-info` notes without waiting; it waits for you only
+before a `wontfix` closure. A product or architecture question that blocks the
+outcome moves the item to `needs-info` with the question in its triage notes,
+and a newer comment than those notes sends it back through triage. The
+`ready-for-cloud` lane label goes only next to `ready-for-agent`. An item that
+reaches `ready-for-agent` ends with `$luke-mode fix #42`,
+`$luke-mode implement #42`, or `$luke-mode autopilot issue #42` as the offered
+next step.
 
 Setup installs `triage` with the other dependencies, so Matt's repository setup
 also writes the triage-label mapping. A question about an issue that does not
 name triage goes to Explore.
+
+## Verify cloud PRs locally
+
+```text
+$luke-mode local-verify
+$luke-mode local-verify #57
+```
+
+Local verify checks a cloud PR on your machine: the local build, the
+verification skill's affected flows on each device type, and each
+`Not captured` line in the PR body. It asks you to do any step that needs your
+hands, such as drawing with a stylus. A pass posts one comment with the devices,
+OS versions, and evidence, then marks the PR ready. A fail posts one comment
+with the steps and screenshots, swaps the label for `verify-failed`, and keeps
+the draft. It changes no code and never merges. With no PR number, it works
+through every PR labeled `needs-local-verify`, oldest first.
 
 ## Create and maintain project verification
 

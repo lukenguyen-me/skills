@@ -103,12 +103,38 @@ request.
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
 | `$luke-mode triage Show me anything that needs my attention.` | Follows the installed `triage` to list its three buckets; makes no tracker writes or file changes. |
-| `$luke-mode triage #42`; a reproducible bug | Gathers context with a blast-radius look, reproduces the symptom with recorded commands and output, recommends roles, and waits for direction. Fixes nothing; offers `$luke-mode fix #42` once it reaches `ready-for-agent`. |
-| `$luke-mode triage #43`; the repro cannot run | Reports the gap and keeps the claim unconfirmed; a `needs-info` recommendation is acceptable. |
-| `$luke-mode triage #44`; a vague enhancement | Grills in the parent session, using `grilling` and `domain-modeling` as the installed skill directs; posts a brief only after direction. |
+| `$luke-mode triage #42`; a reproducible bug | Gathers context with a blast-radius look, reproduces the symptom with recorded commands and output, then applies the labels and posts the agent brief without waiting. Fixes nothing; offers `$luke-mode fix #42`. |
+| `$luke-mode triage #42`; a bug a cloud session can fix, with a lane label in the mapping | Adds `ready-for-cloud` next to `ready-for-agent`, keeps one state role, and offers `$luke-mode autopilot issue #42`. |
+| `$luke-mode triage #43`; the repro cannot run | Reports the gap and keeps the claim unconfirmed; moving it to `needs-info` with triage notes is acceptable. |
+| `$luke-mode triage #44`; a vague enhancement with an open product decision | Moves it to `needs-info` and posts triage notes with the decision as the question; does not grill or wait in the session. |
+| `$luke-mode triage Let's grill #44.` | Grills in the parent session, using `grilling` and `domain-modeling` as the installed skill directs. |
+| `$luke-mode triage #45`; already implemented | Presents the `wontfix` recommendation and closing comment, then waits for direction before closing. |
+| A `needs-info` item whose newest comment came after the last triage notes; another whose newest comment is the triage notes | Triages the first again; leaves the second waiting. |
 | Five issues to triage at once | May use read-only Explorers for codebase context; all tracker reads and writes stay with the parent. |
 | `triage` or the triage-label mapping is missing | Leaves triage pending and points to `$luke-mode setup`; does not improvise states or labels. |
 | `$luke-mode is #42 ready for an agent?` without naming triage | Routes to Explore and offers `$luke-mode triage #42`; makes no tracker writes. |
+
+## Autopilot and local verify
+
+Use a disposable GitHub repository with the triage-label mapping, including
+`in-progress`, `needs-local-verify`, and `verify-failed`, and project docs that
+name a local-check path, a local build, and a verification skill.
+
+| Condition and prompt | Expected behavior and evidence |
+| --- | --- |
+| `$luke-mode autopilot issue #42`; a `bug` ticket | Routes to Fix with no other instruction; the PR body links the ticket. |
+| `$luke-mode autopilot issue #43`; an `enhancement` ticket, or a parent spec with children | Routes to Implement, or to whole-spec mode for the parent. |
+| Checks pass; the diff touches only paths outside the local-check paths | Opens the PR and marks it ready for review; removes `in-progress` from the ticket. |
+| Checks pass; the diff touches a local-check path | Adds `needs-local-verify` and keeps the draft; removes `in-progress`. |
+| A required check still fails after in-scope attempts | Keeps the draft with no label; the failure is at the top of the body. |
+| The push fails | Keeps `in-progress` and comments the reason and local branch on the ticket. |
+| Any autopilot run | Never merges and never enables auto-merge. |
+| `$luke-mode local-verify`; three PRs carry `needs-local-verify` | Checks them oldest first, one at a time, each in a temporary worktree; the user's checkout is unchanged. |
+| `$luke-mode local-verify #57`; the checks pass | Posts one comment with the commit, each device and OS version, what was checked, and evidence; removes the label and marks the PR ready. |
+| `$luke-mode local-verify #57`; a flow fails | Posts one comment with the device, OS, steps, failure, and screenshots; swaps the label for `verify-failed`, keeps the draft, and edits no code. |
+| A `Not captured` line needs a physical stylus | Asks the human to do the step and records the answer in the result. |
+| The local build tool is missing | Reports the gap and leaves the labels and draft unchanged. |
+| The PR head moves during the check | Makes no label change for the old commit and checks the new head. |
 
 ## Whole-spec execution
 

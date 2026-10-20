@@ -10,6 +10,12 @@ to; it does not replace it. A request that routes to Implement, Fix, or Refactor
 including whole-spec execution, runs on autopilot. A request for Explore,
 Design, or Review runs its ordinary route; say that autopilot did not apply.
 
+`$luke-mode autopilot issue #N` is a complete request: the ticket is the
+input. Route by the ticket: `bug` to Fix, `enhancement` to Implement, and a
+parent spec with implementation children to Implement's
+[whole-spec mode](../references/implement-spec.md). A ticket without a category
+routes by its brief, as any request does.
+
 ## Run
 
 1. Route the request through Luke's ordinary steps and read the selected
@@ -30,14 +36,41 @@ Design, or Review runs its ordinary route; say that autopilot did not apply.
    - Push the branch. Write the body with the installed `pr` skill, filling its
      Evidence section from the published captures and adding a
      `## Decisions taken` section after it. Without `pr`, use its sections
-     directly: Summary, Evidence, Decisions taken, Merge Danger.
+     directly: Summary, Evidence, Decisions taken, Merge Danger. For a ticket,
+     the body links it with the tracker's closing keyword, such as `Closes #N`.
    - Open the PR as a draft, or update the draft already open for this branch.
+5. Hand off the PR and release the ticket, as below.
 
 Done when the draft PR is open with every planned capture shown or named as a
-gap, every decision listed, and every failed or unrun check stated. Required
-checks that still fail after in-scope attempts go at the top of the body; the
-draft still opens, because the PR is where the user reviews the run. Give the
-PR link in the handoff.
+gap, every decision listed, and every failed or unrun check stated, and the PR
+and ticket carry the hand-off labels. Required checks that still fail after
+in-scope attempts go at the top of the body; the draft still opens, because the
+PR is where the user reviews the run. Give the PR link in the handoff.
+
+## Hand off
+
+Draft means the agents are not done. Ready for review means it is the human's
+turn to review; it does not mean approved. Label names come from the project's
+triage-label mapping, and the local-check paths from the
+[project facts](local-verify.md#project-facts).
+
+| State after the run | PR |
+| --- | --- |
+| Required checks pass; the diff touches a local-check path | Add `needs-local-verify`; keep the draft |
+| Required checks pass; no local-check path changed | Mark ready for review |
+| A required check still fails, or a hard stop blocked a step | Keep the draft; add no label |
+
+A project with no local-check paths has none to touch. A label the tracker
+lacks is a gap in the handoff; Luke does not create labels.
+
+For a ticket, once the draft PR is open, remove `in-progress` from it. When the
+run ends without a PR (a hard stop with nothing to push, or a failed push or PR
+creation), keep `in-progress` and comment on the ticket with the reason and the
+local branch, when the tracker is reachable. The human clears the label to
+allow a retry.
+
+Autopilot never merges a PR and never enables auto-merge. Its tracker writes
+are the ones above; other tracker updates stay with the user.
 
 ## Decisions
 
@@ -64,8 +97,5 @@ Stop and ask before an action that cannot be undone by reverting the PR:
 
 At a hard stop, finish the independent work, push the branch, open the draft PR
 with the blocked step named at the top, and ask the user there and in the
-handoff.
-
-Marking the PR ready, merging, and tracker updates stay with the user. When
-push or PR creation fails, keep the local branch and report the failing command
-and its error.
+handoff. When push or PR creation fails, keep the local branch and report the
+failing command and its error.
