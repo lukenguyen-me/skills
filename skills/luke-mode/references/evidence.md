@@ -199,7 +199,9 @@ Look at each image and GIF yourself before it leaves the machine:
 
 Published evidence stays forever, so keep each file small:
 
-- Screenshots: PNG with the longest side at most 1600 px (`sips -Z 1600 <file>`).
+- Screenshots: PNG with the longest side at most 1600 px: `sips -Z 1600 <file>`
+  on macOS, `mogrify -resize '1600x1600>' <file>` (ImageMagick) on Linux. Both
+  resize in place, keep the aspect ratio, and never enlarge.
 - Recordings: at most 15 seconds. Convert to a GIF so it plays inline:
 
   ```sh
@@ -226,6 +228,27 @@ Republishing adds to the ref; earlier links keep working. Give every file a
 unique, descriptive name such as `settings-after-dark.png`. The script refuses
 files over 10 MB. For a remote outside github.com, it stops; report the local
 capture paths in the handoff and in the PR body's gaps.
+
+**Claude cloud session.** The remote is github.com, but the session's git proxy
+accepts branch pushes only: the push to `refs/evidence/<branch>` fails with
+HTTP 403, and the REST git data API is refused too. Publish from a GitHub
+Actions runner instead, when the project has one. A workflow on pushes to the
+session's branches (`claude/**`) with `contents: write` and
+`pull-requests: write`:
+
+1. Checks out the branch, sets up the app's toolchain, and replays the capture
+   recipes headlessly (a web server with `agent-browser`, Robolectric or
+   another JVM screenshot test for Android).
+2. Shrinks the captures and runs
+   `publish_evidence.py <files> --ref "$GITHUB_REF_NAME"`; the workflow token
+   pushes the ref.
+3. Writes the URLs to the job summary and to one comment on the branch's open
+   PR, found by a marker line and updated on each push.
+
+When the run finishes, fill the Evidence section from the comment's URLs; until
+then, link the comment there. With no runner, publish nothing: committing the
+captures to a branch would carry them into every clone. Name each planned
+capture as `Not captured: <what> (<reason>)`.
 
 ## Fill the Evidence section
 

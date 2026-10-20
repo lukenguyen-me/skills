@@ -143,7 +143,10 @@ GitHub has no API for PR image uploads, so the bundled
 [`publish_evidence.py`](../../skills/luke-mode/scripts/publish_evidence.py)
 commits the files to a hidden ref, `refs/evidence/<branch>`. Clones skip hidden
 refs, so evidence adds nothing to a checkout. The images are visible only to
-people who can read the repository, and they are kept forever. See
+people who can read the repository, and they are kept forever. A Claude cloud
+session cannot push that ref through its git proxy, so there a GitHub Actions
+workflow replays the captures and publishes them; without one, the captures are
+listed as gaps. See
 [PR evidence](../../skills/luke-mode/references/evidence.md).
 
 ## Set up Luke Mode
