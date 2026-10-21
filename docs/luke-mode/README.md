@@ -123,9 +123,10 @@ requests run their ordinary route.
 `enhancement` to Implement, and a parent spec to whole-spec mode. When its
 checks pass, autopilot marks the PR ready for review, or, when the diff touches
 a path the project marks for local checks, labels it `needs-local-verify` and
-keeps the draft. It removes the ticket's `in-progress` label once the draft PR
-is open; a run that stops before a PR keeps the label and comments the reason
-on the ticket. Merging stays with you; autopilot never merges or enables
+keeps the draft. Once the draft PR is open, it swaps the ticket's `in-progress`
+label for `in-review`, and adds `in-review` to every other ticket the PR closes,
+so a ticket never looks unstarted while its PR waits. A run that stops before a
+PR keeps `in-progress` and comments the reason on the ticket. Merging stays with you; autopilot never merges or enables
 auto-merge.
 
 ### Cloud pipeline
@@ -138,10 +139,10 @@ review:
 2. A dispatcher you set up outside Luke assigns each such ticket, adds
    `in-progress`, and starts a cloud session with `/luke-mode autopilot issue #N`.
 3. Autopilot opens the PR: ready for review, or a draft labeled
-   `needs-local-verify`.
+   `needs-local-verify`. The ticket's `in-progress` becomes `in-review`.
 4. On your Mac, `$luke-mode local-verify` checks each labeled PR on real devices.
    A pass marks it ready; a fail swaps the label for `verify-failed`.
-5. You review every ready PR and merge it.
+5. You review every ready PR and merge it; the merge closes its tickets.
 
 Draft means the agents are not done; ready means it is your turn to review, not
 that it is approved. The project's docs name the labels, the paths that need a
