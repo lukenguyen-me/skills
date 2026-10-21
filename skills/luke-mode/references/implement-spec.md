@@ -183,7 +183,9 @@ do not loop back into repeated whole-spec review after every correction.
 
 Finish only when integration evidence and review cover the requested scope.
 Follow the authorized delivery: ready an authorized PR or resolve tickets when
-permitted; otherwise report the local branch and pending tracker/PR actions.
+permitted. Before a PR leaves draft, its body has a closing line for the spec
+and for every child ticket the run built, checked against the tracker's list of
+children; otherwise report the local branch and pending tracker/PR actions.
 Under autopilot, publish the after captures and update its draft PR instead.
 Keep implementation, verification, review, and external delivery statuses
 distinct. A blocked ticket or required proof leaves the spec incomplete.

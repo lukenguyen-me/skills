@@ -152,7 +152,11 @@ Authorized whole-spec execution includes the local Git history needed for its
 integration branch; external delivery still follows established authorization.
 Every branch Luke creates or renames follows [branch names](references/branch-names.md).
 Every PR Luke opens carries [PR evidence](references/evidence.md) and a body
-from the installed `pr` skill. [Autopilot](playbooks/autopilot.md) changes these
+from the installed `pr` skill. The body gives every issue the PR resolves its
+own closing line in the tracker's syntax: the ticket, or a parent spec and each
+of its child tickets (`Closes #187`, then `Closes #190` on the next line, and so
+on). GitHub closes only a number written directly after a keyword, and closing
+a parent leaves its sub-issues open. [Autopilot](playbooks/autopilot.md) changes these
 rules for its run: Luke decides instead of asking, delivers a draft PR, and
 hands the PR and its ticket off through labels and the PR's ready state.
 
