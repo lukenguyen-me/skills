@@ -36,8 +36,9 @@ routes by its brief, as any request does.
    - Push the branch. Write the body with the installed `pr` skill, filling its
      Evidence section from the published captures and adding a
      `## Decisions taken` section after it. Without `pr`, use its sections
-     directly: Summary, Evidence, Decisions taken, Merge Danger. For a ticket,
-     the body links it with the tracker's closing keyword, such as `Closes #N`.
+     directly: Summary, Evidence, Decisions taken, Merge Danger. The body
+     carries a closing line for every issue the PR resolves, as the PR rules
+     in [Luke Mode](../SKILL.md) set out.
    - Open the PR as a draft, or update the draft already open for this branch.
 5. Hand off the PR and release the ticket, as below.
 
