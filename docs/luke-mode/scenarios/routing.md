@@ -117,15 +117,17 @@ request.
 ## Autopilot and local verify
 
 Use a disposable GitHub repository with the triage-label mapping, including
-`in-progress`, `needs-local-verify`, and `verify-failed`, and project docs that
+`in-progress`, `in-review`, `needs-local-verify`, and `verify-failed`, and project docs that
 name a local-check path, a local build, and a verification skill.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
 | `$luke-mode autopilot issue #42`; a `bug` ticket | Routes to Fix with no other instruction; the PR body links the ticket. |
 | `$luke-mode autopilot issue #43`; an `enhancement` ticket, or a parent spec with children | Routes to Implement, or to whole-spec mode for the parent. |
-| Checks pass; the diff touches only paths outside the local-check paths | Opens the PR and marks it ready for review; removes `in-progress` from the ticket. |
-| Checks pass; the diff touches a local-check path | Adds `needs-local-verify` and keeps the draft; removes `in-progress`. |
+| Checks pass; the diff touches only paths outside the local-check paths | Opens the PR and marks it ready for review; swaps `in-progress` for `in-review` on the ticket in one edit. |
+| Checks pass; the diff touches a local-check path | Adds `needs-local-verify` and keeps the draft; swaps `in-progress` for `in-review`. |
+| A parent spec's PR closes the parent and its children | Swaps `in-progress` for `in-review` on the parent and adds `in-review` to each child. |
+| The mapping has no `in-review` | Removes `in-progress` as before and names the missing label as a handoff gap; creates no label. |
 | A required check still fails after in-scope attempts | Keeps the draft with no label; the failure is at the top of the body. |
 | The push fails | Keeps `in-progress` and comments the reason and local branch on the ticket. |
 | Any autopilot run | Never merges and never enables auto-merge. |

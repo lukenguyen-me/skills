@@ -64,11 +64,19 @@ triage-label mapping, and the local-check paths from the
 A project with no local-check paths has none to touch. A label the tracker
 lacks is a gap in the handoff; Luke does not create labels.
 
-For a ticket, once the draft PR is open, remove `in-progress` from it. When the
-run ends without a PR (a hard stop with nothing to push, or a failed push or PR
-creation), keep `in-progress` and comment on the ticket with the reason and the
-local branch, when the tracker is reachable. The human clears the label to
-allow a retry.
+A ticket always shows its stage, so never remove `in-progress` without adding
+the next label. Once the draft PR is open, swap `in-progress` for `in-review` on
+the ticket in one edit, and add `in-review` to every other ticket the PR closes,
+such as a parent spec's children. `in-review` says a PR for the ticket is open;
+the PR's draft state and labels say whose turn it is. It stays until the merge
+closes the ticket; when the PR is closed without merging, the human removes it.
+A mapping without `in-review` leaves the project on the old hand-off: remove
+`in-progress` and name the missing label as a gap in the handoff.
+
+When the run ends without a PR (a hard stop with nothing to push, or a failed
+push or PR creation), keep `in-progress` and comment on the ticket with the
+reason and the local branch, when the tracker is reachable. The human clears the
+label to allow a retry.
 
 Autopilot never merges a PR and never enables auto-merge. Its tracker writes
 are the ones above; other tracker updates stay with the user.
