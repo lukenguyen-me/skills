@@ -82,7 +82,10 @@ python3 -B -m unittest discover -s tests -p 'test_luke_mode_*.py' -v
 ```
 
 The publish tests use a local bare remote: hidden ref and URLs, absence from a
-network-style clone, chaining, and size and type limits.
+network-style clone, chaining, and size and type limits. The device pick tests
+run the CLI against stub `xcrun`, `adb`, and `emulator` tools on `PATH`, so the
+pool's order, the pass-over of claimed, locked, unauthorized, and skip-listed
+devices, `hold`, and `list` are checked on any host, Linux included.
 
 ## Remaining coverage
 

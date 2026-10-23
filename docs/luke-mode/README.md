@@ -163,12 +163,17 @@ first edit and the after state once the work is verified: screenshots for
 visual changes, a GIF for flows, and command output for CLI changes. It uses
 `agent-browser` for web, `devicectl` and `simctl` for iOS, and `adb` for Android.
 It reuses the connected phones and tablets and the simulators and emulators
-already on the machine as one pool, physical devices first: they run the app
-on their own hardware, so the Mac spends no memory or CPU on a simulator.
-Setup asks which connected devices to skip, such as a personal phone, and
-saves them in `~/.config/device-claims/excluded.txt`. Each
-run claims a free device with the bundled `device_claim.py`, so parallel
-worktrees and projects use different devices and wait only when all are busy.
+already on the machine as one pool, in one order: Android device, iOS device,
+iOS simulator, Android emulator. A physical device runs the app on its own
+hardware, so the Mac spends no memory or CPU on a simulator, and an Android
+emulator costs the Mac more than an iOS simulator. A task that names its
+platform keeps that order within the platform. The bundled
+[`device_pick.py`](../../skills/luke-mode/scripts/device_pick.py) owns the
+order: each run picks and claims the first free device through it, so parallel
+worktrees and projects use different devices, a busy device is passed over for
+the next one, and a run waits only when all are busy. Setup asks which
+connected devices to skip, such as a personal phone, and saves them in
+`~/.config/device-claims/excluded.txt`.
 On a physical device it resets only the app under test and restores the
 settings it changed. It erases a simulator or emulator for a clean state and
 creates one only when none fits, named after its type and deleted afterwards. Its scripts find the device by

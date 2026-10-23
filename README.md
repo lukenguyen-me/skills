@@ -112,7 +112,9 @@ check-ins. Luke records the decisions it made in the PR. For changes you can
 see, the PR shows before and after screenshots or GIFs, stored on a hidden Git
 ref that clones never download. `$luke-mode autopilot issue #N` takes a triaged
 ticket as its only input, and `$luke-mode local-verify` checks cloud PRs on your
-machine's devices before they go to review.
+machine's devices before they go to review. Every run on a Mac picks its device
+from one machine-wide pool in one order, Android device, iOS device, iOS
+simulator, Android emulator, and passes over a busy device for the next one.
 
 Ask Luke to implement a ticket or spec. The Implement playbook resolves the
 target: a parent spec with implementation children automatically selects

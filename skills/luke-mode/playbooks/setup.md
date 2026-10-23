@@ -158,20 +158,20 @@ toolkit readiness in another project. Read
 
 ## Set up the device pool
 
-The [device pool](../references/evidence.md#shared-devices) uses every
-connected physical device first, so a personal phone paired with the Mac is a
-candidate unless it is on the skip list. The list is machine-wide: one answer
-covers every project. Skip this stage where the harness has no local devices,
-such as Cursor Cloud.
+The [device pool](../references/evidence.md#shared-devices) takes a
+connected physical device before any simulator or emulator, so a personal
+phone paired with the Mac is a candidate unless it is on the skip list. The
+list is machine-wide: one answer covers every project. Skip this stage where
+the harness has no local devices, such as Cursor Cloud.
 
-1. List the connected physical devices: `xcrun devicectl list devices` (rows
-   whose Reality is `physical`) and `adb devices -l` (serials other than
-   `emulator-*`). Show the current skip list with
-   `python3 <luke-mode>/scripts/device_claim.py list` (`<luke-mode>` is this
-   skill's directory).
-2. Show one table with each device's name, model, OS version, identifier, and
-   whether it is skipped. Ask which devices the pool skips, such as a personal
-   phone. On a re-run, reuse the existing list unless the user wants changes.
+1. List the pool with `python3 <luke-mode>/scripts/device_pick.py list`
+   (`<luke-mode>` is this skill's directory): every device in the pool's
+   order, with the skip list marked. The physical devices are the
+   `ios-device` and `android-device` rows.
+2. Show one table with each physical device's name, model, OS version,
+   identifier, and whether it is skipped. Ask which devices the pool skips,
+   such as a personal phone. On a re-run, reuse the existing list unless the
+   user wants changes.
 3. Apply the answer with `device_claim.py exclude <identifier> --note <name>`
    and `device_claim.py include <identifier>`. The identifier is the UDID or
    adb serial a claim uses.

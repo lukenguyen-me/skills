@@ -36,7 +36,8 @@ The playbook names no project. Read these from the project instructions
    - the local build;
    - each verification-skill flow the change affects, on each local surface
      the change touches (phone, tablet, desktop), on a
-     [shared device](../references/evidence.md#shared-devices), physical first;
+     [shared device](../references/evidence.md#shared-devices), in the pool's
+     order;
    - every `Not captured` line in the PR body.
 3. Verifier runs the checks and captures evidence as in
    [PR evidence](../references/evidence.md): inspect and shrink each capture.
