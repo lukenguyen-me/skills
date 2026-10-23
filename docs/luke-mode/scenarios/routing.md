@@ -124,6 +124,12 @@ name a local-check path, a local build, and a verification skill.
 | --- | --- |
 | `$luke-mode autopilot issue #42`; a `bug` ticket | Routes to Fix with no other instruction; the PR body links the ticket. |
 | `$luke-mode autopilot issue #43`; an `enhancement` ticket, or a parent spec with children | Routes to Implement, or to whole-spec mode for the parent. |
+| `$luke-mode autopilot issue #42`; the ticket has no stage label | Adds `in-progress` before the first edit. |
+| `$luke-mode autopilot issue #42 --claimed`; the ticket has `in-progress` | Continues; adds no label. |
+| `$luke-mode autopilot issue #42`; the ticket has `in-progress` | Stops before any edit; opens no PR, writes nothing to the tracker, and names the label in the handoff. |
+| `$luke-mode autopilot issue #42`; the ticket has `in-review`, and the run is on that PR's branch | Continues the branch and updates the open PR; opens no second PR. |
+| `$luke-mode autopilot issue #42`; the ticket has `in-review`, and the run is on another branch | Stops before any edit; names the open PR in the handoff. |
+| The mapping has no `in-progress` | Makes no claim and continues. |
 | Checks pass; the diff touches only paths outside the local-check paths | Opens the PR and marks it ready for review; swaps `in-progress` for `in-review` on the ticket in one edit. |
 | Checks pass; the diff touches a local-check path | Adds `needs-local-verify` and keeps the draft; swaps `in-progress` for `in-review`. |
 | A parent spec's PR closes the parent and its children | Swaps `in-progress` for `in-review` on the parent and adds `in-review` to each child. |
