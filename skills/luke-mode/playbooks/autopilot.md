@@ -18,15 +18,17 @@ routes by its brief, as any request does.
 
 ## Run
 
-1. Route the request through Luke's ordinary steps and read the selected
+1. For a ticket, claim it as in Claim before anything else. A stop there ends
+   the run.
+2. Route the request through Luke's ordinary steps and read the selected
    playbook. Plan the evidence with [PR evidence](../references/evidence.md),
    including the [shared device](../references/evidence.md#shared-devices)
    each mobile capture uses, and capture the before state before the first edit.
-2. Do the playbook's work. Where the playbook would ask the user, decide and
+3. Do the playbook's work. Where the playbook would ask the user, decide and
    continue (see Decisions). Stop only at a hard stop.
-3. Finish the playbook: checks, review, and its done criteria. Capture, inspect,
+4. Finish the playbook: checks, review, and its done criteria. Capture, inspect,
    and publish the after state through PR evidence.
-4. Deliver:
+5. Deliver:
    - On the default branch, create a branch named as in
      [branch names](../references/branch-names.md). On a branch the harness generated for the
      session that has no pushes yet, rename it the same way before the first
@@ -40,13 +42,39 @@ routes by its brief, as any request does.
      carries a closing line for every issue the PR resolves, as the PR rules
      in [Luke Mode](../SKILL.md) set out.
    - Open the PR as a draft, or update the draft already open for this branch.
-5. Hand off the PR and release the ticket, as below.
+6. Hand off the PR and release the ticket, as below.
 
 Done when the draft PR is open with every planned capture shown or named as a
 gap, every decision listed, and every failed or unrun check stated, and the PR
 and ticket carry the hand-off labels. Required checks that still fail after
 in-scope attempts go at the top of the body; the draft still opens, because the
 PR is where the user reviews the run. Give the PR link in the handoff.
+
+## Claim
+
+A run claims its ticket before it works on it, so the tracker shows that the
+ticket is taken and no second session starts on it. A dispatcher that adds
+`in-progress` before it starts the session hands the claim to the run with
+`--claimed`: `/luke-mode autopilot issue #N --claimed`.
+Label names come from the triage-label mapping. A mapping without `in-progress`
+has no claim; continue.
+
+Read the ticket's labels and take the first row that applies:
+
+| Ticket labels | Action |
+| --- | --- |
+| `in-review` | A PR for the ticket is open. On that PR's branch, continue it and update that PR. Otherwise, or when no open PR closes the ticket, stop. |
+| `in-progress`, and the request has `--claimed` | The dispatcher claimed the ticket for this run; continue. |
+| `in-progress`, and the request has no `--claimed` | Another session may own the ticket; stop. |
+| Neither | Add `in-progress`, then continue. |
+
+A stop here is a hard stop before any work: edit nothing, open no PR, and write
+nothing to the tracker. In the handoff, name the label that stopped the run and
+the PR when there is one, and ask the user. The user clears the label, or runs
+again with `--claimed` once no other session holds the ticket.
+
+When the tracker cannot be read or the label write fails, continue without the
+claim and name it as a gap in the handoff.
 
 ## Hand off
 
@@ -71,15 +99,19 @@ such as a parent spec's children. `in-review` says a PR for the ticket is open;
 the PR's draft state and labels say whose turn it is. It stays until the merge
 closes the ticket; when the PR is closed without merging, the human removes it.
 A mapping without `in-review` leaves the project on the old hand-off: remove
-`in-progress` and name the missing label as a gap in the handoff.
+`in-progress` and name the missing label as a gap in the handoff. A project may
+automate this swap with a workflow that runs when a PR opens; the agent's own
+edit is then redundant but harmless. The claim cannot be automated this way,
+because a local run has no PR or push yet.
 
-When the run ends without a PR (a hard stop with nothing to push, or a failed
-push or PR creation), keep `in-progress` and comment on the ticket with the
-reason and the local branch, when the tracker is reachable. The human clears the
-label to allow a retry.
+When a run that passed the claim ends without a PR (a hard stop with nothing to
+push, or a failed push or PR creation), keep `in-progress` and comment on the
+ticket with the reason and the local branch, when the tracker is reachable. The
+human clears the label to allow a retry.
 
 Autopilot never merges a PR and never enables auto-merge. Its tracker writes
-are the ones above; other tracker updates stay with the user.
+are the claim and the hand-off writes above; other tracker updates stay with
+the user.
 
 ## Decisions
 
@@ -104,7 +136,8 @@ Stop and ask before an action that cannot be undone by reverting the PR:
 - touching production, secrets, billing, or shared infrastructure;
 - committing a file that also holds changes made before the run.
 
-At a hard stop, finish the independent work, push the branch, open the draft PR
+A stop at the claim does no work and opens no PR; see Claim. At any other hard
+stop, finish the independent work, push the branch, open the draft PR
 with the blocked step named at the top, and ask the user there and in the
 handoff. When push or PR creation fails, keep the local branch and report the
 failing command and its error.

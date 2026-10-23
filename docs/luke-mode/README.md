@@ -120,7 +120,11 @@ pushes what it has and asks in the draft PR. Explore, Design, and Review
 requests run their ordinary route.
 
 `$luke-mode autopilot issue #42` needs no other input: a `bug` goes to Fix, an
-`enhancement` to Implement, and a parent spec to whole-spec mode. When its
+`enhancement` to Implement, and a parent spec to whole-spec mode. Before its
+first edit, it claims the ticket with `in-progress`. It stops without changes
+when the ticket already has `in-progress` from another session, or `in-review`
+for a PR on another branch, so two sessions never work on one ticket. A
+dispatcher that added `in-progress` itself passes `--claimed`. When its
 checks pass, autopilot marks the PR ready for review, or, when the diff touches
 a path the project marks for local checks, labels it `needs-local-verify` and
 keeps the draft. Once the draft PR is open, it swaps the ticket's `in-progress`
@@ -137,7 +141,9 @@ review:
 1. Triage marks a ticket `ready-for-agent` and, when a cloud agent can do it,
    `ready-for-cloud`.
 2. A dispatcher you set up outside Luke assigns each such ticket, adds
-   `in-progress`, and starts a cloud session with `/luke-mode autopilot issue #N`.
+   `in-progress`, and starts a cloud session with
+   `/luke-mode autopilot issue #N --claimed`. A run you start by hand claims
+   the ticket itself.
 3. Autopilot opens the PR: ready for review, or a draft labeled
    `needs-local-verify`. The ticket's `in-progress` becomes `in-review`.
 4. On your Mac, `$luke-mode local-verify` checks each labeled PR on real devices.
