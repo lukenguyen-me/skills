@@ -33,7 +33,7 @@ these single-ticket steps around every ticket in a whole-spec run.
    radius. Run the full relevant suite once for substantive changes; a trivial
    isolated edit needs only focused evidence unless risk or project requirements
    warrant more. Verification on a phone, tablet, simulator, or emulator uses a
-   [shared device](../references/evidence.md#shared-devices), physical first.
+   [shared device](../references/evidence.md#shared-devices), in the pool's order.
 5. Compose `code-review` after implementation and verification when its scope,
    prerequisites, and fan-out fit. Otherwise have Reviewer check the actual diff
    against the requirements and project standards, and disclose that fallback.
