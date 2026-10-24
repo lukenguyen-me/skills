@@ -17,7 +17,7 @@ Luke Mode carries these bundle routes:
 | [Sync](../../skills/luke-mode/playbooks/sync.md) | Update Luke's dependencies to a newer upstream tag | `$luke-mode sync` |
 | [Autopilot](../../skills/luke-mode/playbooks/autopilot.md) | Carry a change to a draft PR with evidence, without check-ins | `$luke-mode autopilot <request>` |
 | [Triage](../../skills/luke-mode/playbooks/triage.md) | Move issues through Matt's triage states, with codebase evidence | `$luke-mode triage` |
-| [Local verify](../../skills/luke-mode/playbooks/local-verify.md) | Check cloud PRs on this machine's devices, then hand them to review | `$luke-mode local-verify [#N]` |
+| [Local verify](../../skills/luke-mode/playbooks/local-verify.md) | Check cloud PRs on this machine's devices, then hand them to review; with `--fix`, correct what fails here | `$luke-mode local-verify [#N] [--fix]` |
 
 Matt's skills and PStack's `create-verification-skill` and
 `maintain-verification-skill` are external
@@ -147,7 +147,9 @@ review:
 3. Autopilot opens the PR: ready for review, or a draft labeled
    `needs-local-verify`. The ticket's `in-progress` becomes `in-review`.
 4. On your Mac, `$luke-mode local-verify` checks each labeled PR on real devices.
-   A pass marks it ready; a fail swaps the label for `verify-failed`.
+   A pass marks it ready; a fail swaps the label for `verify-failed`. With
+   `--fix`, a small failure is fixed on your Mac instead and pushed to the PR,
+   which carries `fixing-locally` meanwhile.
 5. You review every ready PR and merge it; the merge closes its tickets.
 
 Draft means the agents are not done; ready means it is your turn to review, not
@@ -436,6 +438,7 @@ name triage goes to Explore.
 ```text
 $luke-mode local-verify
 $luke-mode local-verify #57
+$luke-mode local-verify #57 --fix
 ```
 
 Local verify checks a cloud PR on your machine: the local build, the
@@ -444,8 +447,18 @@ verification skill's affected flows on each device type, and each
 hands, such as drawing with a stylus. A pass posts one comment with the devices,
 OS versions, and evidence, then marks the PR ready. A fail posts one comment
 with the steps and screenshots, swaps the label for `verify-failed`, and keeps
-the draft. It changes no code and never merges. With no PR number, it works
-through every PR labeled `needs-local-verify`, oldest first.
+the draft. Without `--fix`, it changes no code; it never merges. With no PR
+number, it works through every PR labeled `needs-local-verify`, oldest first.
+
+When the fix looks faster on your Mac than a round trip to the cloud, run the
+same command with `--fix`. A failure that corrects this PR's change within its
+own scope is fixed on the PR's branch: the PR takes `fixing-locally` so no
+cloud session starts on it, the Fix playbook runs in the worktree, the whole
+local plan replays on the same devices, and the fix is pushed with its evidence
+and one comment. The PR is then marked ready without waiting for CI on the new
+head, since your Mac already ran the build, the required checks, and the flows.
+A failure outside that scope, or a PR whose branch lives in a fork, takes the
+ordinary `verify-failed` hand-back with the diagnosis in the comment.
 
 ## Create and maintain project verification
 

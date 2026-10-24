@@ -63,7 +63,7 @@ Read the ticket's labels and take the first row that applies:
 
 | Ticket labels | Action |
 | --- | --- |
-| `in-review` | A PR for the ticket is open. On that PR's branch, continue it and update that PR. Otherwise, or when no open PR closes the ticket, stop. |
+| `in-review` | A PR for the ticket is open. On that PR's branch, continue it and update that PR. When that PR carries `fixing-locally`, the user's machine owns it ([fix locally](local-verify.md#fix-locally)): stop. Otherwise, or when no open PR closes the ticket, stop. |
 | `in-progress`, and the request has `--claimed` | The dispatcher claimed the ticket for this run; continue. |
 | `in-progress`, and the request has no `--claimed` | Another session may own the ticket; stop. |
 | Neither | Add `in-progress`, then continue. |
@@ -96,7 +96,10 @@ A ticket always shows its stage, so never remove `in-progress` without adding
 the next label. Once the draft PR is open, swap `in-progress` for `in-review` on
 the ticket in one edit, and add `in-review` to every other ticket the PR closes,
 such as a parent spec's children. `in-review` says a PR for the ticket is open;
-the PR's draft state and labels say whose turn it is. It stays until the merge
+the PR's draft state and labels say whose turn it is: `needs-local-verify` as
+above, `verify-failed` after a failed local check, `fixing-locally` while the
+user's machine corrects it ([fix locally](local-verify.md#fix-locally)). It
+stays until the merge
 closes the ticket; when the PR is closed without merging, the human removes it.
 A mapping without `in-review` leaves the project on the old hand-off: remove
 `in-progress` and name the missing label as a gap in the handoff. A project may
