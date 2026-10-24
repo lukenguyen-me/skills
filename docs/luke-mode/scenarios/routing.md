@@ -139,7 +139,13 @@ name a local-check path, a local build, and a verification skill.
 | Any autopilot run | Never merges and never enables auto-merge. |
 | `$luke-mode local-verify`; three PRs carry `needs-local-verify` | Checks them oldest first, one at a time, each in a temporary worktree; the user's checkout is unchanged. |
 | `$luke-mode local-verify #57`; the checks pass | Posts one comment with the commit, each device and OS version, what was checked, and evidence; removes the label and marks the PR ready. |
-| `$luke-mode local-verify #57`; a flow fails | Posts one comment with the device, OS, steps, failure, and screenshots; swaps the label for `verify-failed`, keeps the draft, and edits no code. |
+| `$luke-mode local-verify #57`; a flow fails | Posts one comment with the device, OS, steps, failure, and screenshots; swaps the label for `verify-failed`, keeps the draft, and edits no code. When the failure fits the fix bound, offers `$luke-mode local-verify #57 --fix` as the next action; asks nothing. |
+| `$luke-mode local-verify #57 --fix`; a flow fails within the PR's scope | Swaps the PR's label for `in-progress` and comments the claim before the first edit; the ticket keeps `in-review`; runs Fix in a worktree on the PR's head branch; replays the whole plan on the same devices; pushes; publishes the captures; adds `## Local fixes` to the body; posts the fixed comment naming both commits and CI's state; removes `in-progress` and marks the PR ready without waiting for CI. |
+| `$luke-mode local-verify #57 --fix`; the fix needs new behavior or a design decision | Takes the `verify-failed` hand-back with the diagnosis in the comment; pushes nothing. |
+| `$luke-mode local-verify #57 --fix`; the fix outgrows the bound after the claim | Resets the worktree to the PR head, swaps `in-progress` for `verify-failed`, and posts the diagnosis. |
+| `$luke-mode local-verify #57 --fix`; the head branch is in a fork | Checks the PR as without `--fix` and says why. |
+| `$luke-mode local-verify #57 --fix`; the PR already carries `in-progress` | Stops before any edit and reports the other session. |
+| `$luke-mode autopilot issue #42`; the ticket has `in-review` and its PR carries `in-progress` | Stops before any edit, even on that PR's branch. |
 | A `Not captured` line needs a physical stylus | Asks the human to do the step and records the answer in the result. |
 | The local build tool is missing | Reports the gap and leaves the labels and draft unchanged. |
 | The PR head moves during the check | Makes no label change for the old commit and checks the new head. |

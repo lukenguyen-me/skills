@@ -35,7 +35,7 @@ verification-authoring workflows before selecting an engineering playbook:
 | `sync`, or update Luke's skill dependencies, such as Matt Pocock's skills | [Sync](playbooks/sync.md) |
 | `autopilot <request>`: carry a change to a draft PR with evidence, without check-ins | [Autopilot](playbooks/autopilot.md), wrapping the engineering playbook |
 | `triage`: move issues or external PRs through Matt's triage states | [Triage](playbooks/triage.md), with the installed `triage` as procedure owner |
-| `local-verify [#N]`: check cloud PRs on this machine and hand them to review | [Local verify](playbooks/local-verify.md) |
+| `local-verify [#N] [--fix]`: check cloud PRs on this machine and hand them to review; with `--fix`, correct what fails here and push | [Local verify](playbooks/local-verify.md) |
 | `create-verification-skill`: generate and prove a project-local app verification skill | `create-verification-skill` from the installed PStack source |
 | `maintain-verification-skill`: audit and repair an existing verification skill and feature map | `maintain-verification-skill` from the installed PStack source |
 
