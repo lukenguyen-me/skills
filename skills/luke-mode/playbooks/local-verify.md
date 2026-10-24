@@ -20,9 +20,9 @@ The playbook names no project. Read these from the project instructions
 (`AGENTS.md`, `CLAUDE.md`) and the docs they reference, such as `docs/agents/`:
 
 - **Labels**: the triage-label mapping names `ready-for-cloud`, `in-progress`,
-  `needs-local-verify`, `verify-failed`, and, for `--fix`, `fixing-locally`.
-  A missing mapping leaves the queue pending; point to `$luke-mode setup`. A
-  mapping without `fixing-locally` leaves the claim to the comment, as a gap.
+  `needs-local-verify`, and `verify-failed`. A missing mapping leaves the queue
+  pending; point to `$luke-mode setup`. `--fix` claims the PR with
+  `in-progress`; a mapping without it leaves the claim to the comment, as a gap.
 - **Local-check paths**: the changed paths that need a local check, such as an
   app directory. A project that names none has no PR for this route.
 - **Local build**: the build or test command the cloud cannot run.
@@ -111,17 +111,18 @@ A failure outside the bound takes the Fail result above, with the diagnosis so
 far in the comment: the cloud fixer starts from it.
 
 1. Claim the PR before the first edit: swap `needs-local-verify` (or
-   `verify-failed`) for `fixing-locally`, and post one comment naming the
-   checked commit and the failure. The label tells a dispatcher and any cloud
-   session watching the PR that this machine owns it; a PR that already
-   carries it belongs to another session, so stop and report.
+   `verify-failed`) for `in-progress` on the PR, and post one comment naming
+   the checked commit and the failure. The label tells a dispatcher and any
+   cloud session watching the PR that an agent owns it again; a PR that
+   already carries it belongs to another session, so stop and report. The
+   ticket keeps `in-review`: a PR for it is still open.
 2. Run [Fix](fix.md) in the worktree. The failed step is the repro; Coding
    edits, Verifier reruns the project's required checks. Commit on the PR's
    branch in the project's commit style; the branch keeps its name.
 3. Replay the whole plan from Check one PR, not only the failed step, on the
    devices the first pass used. A step that fails again goes back to step 2.
    A fix that outgrows the bound stops here: reset the worktree to the PR
-   head, swap `fixing-locally` for `verify-failed`, and post the Fail result
+   head, swap `in-progress` for `verify-failed`, and post the Fail result
    with the diagnosis.
 4. Push the branch. Publish the new captures with `publish_evidence.py --ref
    <head-branch>` and edit the PR body: replace each `Not captured` line the
@@ -129,7 +130,7 @@ far in the comment: the cloud fixer starts from it.
    `## Decisions taken` when present, with one line per fix: what failed, on
    which device, and the fix commit.
 5. Check that the head is still the pushed commit, then post the comment
-   below, swap `fixing-locally` out, and mark the PR ready for review. The
+   below, remove `in-progress`, and mark the PR ready for review. The
    local run already ran the local build, the required checks, and the flows,
    so ready does not wait for CI on the new head; name CI's state at the time
    in the comment.

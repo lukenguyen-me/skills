@@ -149,7 +149,7 @@ review:
 4. On your Mac, `$luke-mode local-verify` checks each labeled PR on real devices.
    A pass marks it ready; a fail swaps the label for `verify-failed`. With
    `--fix`, a small failure is fixed on your Mac instead and pushed to the PR,
-   which carries `fixing-locally` meanwhile.
+   which carries `in-progress` meanwhile.
 5. You review every ready PR and merge it; the merge closes its tickets.
 
 Draft means the agents are not done; ready means it is your turn to review, not
@@ -452,7 +452,7 @@ number, it works through every PR labeled `needs-local-verify`, oldest first.
 
 When the fix looks faster on your Mac than a round trip to the cloud, run the
 same command with `--fix`. A failure that corrects this PR's change within its
-own scope is fixed on the PR's branch: the PR takes `fixing-locally` so no
+own scope is fixed on the PR's branch: the PR goes back to `in-progress` so no
 cloud session starts on it, the Fix playbook runs in the worktree, the whole
 local plan replays on the same devices, and the fix is pushed with its evidence
 and one comment. The PR is then marked ready without waiting for CI on the new
