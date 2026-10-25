@@ -47,7 +47,9 @@ The playbook names no project. Read these from the project instructions
      the change touches (phone, tablet, desktop), on a
      [shared device](../references/evidence.md#shared-devices), in the pool's
      order;
-   - every `Not captured` line in the PR body.
+   - every `Not captured` line in the PR body. A line for a surface that
+     exists on the base is a pair: capture its before state from the PR's
+     merge base, in a second temporary worktree, on the same device.
 3. Verifier runs the checks and captures evidence as in
    [PR evidence](../references/evidence.md): inspect and shrink each capture.
    Record each device's name and OS version.
@@ -126,7 +128,8 @@ far in the comment: the cloud fixer starts from it.
    with the diagnosis.
 4. Push the branch. Publish the new captures with `publish_evidence.py --ref
    <head-branch>` and edit the PR body: replace each `Not captured` line the
-   run captured with its image, and add a `## Local fixes` section, after
+   run captured with its before and after pair (the after image alone for a
+   surface the PR introduces), and add a `## Local fixes` section, after
    `## Decisions taken` when present, with one line per fix: what failed, on
    which device, and the fix commit.
 5. Check that the head is still the pushed commit, then post the comment

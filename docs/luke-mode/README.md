@@ -162,7 +162,9 @@ stay project-neutral.
 Every PR Luke opens, on autopilot or on request, has a body from Matt's `pr`
 skill. For a change you can see, Luke captures the before state before its
 first edit and the after state once the work is verified: screenshots for
-visual changes, a GIF for flows, and command output for CLI changes. It uses
+visual changes, a GIF for flows, and command output for CLI changes. A change
+to an existing screen shows as a before and after pair in the PR body; a new
+screen shows its after state alone. It uses
 `agent-browser` for web, `devicectl` and `simctl` for iOS, and `adb` for Android.
 It reuses the connected phones and tablets and the simulators and emulators
 already on the machine as one pool, in one order: Android device, iOS device,

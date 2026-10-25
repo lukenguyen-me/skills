@@ -26,8 +26,9 @@ routes by its brief, as any request does.
    each mobile capture uses, and capture the before state before the first edit.
 3. Do the playbook's work. Where the playbook would ask the user, decide and
    continue (see Decisions). Stop only at a hard stop.
-4. Finish the playbook: checks, review, and its done criteria. Capture, inspect,
-   and publish the after state through PR evidence.
+4. Finish the playbook: checks, review, and its done criteria. Capture and
+   inspect the after state, then publish it with its before state through PR
+   evidence, so each changed screen shows as a before and after pair.
 5. Deliver:
    - On the default branch, create a branch named as in
      [branch names](../references/branch-names.md). On a branch the harness generated for the

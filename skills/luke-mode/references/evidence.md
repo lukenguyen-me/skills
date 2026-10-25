@@ -18,7 +18,12 @@ state, viewport, and theme.
 | Refactor of a UI | Screenshots plus a pixel diff showing no change | Base screenshots |
 | No observable surface | Check and test results | None |
 
-A new screen has no before state: show the entry point that leads to it.
+A change to a surface that exists on the base (a fix, a restyle, a changed
+flow, a refactor) is shown as a **pair**: before and after, captured from the
+same recipe and published together, so the reviewer compares them side by side.
+Only a surface the PR introduces stands alone: a new screen has no before
+state, so show its after state and the entry point that leads to it. A pair
+whose before was not captured is a gap, named as for any missing capture.
 Responsive or theme changes add a phone viewport or dark theme to the plan.
 
 ## Capture the before state first
@@ -238,9 +243,10 @@ installation directory):
 python3 <luke-mode>/scripts/publish_evidence.py "$EV/settings-before.png" "$EV/settings-after.png"
 ```
 
-It commits the files to the hidden ref `refs/evidence/<branch>` and prints each
-file's URL as JSON. Clones skip hidden refs, so evidence never weighs on the
-repository's users, and only people who can read the repository can open it.
+Publish both halves of every pair in the same call. It commits the files to
+the hidden ref `refs/evidence/<branch>` and prints each file's URL as JSON.
+Clones skip hidden refs, so evidence never weighs on the repository's users,
+and only people who can read the repository can open it.
 Republishing adds to the ref; earlier links keep working. Give every file a
 unique, descriptive name such as `settings-after-dark.png`. The script refuses
 files over 10 MB. For a remote outside github.com, it stops; report the local
@@ -255,14 +261,19 @@ session's branches (`claude/**`) with `contents: write` and
 
 1. Checks out the branch, sets up the app's toolchain, and replays the capture
    recipes headlessly (a web server with `agent-browser`, Robolectric or
-   another JVM screenshot test for Android).
+   another JVM screenshot test for Android). For every pair it also replays
+   the recipe on the base, in a worktree at
+   `git merge-base origin/<base-branch> HEAD` (check out with full history,
+   `fetch-depth: 0`, so the merge base resolves), so the block holds before
+   and after.
 2. Shrinks the captures and runs
    `publish_evidence.py <files> --ref "$GITHUB_REF_NAME"`; the workflow token
    pushes the ref.
 3. Writes the URLs to the job summary and into the open PR's description,
    between a start and an end marker line (HTML comments such as
    `<!-- <name>:start -->` and `<!-- <name>:end -->`; the project picks
-   `<name>`). Each push replaces only that block. The workflow appends the
+   `<name>`). The block shows each pair as one Before and After row. Each push
+   replaces only that block. The workflow appends the
    block when the markers are absent, keeps the rest of the body unchanged, and
    posts no PR comment.
 
@@ -294,8 +305,10 @@ Settings, 1280×800, light, seeded demo account.
 Not captured: Android layout (no emulator in this environment).
 ```
 
-Caption each pair with its recipe in one line. Name each planned capture that
-did not happen as `Not captured: <what> (<reason>)`.
+Caption each pair with its recipe in one line. Put each pair in a Before and
+After table; a surface the PR introduces gets an After image alone. Name each
+planned capture that did not happen as `Not captured: <what> (<reason>)`.
 
 Done when every planned capture is published in the PR body (in a cloud
-session, in the marked block) or named there as a gap.
+session, in the marked block) or named there as a gap, and every changed
+existing surface shows as a pair.

@@ -123,6 +123,8 @@ name a local-check path, a local build, and a verification skill.
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
 | `$luke-mode autopilot issue #42`; a `bug` ticket | Routes to Fix with no other instruction; the PR body links the ticket. |
+| `$luke-mode autopilot issue #42`; the fix changes an existing screen | Captures the before state before the first edit; the Evidence section shows a Before and After table for each changed screen. |
+| `$luke-mode autopilot issue #43`; the ticket adds a new screen | The Evidence section shows the new screen and its entry point, with no Before column. |
 | `$luke-mode autopilot issue #43`; an `enhancement` ticket, or a parent spec with children | Routes to Implement, or to whole-spec mode for the parent. |
 | `$luke-mode autopilot issue #42`; the ticket has no stage label | Adds `in-progress` before the first edit. |
 | `$luke-mode autopilot issue #42 --claimed`; the ticket has `in-progress` | Continues; adds no label. |
@@ -146,6 +148,7 @@ name a local-check path, a local build, and a verification skill.
 | `$luke-mode local-verify #57 --fix`; the head branch is in a fork | Checks the PR as without `--fix` and says why. |
 | `$luke-mode local-verify #57 --fix`; the PR already carries `in-progress` | Stops before any edit and reports the other session. |
 | `$luke-mode autopilot issue #42`; the ticket has `in-review` and its PR carries `in-progress` | Stops before any edit, even on that PR's branch. |
+| A `Not captured` line names a changed existing screen | Captures the screen on the merge base and the PR head on the same device, and publishes them as a pair. |
 | A `Not captured` line needs a physical stylus | Asks the human to do the step and records the answer in the result. |
 | The local build tool is missing | Reports the gap and leaves the labels and draft unchanged. |
 | The PR head moves during the check | Makes no label change for the old commit and checks the new head. |
