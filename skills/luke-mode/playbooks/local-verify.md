@@ -43,15 +43,22 @@ The playbook names no project. Read these from the project instructions
    (`git worktree add <tmp> <head-branch>` when the branch already exists
    locally). A head branch in a fork cannot be pushed from here; check that PR
    as if `--fix` were absent and say so.
-2. Plan the checks. At minimum:
+2. Plan the checks, scoped to the diff:
    - the local build;
    - each verification-skill flow the change affects, on each local surface
      the change touches (phone, tablet, desktop), on a
      [shared device](../references/evidence.md#shared-devices), in the pool's
-     order;
-   - every `Not captured` line in the PR body. A line for a surface that
-     exists on the base is a pair: capture its before state from the PR's
-     merge base, in a second temporary worktree, on the same device.
+     order. A change that alters no flow and no shown screen, such as logic,
+     analytics, or storage, runs no flows;
+   - every `Not captured` line in the PR body, as a gap to close. Narrow a
+     line whose command runs a whole suite to the flows the change affects;
+     close a line the change cannot reach as not applicable, with the reason
+     in the result comment. A line for a surface that exists on the base is a
+     pair: capture its before state from the PR's merge base, in a second
+     temporary worktree, on the same device.
+
+   A **regression pass**, every flow the verification skill has, runs only
+   when the user asks for one, such as before a release.
 3. Verifier runs the checks and captures evidence as in
    [PR evidence](../references/evidence.md): inspect and shrink each capture.
    Record each device's name and OS version.
@@ -123,10 +130,14 @@ far in the comment: the cloud fixer starts from it.
    already carries it belongs to another session, so stop and report. The
    ticket keeps `in-review`: a PR for it is still open.
 2. Run [Fix](fix.md) in the worktree. The failed step is the repro; Coding
-   edits, Verifier reruns the project's required checks. Commit on the PR's
+   edits, Verifier reruns the required checks the fix touches. Commit on the PR's
    branch in the project's commit style; the branch keeps its name.
-3. Replay the whole plan from Check one PR, not only the failed step, on the
-   devices the first pass used. A step that fails again goes back to step 2.
+3. Rerun the failed step, plus each planned check whose inputs the fix
+   changed, on the devices the first pass used. A fix in one platform's code
+   reruns that platform's build and the failed flows; a fix in shared code
+   also reruns the shared tests and the flows that use it. Checks the fix
+   cannot reach keep their first-pass result. A step that fails again goes
+   back to step 2.
    A fix that outgrows the bound stops here: reset the worktree to the PR
    head, swap `in-progress` for `verify-failed`, and post the Fail result
    with the diagnosis.
@@ -140,8 +151,8 @@ far in the comment: the cloud fixer starts from it.
    PR goes back to `needs-local-verify` or ready for review.
 5. Check that the head is still the pushed commit, then post the comment
    below, remove `in-progress`, and mark the PR ready for review. The
-   local run already ran the local build, the required checks, and the flows,
-   so ready does not wait for CI on the new head; name CI's state at the time
+   local run already ran the checks the change and the fix reach, so ready
+   does not wait for CI on the new head; name CI's state at the time
    in the comment.
 
 ```markdown
