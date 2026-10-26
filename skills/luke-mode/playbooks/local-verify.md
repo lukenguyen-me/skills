@@ -29,6 +29,8 @@ The playbook names no project. Read these from the project instructions
 - **Verification skill**: the project's app verification skill and its feature
   map. Resolve it through [composition](../references/composition.md); without
   one, use the project's documented checks under its fallback rules.
+- **Evidence run**: the project's step that starts its screenshot workflow
+  after a pushed fix, when it has one.
 
 ## Check one PR
 
@@ -79,9 +81,11 @@ evidence. Then remove `needs-local-verify` and mark the PR ready for review.
 PR comment with the checked commit, the device and OS version, the steps, what
 failed, and screenshots. Swap `needs-local-verify` for `verify-failed` and keep
 the draft. End the comment with the hand-back: the fixer adds
-`needs-local-verify` again after pushing the fix. When the failure fits the
-[fix bound](#fix-locally), offer `$luke-mode local-verify #N --fix` as the next
-action in the handoff; the user decides, so the queue keeps moving.
+`needs-local-verify` again after pushing the fix. After a pushed fix that
+changes a shown screen, the fixer starts the project's evidence run first.
+When the failure fits the [fix bound](#fix-locally), offer
+`$luke-mode local-verify #N --fix` as the next action in the handoff; the user
+decides, so the queue keeps moving.
 
 ```markdown
 ## Local verification: failed at 3f2a91c
@@ -131,7 +135,9 @@ far in the comment: the cloud fixer starts from it.
    run captured with its before and after pair (the after image alone for a
    surface the PR introduces), and add a `## Local fixes` section, after
    `## Decisions taken` when present, with one line per fix: what failed, on
-   which device, and the fix commit.
+   which device, and the fix commit. After a pushed fix that changes a shown
+   screen, start the project's evidence run and wait for it to end before the
+   PR goes back to `needs-local-verify` or ready for review.
 5. Check that the head is still the pushed commit, then post the comment
    below, remove `in-progress`, and mark the PR ready for review. The
    local run already ran the local build, the required checks, and the flows,
