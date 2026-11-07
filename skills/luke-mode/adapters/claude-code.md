@@ -157,5 +157,7 @@ git push -u origin HEAD
 ```
 
 Once the branch is pushed or has a PR, keep its name. The prefix also keeps the
-branch under the `claude/**` trigger of the
-[evidence workflow](../references/evidence.md#publish).
+branch under the `claude/**` trigger of a project's evidence workflow. A cloud
+session publishes [PR evidence](../references/evidence.md#claude-cloud-session)
+to the project's store when one is configured, and uses that workflow only
+when it is not.

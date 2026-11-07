@@ -214,8 +214,9 @@ Look at each image and GIF yourself before it leaves the machine:
   work.
 - **Comparable**: the pair differs only by the change. Review every changed
   region in the pixel diff and explain or fix each unintended one.
-- **Safe**: published evidence is permanent. It shows no secrets, tokens,
-  personal data, or private URLs. Recapture with fixture data.
+- **Safe**: published evidence is permanent, and in an `r2` store anyone with
+  the URL can open it. It shows no secrets, tokens, personal data, or private
+  URLs. Recapture with fixture data.
 
 ## Shrink
 
@@ -237,27 +238,76 @@ Published evidence stays forever, so keep each file small:
 
 GitHub has no API to upload images to a PR. After pushing the PR branch, run
 the bundled script from the project repository (`<luke-mode>` is this skill's
-installation directory):
+installation directory). It publishes to the store that the project file
+`docs/agents/evidence.md` names; [setup](../playbooks/setup.md#set-up-the-pr-evidence-store)
+writes that file.
+
+| `store` | Where the files go | Who can open them |
+| --- | --- | --- |
+| `git-ref`, or no project file | The hidden ref `refs/evidence/<branch>`. Clones skip hidden refs, so evidence never weighs on the repository's users. | People who can read the repository |
+| `r2` | The project's bucket, at `<key-prefix>/<branch>/<head sha>/<random>/<name>` | Anyone with the URL; the random part makes it unguessable |
+| `none` | Nowhere: the project has no visual surface | Nobody |
+
+Record the commit the captures show (`git rev-parse HEAD` when you take the
+after captures) and pass it with `--commit`. Publish both halves of every pair
+in the same call:
 
 ```sh
-python3 <luke-mode>/scripts/publish_evidence.py "$EV/settings-before.png" "$EV/settings-after.png"
+python3 <luke-mode>/scripts/publish_evidence.py --commit <sha> "$EV/settings-before.png" "$EV/settings-after.png" > "$EV/published.json"
 ```
 
-Publish both halves of every pair in the same call. It commits the files to
-the hidden ref `refs/evidence/<branch>` and prints each file's URL as JSON.
-Clones skip hidden refs, so evidence never weighs on the repository's users,
-and only people who can read the repository can open it.
-Republishing adds to the ref; earlier links keep working. Give every file a
-unique, descriptive name such as `settings-after-dark.png`. The script refuses
-files over 10 MB. For a remote outside github.com, it stops; report the local
-capture paths in the handoff and in the PR body's gaps.
+`--commit` refuses a dirty tree, and a HEAD that is not that commit; capture
+again from the commit you publish. The `r2` store requires it. The script
+prints JSON: `head`, the commit the captures show, and each file's `name` and
+`url`. Every publish writes new paths, so earlier links keep working after
+later pushes. Name the halves of a pair `<surface>-before[-<variant>]` and
+`<surface>-after[-<variant>]`, such as `settings-before-dark.png` and
+`settings-after-dark.png`, so the block pairs them; the `r2` store takes
+letters, digits, dots, dashes, and underscores only. The script refuses files
+over 10 MB. Images and GIFs show inline; a video shows as a link only.
+Credential values never reach its output: an error names the missing variable
+or the HTTP status. For a `git-ref` remote outside github.com, it stops; report
+the local capture paths in the handoff and in the PR body's gaps.
 
-**Claude cloud session.** The remote is github.com, but the session's git proxy
-accepts branch pushes only: the push to `refs/evidence/<branch>` fails with
-HTTP 403, and the REST git data API is refused too. Publish from a GitHub
-Actions runner instead, when the project has one. A workflow on pushes to the
-session's branches (`claude/**`) with `contents: write` and
-`pull-requests: write`:
+### Write the block
+
+The images go in the PR body between two marker lines,
+`<!-- luke-mode-evidence:start -->` and `<!-- luke-mode-evidence:end -->`.
+[`evidence_block.py`](../scripts/evidence_block.py) renders the block from
+the publish JSON: it names the head commit, puts each pair in one Before and
+After row, shows other images alone, and links videos. Read the current body
+first, through `gh pr view --json body -q .body` or the harness's GitHub tool,
+then write back what the script prints:
+
+```sh
+python3 <luke-mode>/scripts/evidence_block.py "$EV/published.json" --body "$EV/body.md" > "$EV/new-body.md"
+```
+
+It replaces only the marked block and keeps the rest of the body unchanged.
+When the markers are absent, it puts the block under `## Evidence`, or at the
+end. Pass every publish JSON of the run in one call; captures of different
+commits are refused. A project workflow that has its own marker name passes it
+with `--marker <name>`.
+
+### Claude cloud session
+
+The remote is github.com, but the session's git proxy accepts branch pushes
+only: the push to `refs/evidence/<branch>` fails with HTTP 403, and the REST git
+data API is refused too. Take the first route that applies:
+
+1. **The project's store.** When `docs/agents/evidence.md` sets `store: r2`,
+   publish from the session and write the block yourself, as above.
+   `publish_evidence.py --check` reports whether each credential variable is
+   set, never its value. A missing variable, or an upload the network policy
+   refuses, makes each capture a gap that names the reason.
+2. **The project's GitHub Actions workflow.** When the project has one, it
+   publishes instead; see below.
+3. **Gaps.** Otherwise publish nothing: committing the captures to a branch
+   would carry them into every clone. Name each planned capture as
+   `Not captured: <what> (<reason>)`.
+
+A workflow on pushes to the session's branches (`claude/**`) with
+`contents: write` and `pull-requests: write`:
 
 1. Checks out the branch, sets up the app's toolchain, and replays the capture
    recipes headlessly (a web server with `agent-browser`, Robolectric or
@@ -267,48 +317,46 @@ session's branches (`claude/**`) with `contents: write` and
    `fetch-depth: 0`, so the merge base resolves), so the block holds before
    and after.
 2. Shrinks the captures and runs
-   `publish_evidence.py <files> --ref "$GITHUB_REF_NAME"`; the workflow token
-   pushes the ref.
-3. Writes the URLs to the job summary and into the open PR's description,
-   between a start and an end marker line (HTML comments such as
-   `<!-- <name>:start -->` and `<!-- <name>:end -->`; the project picks
-   `<name>`). The block shows each pair as one Before and After row. Each push
-   replaces only that block. The workflow appends the
-   block when the markers are absent, keeps the rest of the body unchanged, and
-   posts no PR comment.
+   `publish_evidence.py <files> --ref "$GITHUB_REF_NAME" --commit "$GITHUB_SHA"`;
+   the workflow token pushes the ref.
+3. Writes the block with `evidence_block.py` into the open PR's description and
+   the job summary (`--block-only`). It posts no PR comment.
 
 When opening the PR, put the empty marker block in the Evidence section and
 leave the capture URLs to the workflow. When editing the body later, read the
 current body first and keep the block unchanged. The run is done when the block
-shows the head commit. A run that finished before the PR existed left the block
-empty: start the workflow again on the branch. With no runner, publish nothing:
-committing the captures to a branch would carry them into every clone. Name
-each planned capture as `Not captured: <what> (<reason>)`.
+names the head commit. A run that finished before the PR existed left the block
+empty: start the workflow again on the branch.
 
 ## Fill the Evidence section
 
-The `pr` skill owns the body. Fill its Evidence section from this plan. In a
-Claude cloud session with a runner, the marked block holds the images; write the
-captions and gaps around it.
+The `pr` skill owns the body. Fill its Evidence section from this plan. The
+marked block holds the images; write the captions and gaps around it.
 
 ```markdown
 ## Evidence
 
 Settings, 1280×800, light, seeded demo account.
 
+<!-- luke-mode-evidence:start -->
+Captures show commit 8d41c2e0a1b2c3d4e5f60718293a4b5c6d7e8f90.
+
 | Before | After |
 | --- | --- |
-| ![Settings before](<url>) | ![Settings after](<url>) |
+| ![settings before](<url>) | ![settings after](<url>) |
 
-![Checkout flow](<gif-url>) ([full video](<video-url>))
+![checkout](<gif-url>)
+
+[checkout.mp4](<video-url>)
+<!-- luke-mode-evidence:end -->
 
 Not captured: Android layout (no emulator in this environment).
 ```
 
-Caption each pair with its recipe in one line. Put each pair in a Before and
-After table; a surface the PR introduces gets an After image alone. Name each
-planned capture that did not happen as `Not captured: <what> (<reason>)`.
+Caption each pair with its recipe in one line. A surface the PR introduces
+gets an After image alone. Name each planned capture that did not happen as
+`Not captured: <what> (<reason>)`.
 
-Done when every planned capture is published in the PR body (in a cloud
-session, in the marked block) or named there as a gap, and every changed
-existing surface shows as a pair.
+Done when every planned capture is published in the marked block or named as
+a gap in the Evidence section, every changed existing surface shows as a pair,
+and the block names the head commit the captures show.

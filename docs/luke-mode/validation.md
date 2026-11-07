@@ -82,7 +82,19 @@ python3 -B -m unittest discover -s tests -p 'test_luke_mode_*.py' -v
 ```
 
 The publish tests use a local bare remote: hidden ref and URLs, absence from a
-network-style clone, chaining, and size and type limits. The device pick tests
+network-style clone, chaining, and size and type limits. The `r2` tests run
+against a fake S3 endpoint on `127.0.0.1`, with no outside network: the key
+layout, a new random part on each publish, the dirty-tree and HEAD-mismatch
+refusals, `--check`, and that no credential value reaches output, even when
+the store's error names the access key. The signer matches the S3 `GET` object
+example in AWS's SigV4 documentation. The block tests cover pairing by name,
+replacing only the marked block, insertion under `## Evidence`, and refusal of
+captures from different commits.
+
+A live upload to R2 from a Claude cloud session, and GitHub's display of the
+resulting public URL in a PR, have not yet been run. A Brickie cloud session
+saw the agent proxy accept a `CONNECT` to `<account>.r2.cloudflarestorage.com:443`
+with a made-up account id. The device pick tests
 run the CLI against stub `xcrun`, `adb`, and `emulator` tools on `PATH`, so the
 pool's order, the pass-over of claimed, locked, unauthorized, and skip-listed
 devices, `hold`, and `list` are checked on any host, Linux included.

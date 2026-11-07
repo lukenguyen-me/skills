@@ -5,11 +5,13 @@ Claude Code. Keep the working directory in the user's project. Read applicable
 project instructions before configuration.
 
 Full setup runs dependency installation, model configuration, repository
-setup, and the device pool in that order. It authorizes those stages together;
-do not require another sync or Matt setup command from the user. A model-only
-request, such as `configure models`, runs only the model stages. A toolkit-only
-request runs dependency installation and repository setup. A device-only
-request, such as `skip my phone`, runs only the device pool stage.
+setup, the PR evidence store, and the device pool in that order. It authorizes
+those stages together; do not require another sync or Matt setup command from
+the user. A model-only request, such as `configure models`, runs only the model
+stages. A toolkit-only request runs dependency installation and repository
+setup. An evidence-only request, such as `set up the evidence store`, runs only
+the evidence store stage. A device-only request, such as `skip my phone`, runs
+only the device pool stage.
 
 Read [harness selection](../references/harnesses.md),
 [models](../references/models.md), and the selected adapter before proposing
@@ -151,10 +153,66 @@ toolkit readiness in another project. Read
    alone does not authorize those changes.
 5. Read back generated guidance and its referenced configuration to verify
    installed prerequisites. Report dependency availability, model
-   configuration, repository toolkit readiness, and the device pool separately.
-   Full setup is complete when all four stages are verified or explicitly
-   skipped by the user. A pending stage still permits independent work under the composition
+   configuration, repository toolkit readiness, the evidence store, and the
+   device pool separately. Full setup is complete when all five stages are
+   verified or explicitly skipped by the user. A pending stage still permits independent work under the composition
    fallback rules. Re-running setup reuses completed stages.
+
+## Set up the PR evidence store
+
+[PR evidence](../references/evidence.md#publish) publishes to the store that
+`docs/agents/evidence.md` names. The project owns where its files go; this
+skill owns the process. The file holds names, never secret values, so it is
+committed with the project.
+
+1. Read the existing file and reuse it unless the user wants changes. Without
+   one, ask for the store and recommend from the project:
+   - `r2`: a Cloudflare R2 bucket. Claude cloud sessions can publish there,
+     and one bucket serves every project, because the key prefix keeps them
+     apart. URLs are public but unguessable.
+   - `git-ref`: the hidden ref `refs/evidence/<branch>`, readable only by
+     people who can read the repository. Works from a local machine and from
+     a GitHub Actions workflow, not from a Claude cloud session.
+   - `none`: the project has no visual surface.
+2. For `r2`, ask for the bucket name, the public base URL (the bucket's custom
+   domain or `r2.dev` URL), and the names of the three credential variables;
+   propose the defaults below. Write the file with the confirmed values:
+
+   ```markdown
+   # PR evidence
+
+   Read by `publish_evidence.py`. Holds variable names, never their values.
+
+   | Key | Value |
+   | --- | --- |
+   | store | r2 |
+   | bucket | pr-evidence |
+   | public-url | https://evidence.example.com |
+   | key-prefix | <owner>/<repo> |
+   | account-id-var | R2_ACCOUNT_ID |
+   | access-key-id-var | R2_ACCESS_KEY_ID |
+   | secret-access-key-var | R2_SECRET_ACCESS_KEY |
+   | upload-host | `<account id>.r2.cloudflarestorage.com` |
+   ```
+
+   The script puts the account id variable's value in place of
+   `<account id>`. For `git-ref` or `none`, the table holds the `store` row
+   only.
+3. Run `python3 <luke-mode>/scripts/publish_evidence.py --check` from the
+   project. It reports `present` or `missing` for each credential variable in
+   the current environment, never a value. Show that report as it is.
+4. List the manual steps that remain for `r2`, each marked done or pending:
+   - create the bucket and connect its public domain;
+   - create an R2 API token with Object Read and Write on that bucket only;
+   - for Claude cloud sessions, add the three variables as the cloud
+     environment's secrets, and allow the upload host (the `upload_host` that
+     `--check` prints, with the account id in place) in its network policy.
+5. Read the file back and report its path.
+
+The evidence store is done when the file is written and read back. For `r2`,
+`--check` reports every variable present, or each missing variable and each
+manual step is listed as pending; a publish then makes each capture a gap that
+names the missing step.
 
 ## Set up the device pool
 
