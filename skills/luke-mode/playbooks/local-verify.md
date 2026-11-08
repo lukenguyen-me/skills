@@ -66,8 +66,9 @@ The playbook names no project. Read these from the project instructions
    pointed at an object, goes to the human. Name the device, the exact steps,
    and what to look for, then record their answer as that step's result.
 5. Publish the captures with
-   `python3 <luke-mode>/scripts/publish_evidence.py <files> --ref <head-branch>`
-   (`<luke-mode>` is this skill's directory).
+   `python3 <luke-mode>/scripts/publish_evidence.py <files> --ref <head-branch> --commit <checked-commit>`
+   (`<luke-mode>` is this skill's directory). It publishes to the project's
+   store and refuses a worktree that is not clean at the checked commit.
 6. Before any label write, check that the PR head is still the recorded commit.
    When it moved, report the result for the checked commit and check the new
    head instead.
@@ -142,7 +143,7 @@ far in the comment: the cloud fixer starts from it.
    head, swap `in-progress` for `verify-failed`, and post the Fail result
    with the diagnosis.
 4. Push the branch. Publish the new captures with `publish_evidence.py --ref
-   <head-branch>` and edit the PR body: replace each `Not captured` line the
+   <head-branch> --commit <fix-commit>` and edit the PR body: replace each `Not captured` line the
    run captured with its before and after pair (the after image alone for a
    surface the PR introduces), and add a `## Local fixes` section, after
    `## Decisions taken` when present, with one line per fix: what failed, on

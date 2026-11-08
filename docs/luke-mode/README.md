@@ -186,12 +186,30 @@ table in the PR. Captures it could not take are listed as gaps.
 
 GitHub has no API for PR image uploads, so the bundled
 [`publish_evidence.py`](../../skills/luke-mode/scripts/publish_evidence.py)
-commits the files to a hidden ref, `refs/evidence/<branch>`. Clones skip hidden
-refs, so evidence adds nothing to a checkout. The images are visible only to
-people who can read the repository, and they are kept forever. A Claude cloud
-session cannot push that ref through its git proxy, so there a GitHub Actions
-workflow replays the captures and publishes them; without one, the captures are
-listed as gaps. See
+publishes them to the store that the project's `docs/agents/evidence.md`
+names; setup asks for it. The skill owns the process, and each project owns
+where its files go:
+
+- `git-ref`, the default: a hidden ref, `refs/evidence/<branch>`. Clones skip
+  hidden refs, so evidence adds nothing to a checkout. The images are visible
+  only to people who can read the repository.
+- `r2`: a Cloudflare R2 bucket. Each file goes to
+  `<owner>/<repo>/<branch>/<head sha>/<random>/<name>`, so its public URL
+  cannot be guessed. Requests are signed with the Python standard library, and
+  credential values never appear in output. One bucket can serve every project.
+
+Evidence is kept forever, and every publish writes new paths, so earlier links
+keep working. The script refuses a dirty tree or a HEAD that is not the
+commit the captures show, and
+[`evidence_block.py`](../../skills/luke-mode/scripts/evidence_block.py) writes
+the Before | After block between marker lines in the PR body, naming that
+commit. A Claude cloud session cannot push the hidden ref through its git
+proxy, so there it publishes to the project's `r2` store. Its GitHub tool
+also rewrites image lines in a PR body, so it then dispatches a small project
+workflow, which setup installs, to write the block. That workflow builds and
+captures nothing, and embeds only URLs from the project's own store. Without
+a store, a GitHub Actions workflow replays the captures and publishes them;
+without either, the captures are listed as gaps. See
 [PR evidence](../../skills/luke-mode/references/evidence.md).
 
 ## Set up Luke Mode
