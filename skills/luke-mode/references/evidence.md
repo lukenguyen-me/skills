@@ -296,15 +296,44 @@ only: the push to `refs/evidence/<branch>` fails with HTTP 403, and the REST git
 data API is refused too. Take the first route that applies:
 
 1. **The project's store.** When `docs/agents/evidence.md` sets `store: r2`,
-   publish from the session and write the block yourself, as above.
-   `publish_evidence.py --check` reports whether each credential variable is
-   set, never its value. A missing variable, or an upload the network policy
-   refuses, makes each capture a gap that names the reason.
+   publish from the session. `publish_evidence.py --check` reports whether
+   each credential variable is set, never its value. A missing variable, or
+   an upload the network policy refuses, makes each capture a gap that names
+   the reason. Then [dispatch the block workflow](#dispatch-the-block-workflow).
 2. **The project's GitHub Actions workflow.** When the project has one, it
    publishes instead; see below.
 3. **Gaps.** Otherwise publish nothing: committing the captures to a branch
    would carry them into every clone. Name each planned capture as
    `Not captured: <what> (<reason>)`.
+
+#### Dispatch the block workflow
+
+The session's GitHub tool rewrites image lines in a PR body: it drops the `!`
+and wraps the URL in backticks, so GitHub shows a link, not the image. A
+session therefore never writes the block itself. The project's
+`.github/workflows/luke-mode-evidence-block.yml`, which setup installs from
+[the template](../templates/luke-mode-evidence-block.yml), writes it. The
+workflow builds nothing and captures nothing; it runs `evidence_block.py` with
+`--allow-url-prefix` set to the project's `public-url`, so it embeds images
+from the project's store only.
+
+1. Open the PR first, with the empty marker block in the Evidence section.
+2. Dispatch the workflow through the harness's GitHub tool:
+   `actions_run_trigger` with `method: run_workflow`,
+   `workflow_id: luke-mode-evidence-block.yml`, `ref` the default branch, and
+   the inputs `pr`, the PR number, and `published`, the publish JSON as one
+   string.
+3. When the run finishes, read the PR body back. The block is done when it
+   names the head commit. Do not write the body again until then, and keep
+   the block unchanged in every later edit: the tool rewrites image lines in
+   any body it writes.
+
+A failed or refused run makes each capture a gap that names the reason. When
+the project has no block workflow, or it is not on the default branch yet,
+report each capture's public URL in the handoff and name the missing workflow
+as the gap.
+
+#### Capture workflow
 
 A workflow on pushes to the session's branches (`claude/**`) with
 `contents: write` and `pull-requests: write`:

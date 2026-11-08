@@ -1,0 +1,72 @@
+# Writes the PR Evidence block for a Claude cloud session.
+#
+# The session uploads its captures to the project's r2 store, then dispatches
+# this workflow with the PR number and the publish JSON, because its GitHub
+# tool rewrites image lines in a PR body. This workflow builds nothing and
+# captures nothing: it renders the block with luke-mode's evidence_block.py and
+# writes it into the PR body. It accepts only URLs under the public-url in
+# docs/agents/evidence.md, so it embeds images from the project's own store and
+# nowhere else.
+#
+# Installed by `$luke-mode setup` for a project whose evidence store is r2.
+# workflow_dispatch works only once this file is on the default branch.
+name: luke-mode evidence block
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number
+        required: true
+      published:
+        description: JSON printed by publish_evidence.py
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: luke-mode-evidence-block-${{ inputs.pr }}
+  cancel-in-progress: false
+
+jobs:
+  block:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Write the evidence block
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ inputs.pr }}
+          PUBLISHED: ${{ inputs.published }}
+        run: |
+          set -euo pipefail
+          case "$PR" in ''|*[!0-9]*) echo "pr must be a PR number, not '$PR'" >&2; exit 1;; esac
+          skill=
+          for dir in .agents/skills/luke-mode .claude/skills/luke-mode; do
+            if [ -f "$dir/scripts/evidence_block.py" ]; then skill=$dir; break; fi
+          done
+          if [ -z "$skill" ]; then
+            echo "luke-mode is not installed in this repository" >&2
+            exit 1
+          fi
+          prefix=$(python3 "$skill/scripts/publish_evidence.py" --check | python3 -c '
+          import json, sys
+          check = json.load(sys.stdin)
+          if check["store"] != "r2":
+              sys.exit("docs/agents/evidence.md does not set store: r2")
+          print(check["public_url"])
+          ')
+          printf '%s' "$PUBLISHED" > "$RUNNER_TEMP/published.json"
+          gh pr view "$PR" --json body -q .body > "$RUNNER_TEMP/body.md"
+          python3 "$skill/scripts/evidence_block.py" "$RUNNER_TEMP/published.json" \
+            --body "$RUNNER_TEMP/body.md" --allow-url-prefix "$prefix" > "$RUNNER_TEMP/new-body.md"
+          gh pr edit "$PR" --body-file "$RUNNER_TEMP/new-body.md"
+          python3 "$skill/scripts/evidence_block.py" "$RUNNER_TEMP/published.json" \
+            --block-only --allow-url-prefix "$prefix" >> "$GITHUB_STEP_SUMMARY"

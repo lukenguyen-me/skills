@@ -201,15 +201,25 @@ committed with the project.
 3. Run `python3 <luke-mode>/scripts/publish_evidence.py --check` from the
    project. It reports `present` or `missing` for each credential variable in
    the current environment, never a value. Show that report as it is.
-4. List the manual steps that remain for `r2`, each marked done or pending:
+4. For `r2`, copy [the block workflow](../templates/luke-mode-evidence-block.yml)
+   to `.github/workflows/luke-mode-evidence-block.yml`, unchanged. A Claude
+   cloud session cannot write image lines into a PR body through its GitHub
+   tool, so it dispatches this workflow to write the
+   [evidence block](../references/evidence.md#dispatch-the-block-workflow).
+   Keep an existing copy unless it differs from the template; then show the
+   difference and ask.
+5. List the manual steps that remain for `r2`, each marked done or pending:
    - create the bucket and connect its public domain;
    - create an R2 API token with Object Read and Write on that bucket only;
    - for Claude cloud sessions, add the three variables as the cloud
      environment's secrets, and allow the upload host (the `upload_host` that
-     `--check` prints, with the account id in place) in its network policy.
-5. Read the file back and report its path.
+     `--check` prints, with the account id in place) in its network policy;
+   - merge the block workflow to the default branch: GitHub dispatches a
+     workflow only from there.
+6. Read the files back and report their paths.
 
 The evidence store is done when the file is written and read back. For `r2`,
+the block workflow is written too, and
 `--check` reports every variable present, or each missing variable and each
 manual step is listed as pending; a publish then makes each capture a gap that
 names the missing step.

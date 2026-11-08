@@ -204,9 +204,12 @@ commit the captures show, and
 [`evidence_block.py`](../../skills/luke-mode/scripts/evidence_block.py) writes
 the Before | After block between marker lines in the PR body, naming that
 commit. A Claude cloud session cannot push the hidden ref through its git
-proxy, so there it publishes to the project's `r2` store; without one, a
-GitHub Actions workflow replays the captures and publishes them; without
-either, the captures are listed as gaps. See
+proxy, so there it publishes to the project's `r2` store. Its GitHub tool
+also rewrites image lines in a PR body, so it then dispatches a small project
+workflow, which setup installs, to write the block. That workflow builds and
+captures nothing, and embeds only URLs from the project's own store. Without
+a store, a GitHub Actions workflow replays the captures and publishes them;
+without either, the captures are listed as gaps. See
 [PR evidence](../../skills/luke-mode/references/evidence.md).
 
 ## Set up Luke Mode

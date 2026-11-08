@@ -12,16 +12,25 @@ Files pair by name: `settings-before-dark.png` and `settings-after-dark.png`
 form one Before | After row. Other images show alone, and videos show as links.
 When the markers are absent, the block goes under the body's `## Evidence`
 heading, or at the end. A session and a CI workflow share this renderer.
+
+--allow-url-prefix makes the block hold only files under that URL, with safe
+names and paths, and a head that is a full commit SHA. The dispatched block
+workflow passes the project's public URL, so a caller can embed images from
+the project's own store and nowhere else.
 """
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 VIDEO = {'.mp4', '.webm', '.mov'}
 ROLES = ('before', 'after')
 DEFAULT_MARKER = 'luke-mode-evidence'
+SAFE_NAME = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]*$')
+SAFE_PATH = re.compile(r'^[A-Za-z0-9._~/-]+$')
+FULL_SHA = re.compile(r'^[0-9a-f]{40}$')
 
 
 class BlockError(Exception):
@@ -47,13 +56,33 @@ def alt_text(filename):
     return Path(filename).stem.replace('-', ' ').replace('_', ' ')
 
 
-def collect(outputs):
+def check_allowed(head, files, prefix):
+    """Refuse anything but safe files under prefix, so the block embeds only those."""
+    prefix = prefix.rstrip('/')
+    if not re.match(r'^https://[A-Za-z0-9.-]+(?:/[A-Za-z0-9._~-]+)*$', prefix):
+        raise BlockError(f'--allow-url-prefix must be a plain https URL, not {prefix!r}')
+    if not isinstance(head, str) or not FULL_SHA.match(head):
+        raise BlockError(f'head must be a full commit SHA, not {head!r}')
+    for file in files:
+        name, url = file.get('name'), file.get('url')
+        if not isinstance(name, str) or not SAFE_NAME.match(name):
+            raise BlockError(f'unsafe file name: {name!r}')
+        if not isinstance(url, str) or not url.startswith(prefix + '/'):
+            raise BlockError(f'{name}: URL is not under {prefix}/')
+        path = url[len(prefix) + 1:]
+        if not SAFE_PATH.match(path) or '..' in path.split('/') or not path.endswith('/' + name):
+            raise BlockError(f'{name}: unsafe URL path {path!r}')
+
+
+def collect(outputs, allow_prefix=None):
     heads = {out.get('head') for out in outputs}
     if None in heads:
         raise BlockError('publish output has no head commit; publish again with this version')
     if len(heads) != 1:
-        raise BlockError(f'captures name different commits: {", ".join(sorted(heads))}')
+        raise BlockError(f'captures name different commits: {", ".join(sorted(map(str, heads)))}')
     files = [f for out in outputs for f in out['files']]
+    if allow_prefix is not None:
+        check_allowed(next(iter(heads)), files, allow_prefix)
     names = [f['name'] for f in files]
     duplicates = sorted({n for n in names if names.count(n) > 1})
     if duplicates:
@@ -61,8 +90,8 @@ def collect(outputs):
     return heads.pop(), files
 
 
-def render(outputs, name=DEFAULT_MARKER):
-    head, files = collect(outputs)
+def render(outputs, name=DEFAULT_MARKER, allow_prefix=None):
+    head, files = collect(outputs, allow_prefix)
     groups, videos = {}, []
     for file in files:
         if Path(file['name']).suffix.lower() in VIDEO:
@@ -121,16 +150,18 @@ def main(argv=None):
     parser.add_argument('--marker', default=DEFAULT_MARKER, help='marker name')
     parser.add_argument('--block-only', action='store_true',
                         help='print the block alone, for a job summary')
+    parser.add_argument('--allow-url-prefix', metavar='URL',
+                        help='refuse any file URL outside this prefix')
     args = parser.parse_args(argv)
     try:
         outputs = [json.loads(path.read_text()) for path in args.outputs]
-        block = render(outputs, args.marker)
+        block = render(outputs, args.marker, args.allow_url_prefix)
         if args.block_only:
             sys.stdout.write(block + '\n')
             return 0
         body = args.body.read_text() if args.body else sys.stdin.read()
         sys.stdout.write(apply(body, block, args.marker))
-    except (BlockError, OSError, ValueError, KeyError) as error:
+    except (BlockError, OSError, ValueError, KeyError, TypeError, AttributeError) as error:
         print(f'evidence_block: {error}', file=sys.stderr)
         return 1
     return 0

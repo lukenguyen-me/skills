@@ -89,12 +89,24 @@ refusals, `--check`, and that no credential value reaches output, even when
 the store's error names the access key. The signer matches the S3 `GET` object
 example in AWS's SigV4 documentation. The block tests cover pairing by name,
 replacing only the marked block, insertion under `## Evidence`, and refusal of
-captures from different commits.
+captures from different commits. With `--allow-url-prefix`, they refuse
+another host, a look-alike host, Markdown in a URL or name, a parent
+directory, a path that does not end in the file name, and a short head. The
+block workflow's run step is run as the runner would run it, in a project
+checkout with a stub `gh`: it writes the block into the body and the job
+summary, and it refuses a URL outside the store, a PR input that is not a
+number, and a project whose store is not `r2`, without editing the body.
 
-A live upload to R2 from a Claude cloud session, and GitHub's display of the
-resulting public URL in a PR, have not yet been run. A Brickie cloud session
-saw the agent proxy accept a `CONNECT` to `<account>.r2.cloudflarestorage.com:443`
-with a made-up account id. The device pick tests
+Checked on 2026-11-08 from a Claude cloud session, through the agent proxy,
+against the `pr-evidence` bucket. `publish_evidence.py --check` reported the
+three variables present; the upload returned no error; the public URL served
+the same bytes as `image/png` with the immutable cache header; no credential
+value reached output. `evidence_block.py` rendered a correct block, but the
+session's GitHub tool stored the image line as `[alt](``url)``` in the PR
+body, so no image showed. After the owner restored the `!` in the browser,
+GitHub showed the image in the PR. Hence the block workflow. It has not run on
+GitHub yet: it needs a project with an `r2` store and the workflow on its
+default branch. The device pick tests
 run the CLI against stub `xcrun`, `adb`, and `emulator` tools on `PATH`, so the
 pool's order, the pass-over of claimed, locked, unauthorized, and skip-listed
 devices, `hold`, and `list` are checked on any host, Linux included.
