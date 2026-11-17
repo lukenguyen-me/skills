@@ -148,6 +148,45 @@ build identifier satisfies monotonicity, or this step was skipped.
   owner placeholders such as `[[OWNER:...]]`.
 - Do not invent owner, legal, privacy, contact, or seller facts.
 
+UI names:
+
+- A UI name is the visible label of a tab, screen, button, menu item,
+  setting, mode, or widget. Wrap every UI name in quotation marks, so the
+  reader sees a pointer into the app and not an ordinary word. This applies
+  to every text field except keywords.
+- Copy the label exactly as that locale's UI resources spell it, with the
+  same casing. A label that is not in production resources is not a UI name.
+- Use the locale's own quotation marks. When that locale's existing listing
+  or UI strings already quote names one way, follow them. Otherwise use the
+  table below, or that language's standard primary quotation marks for a
+  locale it does not list. If a store console or project validator rejects
+  those marks in a field, use straight double quotes `"` in that field.
+- Leave a word unquoted when it carries its ordinary meaning, even if it
+  matches a label.
+
+| Locale | UI name |
+| --- | --- |
+| English | `"Today"` |
+| French | `« Aujourd’hui »`, with a no-break space inside each mark |
+| German, Austrian German | `„Heute“` |
+| Swiss German | `«Heute»` |
+| Spanish, Italian, European Portuguese, Russian, Ukrainian | `«Hoy»` |
+| Brazilian Portuguese, Dutch | `“Hoje”` |
+| Polish | `„Dzisiaj”` |
+| Swedish, Finnish | `”Idag”` |
+| Japanese, Traditional Chinese | `「今日」` |
+| Simplified Chinese | `“今天”` |
+
+English examples:
+
+| Plain word or concept | UI name |
+| --- | --- |
+| `See what is due today.` | `Open "Today" to see what is due.` |
+| `Your tasks sync across devices.` | `Pin any list to "Tasks".` |
+| `Tap the plus button to add an event.` | `Tap "New Event" to add an event.` |
+| `Mute reminders at night.` | `Turn on "Quiet Hours" in "Settings".` |
+| `Plan today in one place.` | `Plan today in "Today".` |
+
 Version notes:
 
 - Lead with the user-visible result, not the implementation.
@@ -163,7 +202,7 @@ Version notes:
 Example:
 
 ```text
-Add a task from the home screen in one step.
+Add a task from "Today" in one step.
 
 Home lists load faster when you have hundreds of events.
 
@@ -184,12 +223,13 @@ Promotional text:
 Example:
 
 ```text
-Add a task from the home screen in one step. Home lists stay fast with hundreds of events.
+Add a task from "Today" in one step. Home lists stay fast with hundreds of events.
 ```
 
 Completion: each enabled store describes the same verified release; each
 App Store locale has timely promotional text, or App Store was not enabled;
-owner-supplied facts remain explicit values or placeholders.
+every UI name matches its locale's label inside that locale's quotation
+marks; owner-supplied facts remain explicit values or placeholders.
 
 ### 7. Validate the result
 
@@ -198,8 +238,8 @@ owner-supplied facts remain explicit values or placeholders.
   historical references.
 - From this skill's `scripts/` directory, run
   `python3 check_limits.py --markdown <store-doc>` on each store document, or
-  `python3 check_limits.py --store app|play --field "<field>" --text "<value>"`
-  for paste-ready fields.
+  `python3 check_limits.py --store app|play --field "<field>" --text '<value>'`
+  for paste-ready fields. Single quotes keep quoted UI names intact.
 - Run the project's store-metadata validator when one exists. If that
   validator supports an owner-placeholder allowance, use it while
   placeholders remain, then run the strict form when none remain.

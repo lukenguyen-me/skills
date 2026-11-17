@@ -12,7 +12,8 @@
         "Play Store version notes stay within 500 characters",
         "App Store promotional text is a timely source-verified claim, not a keyword list or a restatement of version notes",
         "Play Store output has no promotional text field",
-        "The run does not create, fetch, push, or modify git tags"
+        "The run does not create, fetch, push, or modify git tags",
+        "UI names such as tabs, screens, buttons, and settings match the app's label exactly inside each locale's own quotation marks; ordinary words stay unquoted"
       ]
     },
     {
@@ -35,7 +36,8 @@
         "Output includes App Store promotional text for 1.4",
         "Output does not include Play Store fields",
         "Version notes do not use Feature:, Fix:, or Improvement: labels",
-        "Promotional text is a timely claim rather than a restatement of version notes"
+        "Promotional text is a timely claim rather than a restatement of version notes",
+        "UI names such as tabs, screens, buttons, and settings match the app's label exactly inside each locale's own quotation marks; ordinary words stay unquoted"
       ]
     }
   ]
