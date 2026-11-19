@@ -26,8 +26,9 @@ git ls-remote --tags --refs --sort=-v:refname https://github.com/mattpocock/skil
 List the target's skills with
 `npx skills@latest add 'mattpocock/skills#<tag>' --list`. Every Matt dependency
 must appear there. A renamed or removed dependency stops the Matt refresh until
-the dependency list is updated; report it. PStack has no tags, so its target is
-the default branch.
+the dependency list is updated; report it. PStack and Luke's own source
+(`lukenguyen-me/skills`) have no tags, so their target is the default branch.
+Sync does not update `luke-mode` itself; report its installed ref.
 
 ## Refresh
 

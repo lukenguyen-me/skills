@@ -19,8 +19,8 @@ Luke Mode carries these bundle routes:
 | [Triage](../../skills/luke-mode/playbooks/triage.md) | Move issues through Matt's triage states, with codebase evidence | `$luke-mode triage` |
 | [Local verify](../../skills/luke-mode/playbooks/local-verify.md) | Check cloud PRs on this machine's devices, then hand them to review; with `--fix`, correct what fails here | `$luke-mode local-verify [#N] [--fix]` |
 
-Matt's skills and PStack's `create-verification-skill` and
-`maintain-verification-skill` are external
+Matt's skills, PStack's `create-verification-skill` and
+`maintain-verification-skill`, and this repository's `explain` skill are external
 [dependencies](../../skills/luke-mode/references/dependencies.md) installed by
 setup. Luke installs and updates only the listed skills and contains none of
 their upstream files. The verification workflows retain explicit-only
@@ -116,8 +116,8 @@ check-ins. Where Luke would normally ask, it takes its recommended option and
 lists each choice under `## Decisions taken` in the PR. It stops only before
 actions a revert cannot undo: destroying or migrating data, deleting work
 outside the task, or touching production, secrets, or billing. Even then it
-pushes what it has and asks in the draft PR. Explore, Design, and Review
-requests run their ordinary route.
+pushes what it has and asks in the draft PR. Explain, Explore, Design, and
+Review requests run their ordinary route.
 
 `$luke-mode autopilot issue #42` needs no other input: a `bug` goes to Fix, an
 `enhancement` to Implement, and a parent spec to whole-spec mode. Before its
@@ -414,7 +414,8 @@ $luke-mode sync
 ```
 
 Sync moves the listed Matt skills to the latest `mattpocock/skills` release tag,
-or to a tag you name, and refreshes the two PStack skills. It re-runs the Skills
+or to a tag you name, and refreshes the two PStack skills and `explain` from
+their default branches. It does not update `luke-mode` itself. It re-runs the Skills
 CLI's `add` with exactly those skill names and the repository's agents, so the
 lock file records the new tag. Other skills, including Matt skills you added
 yourself, stay at their installed version; the report names them. A dependency

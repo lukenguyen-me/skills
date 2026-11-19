@@ -24,8 +24,9 @@ skills, configuring models, or delegating work.
 
 Setup and sync run inside this bundle as `$luke-mode setup` and
 `$luke-mode sync` (`/luke-mode setup` and `/luke-mode sync` in Cursor Cloud and
-Claude Code). Matt's toolkit and PStack's verification-authoring skills are
-external [dependencies](references/dependencies.md) installed by setup.
+Claude Code). Matt's toolkit, PStack's verification-authoring skills, and
+Luke's `explain` skill are external [dependencies](references/dependencies.md)
+installed by setup.
 Route requested setup, sync, autopilot, local verify, and explicitly named
 verification-authoring workflows before selecting an engineering playbook:
 
@@ -85,7 +86,8 @@ implementation children. Read-only and plan-only scope still takes precedence.
 
 | Requested deliverable | Playbook |
 | --- | --- |
-| An explanation or diagnosis, without an application change | [Explore](playbooks/explore.md) |
+| An explanation that helps the person understand how code works and why it has that shape | [Explain](playbooks/explain.md) |
+| A diagnosis, investigation, or recommendation, without an application change | [Explore](playbooks/explore.md) |
 | Requirements, a plan, or architecture choices | [Design](playbooks/design.md) |
 | Defined new or changed behavior | [Implement](playbooks/implement.md) |
 | Correction of a defect or measured regression | [Fix](playbooks/fix.md) |
@@ -93,7 +95,10 @@ implementation children. Read-only and plan-only scope still takes precedence.
 | Findings about specified code or changes | [Review](playbooks/review.md) |
 
 Read-only and plan-only requests constrain the route. `Review this bug fix`
-means Review; `explain why this fails` means Explore. A behavior change is
+means Review; `explain why this fails` means Explore; `explain how refresh
+tokens rotate` and `help me understand this change` mean Explain. Explain is
+for the person's understanding; finding a cause or choosing a change is
+Explore, whatever the verb. A behavior change is
 Implement or Fix, even if called a refactor. If that intent is genuinely
 ambiguous, clarify before editing. Performance diagnosis belongs to Explore;
 correcting a measured regression belongs to Fix. A bounded prototype can serve

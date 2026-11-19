@@ -7,8 +7,8 @@ made on their behalf.
 `$luke-mode autopilot <request>` (`/luke-mode autopilot` in Cursor Cloud and
 Claude Code) selects this mode. Autopilot wraps the playbook the request routes
 to; it does not replace it. A request that routes to Implement, Fix, or Refactor,
-including whole-spec execution, runs on autopilot. A request for Explore,
-Design, or Review runs its ordinary route; say that autopilot did not apply.
+including whole-spec execution, runs on autopilot. A request for Explain,
+Explore, Design, or Review runs its ordinary route; say that autopilot did not apply.
 
 `$luke-mode autopilot issue #N` is a complete request: the ticket is the
 input. Route by the ticket: `bug` to Fix, `enhancement` to Implement, and a
