@@ -87,7 +87,7 @@ Choose evidence before edits and retain commands, relevant outputs, and artifact
 locations after execution. [PR evidence](evidence.md) owns captures of what a
 user can see. Evidence must match the task: failing then passing
 symptom for Fix, changed behavior for Implement, equivalent behavior for Refactor,
-and inspected sources for Explore or Review. Review assesses evidence; agreement
+and inspected sources for Explain, Explore, or Review. Review assesses evidence; agreement
 between reviewers is not a replacement for it. Redact secrets in reported output.
 
 Choose the least costly checks that establish the affected behavior and cover

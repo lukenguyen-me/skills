@@ -10,7 +10,7 @@ Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 
 | Prompt | Expected behavior and evidence |
 | --- | --- |
-| `$luke-mode Explain how refresh tokens rotate. Leave files unchanged.` | Explore; cites inspected execution paths; application files and Git state stay unchanged. |
+| `$luke-mode Explain how refresh tokens rotate. Leave files unchanged.` | Explain; composes the installed `explain` skill; the reply opens with a bottom line in STE and cites inspected execution paths; application files and Git state stay unchanged. |
 | `$luke-mode Design offline sync. We have not decided conflict behavior. Do not implement yet.` | Design; establishes facts and asks the human to choose consequential conflict semantics; produces no production code. |
 | `$luke-mode Add cursor pagination to GET /orders using docs/pagination.md. The endpoint is our agreed test interface.` | Implement; composes available TDD, builds verifiable slices, runs documented checks, then reviews the actual changes. |
 | `$luke-mode A 10% discount on 10,000 cents returns 10,000 cents. Fix it. discounted_total is our agreed test interface.` | Fix; retains a symptom-specific failing repro/test before correction, then shows 9,000 cents and passing regression checks. |
@@ -25,6 +25,9 @@ Use `/luke-mode` instead of `$luke-mode` for the same requests in Cursor Cloud.
 | `$luke-mode Review this bug fix.` | Review, not Fix. Findings do not trigger unsolicited edits. |
 | `$luke-mode Setup OAuth for this app.` | Application Implement/Design as appropriate, not Luke model setup. |
 | `$luke-mode Diagnose why startup is slow. Do not optimize it yet.` | Explore with measurements or trace evidence; no speculative performance patch. |
+| `$luke-mode Explain why this test fails.` | Explore, not Explain: the deliverable is a cause. No unsolicited fix. |
+| `explain` not installed; `$luke-mode Help me understand the sync engine.` | Explain reports `explain` as a pending dependency, points to `$luke-mode setup`, answers through Explore, and installs nothing. |
+| Configured profile; `$luke-mode Explain how checkout works and why it retries.` | The parent runs the `explain` procedure: `how` explorers and the `why` source-control investigator spawn as Explorer, the `how` explainer and `why` synthesizer as Reasoning. No delegate starts another agent. MCP categories no role can reach appear as gaps in Sources Consulted. |
 | TDD installed; `code-review` absent; request a small implementation | Reuses TDD and discloses a Reviewer pass in place of `code-review`. Missing optional review skill does not block useful work. |
 | `grill-me` present but `grilling` absent | Wrapper is not considered usable; no claim that the absent primitive ran. |
 | Matt's user-only `implement` is installed; request an implementation through Luke | Luke follows its inspired sequence and composes permitted primitives; it does not invoke the user-only workflow implicitly. |
@@ -58,7 +61,7 @@ For full setup, use a disposable repository with both `.agents/skills/` and
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| Install only Luke; `$luke-mode setup` in a new project | Installs only the listed Matt and PStack dependencies with the Skills CLI at project scope, for every agent in use, with Matt pinned to a tag; then configures models and the project. Every dependency has a `skills-lock.json` entry; each `.claude/skills/` entry is a CLI link into `.agents/skills/`; `find -L .claude/skills -maxdepth 1 -type l` prints nothing; no hand-made links or copies exist. |
+| Install only Luke; `$luke-mode setup` in a new project | Installs only the listed Matt, PStack, and `explain` dependencies with the Skills CLI at project scope, for every agent in use, with Matt pinned to a tag; then configures models and the project. Every dependency has a `skills-lock.json` entry; each `.claude/skills/` entry is a CLI link into `.agents/skills/`; `find -L .claude/skills -maxdepth 1 -type l` prints nothing; no hand-made links or copies exist. |
 | Complete accepted setup run a second time | Reuses dependencies, models, and repository guidance; the skill roots and `skills-lock.json` are unchanged; no repeated choices. |
 | A dependency exists in `.agents/skills/` but not `.claude/skills/`, or as a Claude-only copy | Re-runs `add` with every agent in use; the CLI leaves one copy in `.agents/skills/` and a link in `.claude/skills/`. |
 | A dependency is a hand-made link or copy without a lock entry | Reports its path and target; replaces it through `add` only after the user agrees. |
@@ -84,7 +87,7 @@ markers, local customizations, and the initial `skills-lock.json` for comparison
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| `$luke-mode sync` | Resolves the latest `mattpocock/skills` tag, re-runs `add` with exactly the listed Matt skills, that tag, and every agent in use; refreshes the two PStack skills; the lock's `ref` moves to the new tag. |
+| `$luke-mode sync` | Resolves the latest `mattpocock/skills` tag, re-runs `add` with exactly the listed Matt skills, that tag, and every agent in use; refreshes the two PStack skills and `explain`; the lock's `ref` moves to the new tag for Matt; `luke-mode` stays at its installed ref and the report names it. |
 | The project also has Matt skills outside the dependency list | Leaves them at their installed ref and names them in the report. |
 | `$luke-mode sync to v1.3.1` | Uses the named tag instead of the latest. |
 | A listed dependency is renamed or removed in the target tag | Stops the Matt refresh and reports the missing name; installs nothing from that tag. |
@@ -230,13 +233,13 @@ profile, task cards or returned model metadata, final diff, and check artifacts.
 
 | Condition and prompt | Expected behavior and evidence |
 | --- | --- |
-| Install Luke Mode | The CLI writes one `luke-mode` directory in `.agents/skills/` with its explicit-only metadata. External Matt and PStack skills are absent until setup installs them. |
+| Install Luke Mode | The CLI writes one `luke-mode` directory in `.agents/skills/` with its explicit-only metadata. External Matt, PStack, and `explain` skills are absent until setup installs them. |
 | `/luke-mode setup` or `/luke-mode sync` in a Cloud run | Reads the bundled playbook and shared Luke references; installs with the CLI in the Cloud checkout's actual roots. |
 | `/create-verification-skill` or `/luke-mode maintain-verification-skill` in a Cloud run | Selects the explicitly named workflow, uses the Cloud checkout's actual verification controls, and preserves evidence there. The laptop's runtime is not proof. |
 | `/luke-mode Implement ticket #123`; the target is a parent spec with implementation children | Selects Luke-owned whole-spec mode without an extra command or original Matt workflow installation; applies the Cloud profile, native capacity, isolation, and fallback rules. |
 | `/luke-mode implement-spec docs/spec.md` in a Cloud run | Resolves Matt's workflow inside the run, applies the Cloud role profile and shared whole-spec contract, and verifies actual worktree/resource isolation. Luke's single package does not supply Matt's dependency. |
 | Fresh Cloud session; ordinary prompt without `/luke-mode` | Native discovery honors the prepared `disable-model-invocation: true`; Luke remains inactive. |
-| `/luke-mode Explain refresh token rotation. Leave files unchanged.` | Reads the Cloud adapter, selects Explore, inspects actual project sources, and leaves files and Git state unchanged. |
+| `/luke-mode Explain refresh token rotation. Leave files unchanged.` | Reads the Cloud adapter, selects Explain, inspects actual project sources, and leaves files and Git state unchanged. |
 | Cloud metadata identifies a GPT parent; models file contains different `Codex` and `Cursor Cloud` profiles | Selects `Cursor Cloud` by runtime identity, without inferring Codex from GPT or a `.codex/skills/` installation path. |
 | `/luke-mode configure models`; only a confirmed `Codex` profile exists | Proposes Cloud choices from native evidence or intentional inheritance, saves under `Cursor Cloud` after acceptance, and preserves the Codex section. |
 | Cloud run sees a models file containing only `Codex`; request ordinary bounded work | Treats the Cloud profile as absent and works directly in the current session; does not apply Codex role settings. |

@@ -29,8 +29,8 @@ Install all missing skills of a source in one `add`. A full setup request
 authorizes this installation. It does not authorize replacing a hand install,
 overwriting unresolved customizations, or enabling disabled skills.
 
-Installation makes the PStack skills available; it does not create or maintain
-this project's `verify-<app>` skill. Run either authoring workflow only when
+Installation makes the PStack skills and `explain` available; it does not
+create or maintain this project's `verify-<app>` skill. Run either authoring workflow only when
 explicitly named.
 
 Check required tools from the installed instructions and selected project

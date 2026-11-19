@@ -32,6 +32,17 @@ Source `backnotprop/pstack`, which publishes no release tags:
 `create-verification-skill` and `maintain-verification-skill`. Install only
 these two; PStack's `tdd` conflicts with Matt's.
 
+## Luke's own skills
+
+Source `lukenguyen-me/skills`, which publishes no release tags.
+
+| Skill | Used by |
+| --- | --- |
+| `explain` | Explain |
+
+Install only `explain` from this source. `luke-mode` comes from the same
+source, but the user installs and updates it; setup and sync leave it as it is.
+
 ## Install with the Skills CLI
 
 The Skills CLI (`npx skills@latest`) is the only installer. It writes the skill
@@ -56,8 +67,8 @@ project dependency even when a global copy exists.
    right only when Claude Code is the only agent.
 2. **Ref.** Pin Matt's source to a tag: `mattpocock/skills#<tag>`. Use the
    `ref` from the skill's lock entry when present, otherwise the tested tag
-   above; sync chooses its own target tag. Pin PStack only when its lock entry
-   has a `ref`.
+   above; sync chooses its own target tag. Pin PStack and Luke's own source
+   only when their lock entry has a `ref`.
 3. **Command.** Run one `add` per source, naming every skill it installs:
 
    ```sh

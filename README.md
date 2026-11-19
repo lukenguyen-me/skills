@@ -101,7 +101,7 @@ Install only `luke-mode`. It carries two bundle routes:
 - [sync](skills/luke-mode/playbooks/sync.md): update Luke's dependencies to a
   newer upstream tag.
 
-Full setup installs the Matt and PStack skills listed in
+Full setup installs the Matt, PStack, and `explain` skills listed in
 [dependencies](skills/luke-mode/references/dependencies.md), and only those.
 Their upstream files remain the source of truth. Installing verification
 workflows makes them available; creating a project's `verify-<app>` skill remains an explicitly
@@ -201,6 +201,15 @@ Write every message to a human in Simplified Technical English (ASD-STE100). Lea
 Usage:
 ```bash
 claude /skill:write-to-human
+```
+
+### explain
+
+Explain code, a change, or a subsystem so a person understands it. Runs the bundled `how` and `why` investigations, then gives one explanation with the bottom line up front (BLUF), in Simplified Technical English (ASD-STE100). Self-contained: the STE rules ship inside the skill. Luke Mode routes "help me understand X" requests to it through its Explain playbook.
+
+Usage:
+```bash
+claude /skill:explain
 ```
 
 ## Agent workflows
