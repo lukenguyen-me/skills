@@ -93,6 +93,20 @@ triage-label mapping, and the local-check paths from the
 A project with no local-check paths has none to touch. A label the tracker
 lacks is a gap in the handoff; Luke does not create labels.
 
+The draft state stays true after the first hand-off. When the agent takes back
+a PR that is ready for review (a review comment it acts on, a failed required
+check, or a request to resolve a conflict), convert it to draft before the
+first change. Once the fix is pushed and required checks pass, apply the table
+again, judging the local-check paths by what the fix changes: for a merge of
+the base branch, the files its conflict resolution edits. A fix that touches a
+local-check path keeps the draft and adds `needs-local-verify`. A follow-up
+that changes nothing on the branch, such as a question answered in a comment
+or a duplicate event, leaves the draft state and labels as they are. A PR that
+carries `in-progress` belongs to the user's machine
+([fix locally](local-verify.md#fix-locally)): report and stop, as the Claim
+table does. When the draft conversion fails, make the fix anyway and name the
+failure in the handoff.
+
 A ticket always shows its stage, so never remove `in-progress` without adding
 the next label. Once the draft PR is open, swap `in-progress` for `in-review` on
 the ticket in one edit, and add `in-review` to every other ticket the PR closes,
