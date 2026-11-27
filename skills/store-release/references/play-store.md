@@ -14,7 +14,7 @@ description, and full description.
 | App title | 30 characters | Memorable product name. No keyword stuffing. |
 | Short description | 80 characters | First line in search results. One specific benefit. |
 | Full description | 4000 characters | Problem, benefits, capabilities, then a close. First ~167 characters show before Read More. |
-| Version notes | 500 characters | Why a customer should update. Same claims as App Store, compressed. Follow the version-notes rules in `SKILL.md`. |
+| Version notes | 500 characters | Why a customer should update. Follow the version-notes rules in `SKILL.md`. |
 
 ## Global fields
 

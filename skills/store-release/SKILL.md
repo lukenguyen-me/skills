@@ -99,7 +99,10 @@ the workflow has stopped without edits.
 - Exclude tests, refactors, documentation, CI, scripts, dependency bumps,
   formatting, and tooling unless they change a user outcome.
 
-Completion: every version-note claim maps to verified user-visible behavior,
+The audit is exhaustive; the version notes are selective. Step 6 chooses
+what the notes announce.
+
+Completion: every user-visible change in the delta is verified and listed,
 and internal-only changes are excluded.
 
 ### 5. Synchronize release versions
@@ -130,7 +133,8 @@ build identifier satisfies monotonicity, or this step was skipped.
   verified delta.
 - Write timely App Store promotional text for each App Store locale.
 - Update reviewer notes when the verified delta changes how a reviewer
-  exercises the app.
+  exercises the app. Reviewer notes carry the full detail of each new
+  feature that the version notes leave out.
 - If a privacy or review checklist lives with the store documents, update
   current-release version mentions and reviewer steps this delta changes.
   Leave owner-controlled checkboxes and legal claims untouched.
@@ -142,8 +146,8 @@ build identifier satisfies monotonicity, or this step was skipped.
 - Keep the same factual claims across locales; phrase them naturally for each
   locale rather than translating word for word.
 - Keep the same factual claims across stores for fields both stores have.
-  Play version notes are a compressed equivalent that fits 500 characters,
-  not a truncation of the App Store text.
+  Version notes carry the same claims on both stores, apart from
+  platform-only changes.
 - Preserve document structure, field-limit annotations, current locales, and
   owner placeholders such as `[[OWNER:...]]`.
 - Do not invent owner, legal, privacy, contact, or seller facts.
@@ -189,24 +193,40 @@ English examples:
 
 Version notes:
 
-- Lead with the user-visible result, not the implementation.
-- Prefer 3 to 8 concrete points. Combine related changes. One idea per
-  sentence.
+Version notes are a **headline**, not a manual. They announce what
+changed; the app teaches how to use it.
+
+- One entry per feature: its name and the result for the customer, in one
+  or two sentences. The feature's steps, options, entry points, and edge
+  cases stay in the app and in the App Review notes.
+- Write at most three entries, the most important first. One entry is a
+  complete set of notes.
+- Make the first sentence stand alone. The stores show only the first
+  lines before "more".
+- Name every significant customer-visible change. Close with one generic
+  line such as `Fixes and small improvements.` for simple fixes and
+  polish. A fix for a crash, data loss, login, or purchase problem that
+  customers felt gets its own entry.
+- Keep each locale's notes within 500 characters on both stores.
+- Each store's notes cover only what ships on that store's platforms.
+- Play notes state changes only. A call to action may close App Store
+  notes.
 - Use simple verbs: Added, Fixed, Improved, Updated, Reduced, Restored,
   Prevented.
 - Omit weak evidence rather than guessing.
-- Do not write generic filler, change-type labels (`Feature:`, `Fix:`,
-  `Improvement:`), commit hashes, file names, branches, pull requests,
-  internal modules, or architecture, framework, or database names.
+- Do not write change-type labels (`Feature:`, `Fix:`, `Improvement:`),
+  commit hashes, file names, branches, pull requests, internal modules, or
+  architecture, framework, or database names.
 
-Example:
+Example: a release that adds a Backup feature with six verified
+behaviors, one small addition, and two minor fixes.
 
 ```text
-Add a task from "Today" in one step.
+New: "Backup". Keep a copy of your progress in your own iCloud, and restore it on a new iPad.
 
-Home lists load faster when you have hundreds of events.
+"Add to Notebook" now suggests Hanzi for the pinyin you type.
 
-A crash that could happen while iCloud was syncing no longer occurs.
+Fixes and small improvements.
 ```
 
 Promotional text:
@@ -257,7 +277,8 @@ reported without expanding the task.
 ### 8. Hand off the prepared release
 
 - Report the target and base; versions and builds before and after; stores
-  and locales written; the verified delta represented; changed files; and
+  and locales written; the verified delta, marking each change as named in
+  the version notes or left to the generic line; changed files; and
   validation results.
 - Call out unresolved owner placeholders, user visual review, and
   release-console gates.
