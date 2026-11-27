@@ -1,0 +1,371 @@
+<!doctype html>
+<!--
+  Deck template for the prepare-presentation skill.
+  Standalone: system fonts, inline SVG, no network requests.
+  The sample content (a move from a shared support inbox to tickets) only shows each component.
+  Replace it. Delete the components you do not use.
+  Keys: arrows or click = move, F = full screen. #n in the URL opens slide n.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deck title</title>
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --ink: #18212c;
+    --soft: #5c6775;
+    --faint: #98a1ac;
+    --line: #e3e0d7;
+    --old: #b0500f;      /* current / before / warning */
+    --old-tint: #f7e6d6;
+    --new: #1d5bbf;      /* proposed / after / accent */
+    --new-tint: #dfe9fa;
+    --sans: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #10161d; overflow: hidden; }
+  body { font-family: var(--sans); color: var(--ink); }
+
+  /* fixed 16:9 stage, scaled to the window by fit() */
+  #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center center; }
+  .slide { position: absolute; inset: 0; background: var(--bg); padding: 56px 72px 60px; display: none; flex-direction: column; }
+  .slide.on { display: flex; }
+
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--new); margin: 0 0 10px; }
+  h1 { font-size: 46px; line-height: 1.1; margin: 0 0 18px; letter-spacing: -.02em; font-weight: 700; }
+  h2 { font-size: 30px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -.015em; font-weight: 700; }
+  h3 { font-size: 16.5px; line-height: 1.3; margin: 0 0 3px; font-weight: 650; }
+  p { font-size: 15px; line-height: 1.45; margin: 0; color: var(--soft); }
+  code, .m { font-family: var(--mono); font-size: .9em; }
+  .o { color: var(--old); }
+  .n { color: var(--new); }
+
+  .body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 30px; min-height: 0; padding-top: 14px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+  .cap { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin: 0 0 8px; }
+
+  /* callout: bare solid icon + one bold sentence. .w = warning, .q = question, .o = "before" colour */
+  .take { position: relative; padding-left: 38px; font-size: 18px; line-height: 1.45; color: var(--ink); font-weight: 600; }
+  .take::before { content: ""; position: absolute; left: 0; top: 0; width: 26px; height: 26px; background: var(--new);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2z'/%3E%3Cpath d='M9 20h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2z'/%3E%3Cpath d='M9 20h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E") center / contain no-repeat; }
+  .take.o::before { background: var(--old); }
+  .take.w::before { background: var(--old);
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2.5 1.5 21h21L12 2.5zm-1 6.5h2v6h-2V9zm0 8h2v2h-2v-2z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2.5 1.5 21h21L12 2.5zm-1 6.5h2v6h-2V9zm0 8h2v2h-2v-2z'/%3E%3C/svg%3E"); }
+  .take.q::before { content: "?"; background: none; -webkit-mask: none; mask: none; color: var(--new); font-size: 30px; font-weight: 800; line-height: 26px; text-align: center; }
+
+  svg { display: block; overflow: visible; }
+  svg text { font-size: 13.5px; }
+  .fm { font-family: var(--mono); }
+  .fs { font-family: var(--sans); }
+
+  /* number row (cover) */
+  .nums { display: flex; margin-top: 44px; }
+  .nums > div { padding: 0 44px; border-left: 1px solid var(--line); }
+  .nums > div:first-child { padding-left: 0; border-left: none; }
+  .nums .big { font-size: 38px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .nums .lbl { font-size: 14.5px; color: var(--soft); margin-top: 6px; max-width: 230px; line-height: 1.4; }
+
+  /* large count above a fan */
+  .count { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  .count b { font-size: 40px; font-weight: 700; line-height: 1; color: var(--old); letter-spacing: -.02em; }
+  .count span { font-size: 15.5px; color: var(--soft); }
+
+  /* before → after pairs */
+  .pairs { display: grid; grid-template-columns: 1fr 44px 1.15fr; }
+  .pairs > div { padding: 13px 0; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 14px; line-height: 1.45; display: flex; flex-direction: column; justify-content: center; }
+  .pairs > div:nth-child(-n+3) { border-top: none; padding-top: 0; }
+  .pairs > div:nth-child(n+4):nth-child(-n+6) { border-top: none; }
+  .pairs .hd { font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); padding-bottom: 6px; }
+  .pairs .ar { color: var(--faint); font-family: var(--sans); font-size: 18px; align-items: center; }
+  .pairs small { font-family: var(--sans); font-size: 13px; color: var(--faint); }
+
+  /* rules with before / after examples */
+  .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 56px; }
+  .rule { display: flex; gap: 14px; }
+  .rule .k { font-size: 30px; font-weight: 700; line-height: 1; color: var(--new); min-width: 24px; }
+  .rule.acc .k { color: var(--old); }
+  .ex { display: grid; grid-template-columns: 52px 1fr; column-gap: 8px; row-gap: 3px; margin-top: 6px; font-family: var(--mono); font-size: 12.5px; line-height: 1.45; align-items: baseline; }
+  .ex.stack { grid-template-columns: 1fr; row-gap: 1px; margin-top: 8px; }
+  .ex.stack span { margin-bottom: 8px; }
+  .ex i { font-family: var(--sans); font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+
+  /* stepper */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); position: relative; }
+  .steps::before { content: ""; position: absolute; left: 15px; right: 25%; top: 15px; border-top: 2px solid var(--line); }
+  .step { position: relative; padding-right: 28px; }
+  .step .dot { width: 32px; height: 32px; border-radius: 50%; background: var(--new); color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .step .what { font-family: var(--mono); font-size: 13px; line-height: 1.45; color: var(--new); margin-top: 6px; }
+
+  /* table with pills and range bars */
+  table { border-collapse: collapse; width: 100%; }
+  th { text-align: left; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); padding: 0 12px 8px 0; }
+  td { padding: 9px 12px 9px 0; border-top: 1px solid var(--line); font-size: 14.5px; vertical-align: middle; color: var(--soft); }
+  td:first-child { color: var(--ink); font-weight: 650; }
+  td.r, th.r { text-align: right; white-space: nowrap; }
+  .days { display: inline-flex; align-items: baseline; gap: 2px; background: var(--new-tint); color: var(--new); border-radius: 14px; padding: 3px 12px; font-weight: 700; font-size: 14.5px; }
+  .days b { font-weight: 600; font-size: 12.5px; margin-left: 3px; }
+  input.rate { width: 30px; font: inherit; text-align: center; border: none; background: transparent; color: inherit; padding: 0; }
+  input.rate:focus { outline: none; background: #fff; border-radius: 4px; }
+  .track { position: relative; width: 100%; height: 10px; background: #eeebe3; border-radius: 5px; }
+  .track .lo { position: absolute; left: 0; top: 0; bottom: 0; background: var(--new-tint); border-radius: 5px 0 0 5px; }
+  .track .hi { position: absolute; top: 0; bottom: 0; background: var(--new); border-radius: 5px; min-width: 4px; }
+  tr.total td { border-top: 2px solid var(--ink); color: var(--ink); font-weight: 700; font-size: 17px; padding-top: 12px; }
+
+  /* closing */
+  .next { display: flex; flex-direction: column; gap: 22px; }
+  .next h3 { font-size: 20px; margin-top: 4px; }
+  .qa { border-left: 1px solid var(--line); padding-left: 56px; }
+  .qa-big { font-size: 110px; font-weight: 700; letter-spacing: -.03em; line-height: 1; color: var(--new); margin-bottom: 26px; }
+  .closing { font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--ink); }
+
+  footer { position: absolute; left: 72px; right: 72px; bottom: 22px; display: flex; justify-content: space-between; font-size: 12px; color: var(--faint); }
+  #bar { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--new); transition: width .2s; }
+
+  @media print {
+    html, body { overflow: visible; background: #fff; height: auto; }
+    #stage { position: static; transform: none !important; width: auto; height: auto; }
+    .slide { display: flex !important; position: relative; width: 1280px; height: 720px; page-break-after: always; }
+    #bar { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- COVER: title and the bottom line as numbers. No description sentence. -->
+<section class="slide">
+  <div class="body" style="gap:0">
+    <p class="eyebrow">Proposal · Support team</p>
+    <h1>Support requests:<br>from a shared inbox to tickets</h1>
+    <div class="nums">
+      <div><div class="big"><span class="o">1 inbox</span> → <span class="n">4 queues</span></div><div class="lbl">Current → proposed</div></div>
+      <div><div class="big">3 patterns</div><div class="lbl">Intake · ownership · follow-up</div></div>
+      <div><div class="big" id="coverTotal">14–25</div><div class="lbl">Person-days to move</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY: the problem, shown as a one-to-many fan with a large count. -->
+<section class="slide">
+  <p class="eyebrow">1 · Why this proposal</p>
+  <h2>One inbox receives every kind of request</h2>
+  <div class="body">
+    <div class="two">
+      <div>
+        <div class="count"><b>6</b><span>request types, one address</span></div>
+        <div id="fanA"></div>
+      </div>
+      <div>
+        <div class="count"><b>0</b><span>owners for each message</span></div>
+        <div id="fanB"></div>
+      </div>
+    </div>
+    <p class="take o">Subject lines decide the route: <code>URGENT!!</code> · <code>Re: Re: Fwd:</code></p>
+  </div>
+</section>
+
+<!-- TARGET: before → after pairs. The main proof component. -->
+<section class="slide">
+  <p class="eyebrow">1 · Why this proposal</p>
+  <h2>The same requests, as tickets</h2>
+  <div class="body">
+    <div class="pairs">
+      <div class="hd">Current</div><div></div><div class="hd">Proposed</div>
+      <div class="o">Mail to support@<small>subject: "refund??"</small></div><div class="ar">→</div><div class="n">Ticket in queue: Billing<small>type: refund</small></div>
+      <div class="o">Reply-all thread with 9 people</div><div class="ar">→</div><div class="n">One ticket, one owner</div>
+      <div class="o">"Did someone answer this?"</div><div class="ar">→</div><div class="n">Status: waiting for customer</div>
+    </div>
+    <p class="take q">Can a new team member tell who owns a request?</p>
+  </div>
+</section>
+
+<!-- APPROACH: rules, each with a real before / after example. -->
+<section class="slide">
+  <p class="eyebrow">2 · Approach</p>
+  <h2>Four rules, from general to our team</h2>
+  <div class="body">
+    <div class="rules">
+      <div class="rule"><span class="k">1</span><div><h3>A request has one type</h3><div class="ex"><i>Before</i><span class="o">subject: "help"</span><i>After</i><span class="n">type: refund</span></div></div></div>
+      <div class="rule"><span class="k">2</span><div><h3>A request has one owner</h3><div class="ex"><i>Before</i><span class="o">to: support@ (12 readers)</span><i>After</i><span class="n">owner: one named person</span></div></div></div>
+      <div class="rule"><span class="k">3</span><div><h3>The status is visible</h3><div class="ex"><i>Before</i><span class="o">unread / read</span><i>After</i><span class="n">new · in work · waiting · done</span></div></div></div>
+      <div class="rule acc"><span class="k">4</span><div><h3>A refund goes to Billing</h3><div class="ex"><i>Before</i><span class="o">forwarded 3 times</span><i>After</i><span class="n">queue: Billing, first time</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PATTERN: a sequence. Step name + the concrete thing for that step. Callouts at the bottom. -->
+<section class="slide">
+  <p class="eyebrow">3 · Pattern: one request</p>
+  <h2>Receive, assign, answer, close</h2>
+  <div class="body" style="gap:44px">
+    <div class="steps">
+      <div class="step"><div class="dot">1</div><h3>Receive</h3><div class="what">form → ticket #</div></div>
+      <div class="step"><div class="dot">2</div><h3>Assign</h3><div class="what">queue + owner</div></div>
+      <div class="step"><div class="dot">3</div><h3>Answer</h3><div class="what">status: waiting</div></div>
+      <div class="step"><div class="dot">4</div><h3>Close</h3><div class="what">status: done</div></div>
+    </div>
+    <div class="two">
+      <p class="take w">Step 3 means “we answered”, not “the problem is solved”.</p>
+      <p class="take">One status list for all queues.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COST: groups, counts, a rate pill, a range bar, a total. Rates are editable. -->
+<section class="slide">
+  <p class="eyebrow">4 · Estimate</p>
+  <h2>Effort by type of work</h2>
+  <div class="body" style="gap:20px">
+    <table id="est">
+      <tr><th>Type</th><th>Example</th><th class="r">Items</th><th class="r" style="padding-right:28px">Days each</th><th>Range</th></tr>
+      <tr data-n="4"><td>Set up a queue</td><td>Billing, Orders, Accounts, Other</td><td class="r">4</td><td class="r" style="padding-right:28px"><span class="days"><input class="rate" value="1"> – <input class="rate" value="2"><b>d</b></span></td><td><div class="track"><div class="lo"></div><div class="hi"></div></div></td></tr>
+      <tr data-n="6"><td>Write a reply template</td><td>One for each request type</td><td class="r">6</td><td class="r" style="padding-right:28px"><span class="days"><input class="rate" value="0.5"> – <input class="rate" value="1"><b>d</b></span></td><td><div class="track"><div class="lo"></div><div class="hi"></div></div></td></tr>
+      <tr data-n="1"><td>Move open threads</td><td>About 300 threads</td><td class="r">1</td><td class="r" style="padding-right:28px"><span class="days"><input class="rate" value="3"> – <input class="rate" value="5"><b>d</b></span></td><td><div class="track"><div class="lo"></div><div class="hi"></div></div></td></tr>
+      <tr data-n="4"><td>Train a team</td><td>One session for each queue</td><td class="r">4</td><td class="r" style="padding-right:28px"><span class="days"><input class="rate" value="1"> – <input class="rate" value="1.5"><b>d</b></span></td><td><div class="track"><div class="lo"></div><div class="hi"></div></div></td></tr>
+      <tr class="total"><td>Total</td><td></td><td class="r">15</td><td></td><td id="grand"></td></tr>
+    </table>
+    <p>Not included: the tool licence · the customer announcement</p>
+  </div>
+</section>
+
+<!-- CLOSING: next actions on the left, Q&A on the right. -->
+<section class="slide">
+  <p class="eyebrow">5 · Next actions and Q&amp;A</p>
+  <div class="body">
+    <div class="two" style="align-items:center">
+      <div>
+        <p class="cap">Next actions</p>
+        <div class="next">
+          <div class="rule"><span class="k">1</span><div><h3>Read the proposal</h3></div></div>
+          <div class="rule"><span class="k">2</span><div><h3>Challenge the queue names</h3></div></div>
+          <div class="rule"><span class="k">3</span><div><h3>Check the effort for your team</h3></div></div>
+        </div>
+      </div>
+      <div class="qa">
+        <div class="qa-big">Q&amp;A</div>
+        <p class="closing">One request, one type, <span class="n">one owner.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="bar"></div>
+</div>
+
+<script>
+(function () {
+  var DECK_TITLE = 'Deck title';
+  var NS = 'http://www.w3.org/2000/svg';
+  var OLD = '#b0500f', NEW = '#1d5bbf', INK = '#18212c', SOFT = '#5c6775', LINK = '#c9cdd3';
+
+  function el(name, attrs, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  /* fan(hostId, options): one label linked to many labels, as inline SVG.
+     dir: "out" = one → many (one label on the left). "in" = many → one (one label on the right).
+     w: svg width. leftW: width kept for the left text. gap: width of the links. rh: row height.
+     one: the single label. items: [{ t: mono text, d: optional grey description }].
+     oneColor / itemColor: text colours. fs / oneFs: font sizes. label: text for screen readers. */
+  function fan(id, o) {
+    var rh = o.rh || 22, n = o.items.length, H = n * rh, mid = H / 2;
+    var svg = el('svg', { width: o.w, height: H, viewBox: '0 0 ' + o.w + ' ' + H, role: 'img', 'aria-label': o.label });
+    var x1 = o.leftW + 10, x2 = x1 + o.gap, c = o.gap / 2;
+    o.items.forEach(function (it, i) {
+      var y = i * rh + rh / 2;
+      var a = o.dir === 'in' ? y : mid, b = o.dir === 'in' ? mid : y;
+      svg.appendChild(el('path', { d: 'M' + x1 + ' ' + a + ' C' + (x1 + c) + ' ' + a + ' ' + (x1 + c) + ' ' + b + ' ' + x2 + ' ' + b, fill: 'none', stroke: LINK, 'stroke-width': 1.2 }));
+      var t = el('text', { x: o.dir === 'in' ? o.leftW : x2 + 10, y: y + 4.5, 'class': 'fm', fill: o.itemColor, 'text-anchor': o.dir === 'in' ? 'end' : 'start' }, it.t);
+      if (o.fs) t.style.fontSize = o.fs + 'px';
+      if (it.d) t.appendChild(el('tspan', { 'class': 'fs', fill: SOFT, dx: 12 }, it.d));
+      svg.appendChild(t);
+    });
+    var one = el('text', { x: o.dir === 'in' ? x2 + 10 : o.leftW, y: mid + 4.5, 'class': 'fm', fill: o.oneColor, 'font-weight': 650, 'text-anchor': o.dir === 'in' ? 'start' : 'end' }, o.one);
+    if (o.oneFs) one.style.fontSize = o.oneFs + 'px';
+    svg.appendChild(one);
+    document.getElementById(id).appendChild(svg);
+  }
+  function T(a) { return a.map(function (t) { return { t: t }; }); }
+
+  fan('fanA', { dir: 'out', w: 500, leftW: 130, gap: 70, rh: 24, fs: 13.5, oneFs: 14, oneColor: OLD, itemColor: INK,
+    one: 'support@', label: 'One address receives six request types',
+    items: T(['refund', 'late order', 'password reset', 'invoice copy', 'product question', 'complaint']) });
+  fan('fanB', { dir: 'in', w: 500, leftW: 150, gap: 70, rh: 24, fs: 13.5, oneFs: 14, oneColor: OLD, itemColor: INK,
+    one: 'who answers?', label: 'Many readers, no single owner',
+    items: T(['billing team', 'warehouse', 'account team', 'sales', 'manager', 'intern']) });
+
+  /* navigation */
+  var stage = document.getElementById('stage');
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var bar = document.getElementById('bar');
+  var cur = 0;
+  slides.forEach(function (s, i) {
+    var f = document.createElement('footer');
+    f.innerHTML = '<span></span><span>' + (i + 1) + ' / ' + slides.length + '</span>';
+    f.firstChild.textContent = DECK_TITLE;
+    s.appendChild(f);
+  });
+  function fit() {
+    var k = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+  }
+  function show(n) {
+    cur = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+    bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+    try { history.replaceState(null, '', '#' + (cur + 1)); } catch (e) {}
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT') return;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].indexOf(e.key) > -1) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].indexOf(e.key) > -1) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    }
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('input, a')) return;
+    show(cur + (e.clientX < window.innerWidth * 0.25 ? -1 : 1));
+  });
+  window.addEventListener('resize', fit);
+
+  /* estimate table: each row has data-n (item count) and two rate inputs (low, high). */
+  function num(v) { var x = parseFloat(v); return isNaN(x) || x < 0 ? 0 : x; }
+  function fmt(x) { return (Math.round(x * 10) / 10).toString(); }
+  function calc() {
+    var rows = [].slice.call(document.querySelectorAll('#est tr[data-n]')), lo = 0, hi = 0, max = 1, vals = [];
+    if (!rows.length) return;
+    rows.forEach(function (r) {
+      var n = num(r.getAttribute('data-n')), inp = r.querySelectorAll('input');
+      var a = n * num(inp[0].value), b = Math.max(a, n * num(inp[1].value));
+      vals.push([a, b]); lo += a; hi += b; max = Math.max(max, b);
+    });
+    rows.forEach(function (r, i) {
+      var a = vals[i][0], b = vals[i][1];
+      r.querySelector('.lo').style.width = (a / max * 100) + '%';
+      r.querySelector('.hi').style.left = (a / max * 100) + '%';
+      r.querySelector('.hi').style.width = ((b - a) / max * 100) + '%';
+    });
+    var g = document.getElementById('grand'), c = document.getElementById('coverTotal');
+    if (g) g.textContent = fmt(lo) + ' – ' + fmt(hi) + ' person-days';
+    if (c) c.textContent = fmt(lo) + '–' + fmt(hi);
+  }
+  [].forEach.call(document.querySelectorAll('input.rate'), function (i) { i.addEventListener('input', calc); });
+
+  fit(); calc();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+})();
+</script>
+</body>
+</html>
