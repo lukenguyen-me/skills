@@ -203,6 +203,19 @@ Usage:
 claude /skill:write-to-human
 ```
 
+### prepare-presentation
+
+Prepare slides, reports, and pages that a person presents or shares with other people. Puts the bottom line first, gives each claim a real before-and-after example, and keeps the screen to what supports the speaker. Renders a plain style with diagrams as one standalone local HTML file that loads nothing from the network. Includes a deck template and a page template.
+
+```sh
+npx skills add lukenguyen-me/skills --skill prepare-presentation
+```
+
+Usage:
+```bash
+claude /skill:prepare-presentation
+```
+
 ## Agent workflows
 
 This repo also ships workflows under `workflows/`. Grok uses the Rhai entry point; Codex uses the Agent Skill entry point with native subagents.
