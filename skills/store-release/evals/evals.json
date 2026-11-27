@@ -9,7 +9,9 @@
       "expectations": [
         "The target public version is 2.0 and was not inferred from tags or config",
         "Version notes cite user-visible behavior verified in production source",
-        "Play Store version notes stay within 500 characters",
+        "Each new feature gets one version-notes entry of one or two sentences; its steps, options, and edge cases are not listed",
+        "Version notes have at most three entries plus an optional generic line for small fixes, and the first sentence stands alone",
+        "Version notes stay within 500 characters per locale on both stores",
         "App Store promotional text is a timely source-verified claim, not a keyword list or a restatement of version notes",
         "Play Store output has no promotional text field",
         "The run does not create, fetch, push, or modify git tags",
@@ -37,7 +39,8 @@
         "Output does not include Play Store fields",
         "Version notes do not use Feature:, Fix:, or Improvement: labels",
         "Promotional text is a timely claim rather than a restatement of version notes",
-        "UI names such as tabs, screens, buttons, and settings match the app's label exactly inside each locale's own quotation marks; ordinary words stay unquoted"
+        "UI names such as tabs, screens, buttons, and settings match the app's label exactly inside each locale's own quotation marks; ordinary words stay unquoted",
+        "Version notes name each significant change in at most three entries and stay within 500 characters"
       ]
     }
   ]
