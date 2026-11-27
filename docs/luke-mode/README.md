@@ -130,7 +130,11 @@ a path the project marks for local checks, labels it `needs-local-verify` and
 keeps the draft. Once the draft PR is open, it swaps the ticket's `in-progress`
 label for `in-review`, and adds `in-review` to every other ticket the PR closes,
 so a ticket never looks unstarted while its PR waits. A run that stops before a
-PR keeps `in-progress` and comments the reason on the ticket. Merging stays with you; autopilot never merges or enables
+PR keeps `in-progress` and comments the reason on the ticket. When autopilot
+takes back a ready PR to act on a review comment, a failed check, or a request
+to resolve a conflict, it converts the PR to draft before the first change and
+hands it off again once the fix passes, so a ready PR never changes under your
+review. Merging stays with you; autopilot never merges or enables
 auto-merge.
 
 ### Cloud pipeline
